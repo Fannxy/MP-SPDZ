@@ -1,0 +1,56 @@
+"""Test non-linear functions performance.
+"""
+# from Compiler.library import for_range_opt, start_timer, stop_timer
+from Compiler.iterative_based import *
+
+program.use_trunc_pr = True
+
+sfix.set_precision(48, 100)
+m = 10
+n = 8
+N = 100
+
+breaks = [i for i in range(m)]
+
+# plain-text coeffA
+coeffA = []
+for i in range(m):
+    row = []
+    for j in range(n):
+        row.append(j)
+    coeffA.append(row)
+
+x = Array.create_from([sfix(i) for i in range(N)])
+
+start_timer(1)
+for i in range(N):
+    general_non_linear_v2(x[i], coeffA, breaks)
+stop_timer(1)
+
+
+
+
+
+
+# x = sfix(5)
+# degree = n-1
+# pre_muls = floatingpoint.PreOpL(lambda a,b,_: a * b, [x] * degree)
+
+# poss_res = [0]*m
+# for i in range(m):
+#     poss_res[i] = coeffA[i][0]
+#     for j in range(n-1):
+#         # poss_res[i] += coeffA[i][j+1] * pre_muls[j]
+#         poss_res[i] += pre_muls[i].mul_no_reduce(x.coerce(coeffA[i][j+1]))
+#     poss_res[i] = poss_res[i].reduce_after_mul()
+
+# comp = sfix.Array(m)
+# @for_range_opt(m)
+# def _(i):
+#     comp[i] = x >= breaks[i]
+# break_point()
+# cipher_index = bb.get_last_one(comp)
+
+# res = sfix.dot_product(cipher_index, poss_res)
+
+

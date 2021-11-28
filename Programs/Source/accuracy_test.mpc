@@ -1,0 +1,70 @@
+import random
+from math import *
+from iterative_based import *
+
+def generate_test_plain_text(n, min, max):
+    """Generate the test data from min to max.
+    """
+    step = (max - min) / n
+    return [min + i*step for i in range(n)]
+
+
+def error_report(ref_list, res_list):
+    """Print_ln the error report.
+    """
+    n = len(ref_list)
+    # print_ln("Ref answer = %s", ref_list)
+
+    error_list = sfix.Array(n)
+    for i in range(n):
+        error_list[i] = sfix(ref_list[i]) - res_list[i]
+
+    # print_ln("Result = %s", res_list.reveal())
+    print_ln("Error = %s", error_list.reveal())
+
+
+def test_func(test_data, func='sqrt'):
+    """Test the function's performance.
+    """
+    n = len(test_data)
+    res_list = sfix.Array(n)
+
+    if func == 'sqrt':
+        ref_list = [x**(0.5) for x in test_data]
+        for i in range(n):
+            res_list[i] = mpc_sqrt(sfix(test_data[i]))
+        error_report(ref_list, res_list)
+        return
+    
+    if func == 'reci':
+        ref_list = [1/x for x in test_data]
+        for i in range(n):
+            res_list[i] = mpc_reci(sfix(test_data[i]))
+        error_report(ref_list, res_list)
+        return
+    
+    if func == 'log':
+        ref_list = [log(x) for x in test_data]
+        for i in range(n):
+            res_list[i] = mpc_log(sfix(test_data[i]))
+        error_report(ref_list, res_list)
+        return 
+        
+    if func == 'exp':
+        ref_list = [e**x for x in test_data]
+        for i in range(n):
+            res_list[i] = mpc_exp(sfix(test_data[i]))
+        error_report(ref_list, res_list)
+        return 
+
+sfix.set_precision(48, 100)
+n = 100
+# min_max_list = [(10**(-5), 10), (10**(-5), 10**2), (10**(-5), 10**5), (-10, 10)]
+min_max_list = [(10**(-5), 10**5), (-10, 10)]
+func_list = ['log', 'exp']
+# func_list = ['reci', 'sqrt']
+
+for i in range(len(func_list)):
+    test_data = generate_test_plain_text(n, min_max_list[i][0], min_max_list[i][1])
+    test_func(test_data, func_list[i])
+    

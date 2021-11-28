@@ -1,0 +1,24 @@
+
+sfix.set_precision(48, 100)
+
+n = 200
+arrb = Array.create_from([sfix(i) for i in range(n)])
+arrc = Array.create_from([sfix(i) for i in range(n)])
+
+e = sfix.Array(n)
+start_timer(1)
+for i in range(n):
+    e[i] = (arrb[i] * arrc[i])
+break_point()
+stop_timer(1)
+
+
+# b = sfix(10)
+# c = sfix(10)
+# start_timer(1)
+# @for_range(10)
+# def _(j):
+#     d = b * c
+# stop_timer(1)
+# c = 10
+# c = b * c

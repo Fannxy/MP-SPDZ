@@ -1,0 +1,77 @@
+import random
+import copy
+from math import *
+from iterative_based import *
+# from generate_arrays import *
+
+
+
+# def test_general_non_linear(arr, coeffA, breaks, strategy="normal"):
+#     """Vector test the general non-linear functions.
+#     """
+#     n = arr.length
+#     if strategy == 'normal':
+#         @for_range_opt(n)
+#         def _(i):
+#             general_non_linear(arr[i], coeffA, breaks)
+#         break_point()
+#         return
+#     elif strategy == 'p_eval':
+#         @for_range_opt(n)
+#         def _(i):
+#             general_updated_non_linear(arr[i], coeffA, breaks)
+#         break_point()
+#         return
+
+
+# def create_random_list(k, m):
+#     """Used to create the random plain-text list.
+#     """
+#     random_list = [[] for i in range(k)]
+#     for j in range(k):
+#         tmp = [random.random()*100 for i in range(m)]
+#         random_list[j].extend([random.random()*100 for i in range(m)])
+    
+#     return random_list
+
+
+# # Test the time for general non-linear funcs (only time performance).
+# sfix.set_precision(48, 100)
+
+# k_list = [15]
+# m_list = [30]
+# n_list = [200]
+# repeats = 20
+
+
+# for n in n_list:
+#     for k in k_list:
+#         for m in m_list:
+#             data = create_random_array(n, 'sfix')
+#             breaks = Array.create_from([sfix(i+1) for i in range(m)])
+
+#             coeffA = create_random_list(k, m)
+#             print_ln("data-len - %s ", n)
+#             print_ln("k - %s, m - %s"%(k, m))
+
+#             start_timer(1)
+#             @for_range(repeats)
+#             def _(i):
+#                 test_general_non_linear(data, coeffA, breaks, strategy='p_eval')
+#             stop_timer(1)
+#             print_ln(">>> finish p_eval test")
+
+#             coeffA = create_random_matrix(m, k, 'sfix')
+#             start_timer(1)
+#             @for_range(repeats)
+#             def _(i):
+#                 test_general_non_linear(data, coeffA, breaks, strategy='normal')
+#             stop_timer(1)
+#             print_ln(">>> finish normal test")
+
+#             # start_timer(1)
+#             # @for_range(repeats)
+#             # def _(i):
+#             #     test_general_non_linear(data, coeffA, breaks)
+#             # stop_timer(1)
+#             # print_ln(">>> finish vector general")
