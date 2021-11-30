@@ -46,8 +46,15 @@ def general_non_linear(x, coeffA, breaks):
 
 
 def general_non_linear_v2(x, coeffA, breaks):
-    """version 2 general noon-linear computation.
-    Here coeffA is plain-text python list.
+    """Version2 of general non linear function.
+
+    Args:
+        x (Sfixed): the input secret value.
+        coeffA (plain-text 2d python list): The plain-text coefficient of specific non-linear functions.
+        breaks (plainn-text 1d python list): The plain-rext break points of specific functions.
+
+    Returns:
+        Sfixed: f(x) value of specific non-lnear function f.
     """
     m = len(coeffA)
     k = len(coeffA[0])

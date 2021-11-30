@@ -92,7 +92,7 @@ void BaseMachine::load_schedule(const string& progname, bool load_bytecode)
 void BaseMachine::print_compiler()
 {
   if (compiler.size() != 0 and OnlineOptions::singleton.verbose)
-    cerr << "Compiler: " << compiler << endl;
+    cout << "Compiler: " << compiler << endl;
 }
 
 void BaseMachine::load_program(const string& threadname, const string& filename)
@@ -122,10 +122,10 @@ void BaseMachine::stop(int n)
 
 void BaseMachine::print_timers()
 {
-  cerr << "Time = " << timer[0].elapsed() << " seconds " << endl;
+  cout << "Time = " << timer[0].elapsed() << " seconds " << endl;
   timer.erase(0);
   for (map<int,Timer>::iterator it = timer.begin(); it != timer.end(); it++)
-    cerr << "Time" << it->first << " = " << it->second.elapsed() << " seconds " << endl;
+    cout << "Time" << it->first << " = " << it->second.elapsed() << " seconds " << endl;
 }
 
 string BaseMachine::memory_filename(const string& type_short, int my_number)

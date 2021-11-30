@@ -325,13 +325,13 @@ void Machine<sint, sgf2n>::run()
   Timer proc_timer(CLOCK_PROCESS_CPUTIME_ID);
   proc_timer.start();
   timer[0].start();
-
+  clock_t timeMainStart = clock();
   // run main tape
   run_tape(0, 0, 0, N.num_players());
   join_tape(0);
+  clock_t timeMainEnd = clock();
 
   print_compiler();
-
   finish_timer.start();
   // Tell all C-threads to stop
   for (int i=0; i<nthreads; i++)
@@ -355,6 +355,12 @@ void Machine<sint, sgf2n>::run()
       delete queues[i];
     }
   finish_timer.stop();
+
+  for (unsigned int i = 0; i < join_timer.size(); i++)
+    cout << "Join timer: " << i << " " << join_timer[i].elapsed() << endl;
+    cout << "Finish timer: " << finish_timer.elapsed() << endl;
+  
+  cout << "Main time: " << ((timeMainEnd - timeMainStart)/CLOCKS_PER_SEC)*1e+3 << "MS" << endl;
   
 #ifdef VERBOSE
   cerr << "Memory usage: ";
@@ -385,7 +391,7 @@ void Machine<sint, sgf2n>::run()
   size_t rounds = 0;
   for (auto& x : comm_stats)
       rounds += x.second.rounds;
-  cerr << "Data sent = " << comm_stats.sent / 1e6 << " MB in ~" << rounds
+  cout << "Data sent = " << comm_stats.sent / 1e6 << " MB in ~" << rounds
       << " rounds (party " << my_number << ")" << endl;
 
   auto& P = *this->P;
@@ -395,7 +401,7 @@ void Machine<sint, sgf2n>::run()
   size_t global = 0;
   for (auto& os : bundle)
       global += os.get_int(8);
-  cerr << "Global data sent = " << global / 1e6 << " MB (all parties)" << endl;
+  cout << "Global data sent = " << global / 1e6 << " MB (all parties)" << endl;
 
 #ifdef VERBOSE_OPTIONS
   if (opening_sum < N.num_players() && !direct)

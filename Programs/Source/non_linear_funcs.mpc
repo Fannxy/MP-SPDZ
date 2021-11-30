@@ -1,33 +1,30 @@
 """Test non-linear functions performance.
 """
-# from Compiler.library import for_range_opt, start_timer, stop_timer
-from Compiler.iterative_based import *
+import iterative_based as ite
+from nonlinear_config import *
 
 program.use_trunc_pr = True
+program.use_split(3)
+
+func_name = program.args[1]
+
+print_ln("Test function %s", func_name)
+print("Test functions ", func_name)
+func_config = eval(func_name + '_config')
 
 sfix.set_precision(48, 100)
-m = 10
-n = 8
 N = 100
 
-breaks = [i for i in range(m)]
-
-# plain-text coeffA
-coeffA = []
-for i in range(m):
-    row = []
-    for j in range(n):
-        row.append(j)
-    coeffA.append(row)
+coeffA = func_config['coeffA']
+breaks = func_config['breaks'][:-1]
+print("breaks: ", breaks)
 
 x = Array.create_from([sfix(i) for i in range(N)])
-
 start_timer(1)
 for i in range(N):
-    general_non_linear_v2(x[i], coeffA, breaks)
+    ite.general_non_linear_v2(x[i], coeffA, breaks)
+break_point()
 stop_timer(1)
-
-
 
 
 
