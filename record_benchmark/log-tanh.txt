@@ -1,0 +1,114 @@
+
+
+Test benchmark_nonlinear-tanh using protocol replicated-ring-party.x 
+
+Starting timer 1 at 0 after 1.703e-06
+in tanh
+in tanh
+in tanh
+in tanh
+in tanh
+in tanh
+in tanh
+in tanh
+in tanh
+in tanh
+in tanh
+in tanh
+in tanh
+in tanh
+in tanh
+in tanh
+in tanh
+in tanh
+in tanh
+in tanh
+in tanh
+in tanh
+in tanh
+in tanh
+in tanh
+in tanh
+in tanh
+in tanh
+in tanh
+in tanh
+in tanh
+in tanh
+in tanh
+in tanh
+in tanh
+in tanh
+in tanh
+in tanh
+in tanh
+in tanh
+in tanh
+in tanh
+in tanh
+in tanh
+in tanh
+in tanh
+in tanh
+in tanh
+in tanh
+in tanh
+in tanh
+in tanh
+in tanh
+in tanh
+in tanh
+in tanh
+in tanh
+in tanh
+in tanh
+in tanh
+in tanh
+in tanh
+in tanh
+in tanh
+in tanh
+in tanh
+in tanh
+in tanh
+in tanh
+in tanh
+in tanh
+in tanh
+in tanh
+in tanh
+in tanh
+in tanh
+in tanh
+in tanh
+in tanh
+in tanh
+in tanh
+in tanh
+in tanh
+in tanh
+in tanh
+in tanh
+in tanh
+in tanh
+in tanh
+in tanh
+in tanh
+in tanh
+in tanh
+in tanh
+in tanh
+in tanh
+in tanh
+in tanh
+in tanh
+in tanh
+Stopped timer 1 at 0.703966
+Join timer: 0 0.704232
+Finish timer: 0.000699536
+Main time: 0.000685923 MS
+Time = 0.70506 seconds 
+Time1 = 0.703966 seconds 
+Data sent = 13.0662 MB in ~312 rounds (party 0)
+Global data sent = 45.4898 MB (all parties)
+Success

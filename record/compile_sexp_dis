@@ -1,0 +1,25 @@
+Default bit length: 255
+Default security parameter: 40
+Compiling file /root/MP-SPDZ/Programs/Source/non_linear_funcs.mpc
+Test functions  sexp_dis
+breaks:  [1e-05, 6.2500096875, 25.000008750000003]
+Compiled 100000 lines at Tue Nov 30 17:32:11 2021
+Compiled 200000 lines at Tue Nov 30 17:32:18 2021
+Compiled 300000 lines at Tue Nov 30 17:32:28 2021
+Compiled 400000 lines at Tue Nov 30 17:32:39 2021
+Merging 60600 xors in round 8/35
+Merging 30300 xors in round 9/35
+Merging 30300 ands in round 10/35
+Merging 30300 xors in round 11/35
+Merging 29700 xors in round 12/35
+Merging 44400 ands in round 13/35
+Merging 22200 ands in round 14/35
+Merging 14700 xors in round 15/35
+Merging 10500 ands in round 16/35
+Writing to /root/MP-SPDZ/Programs/Schedules/non_linear_funcs-sexp_dis.sch
+Writing to /root/MP-SPDZ/Programs/Bytecode/non_linear_funcs-sexp_dis-0.bc
+Program requires:
+      117000 bit triples
+         300 integer dabits
+        1900 integer triples
+          35 virtual machine rounds

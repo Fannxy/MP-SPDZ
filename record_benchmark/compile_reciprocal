@@ -1,0 +1,132 @@
+Default bit length: 255
+Default security parameter: 40
+Compiling file /root/MP-SPDZ/Programs/Source/benchmark_nonlinear.mpc
+func_name:  mn.mpc_reciprocal
+compile - reciprocal
+compile - reciprocal
+compile - reciprocal
+compile - reciprocal
+compile - reciprocal
+compile - reciprocal
+compile - reciprocal
+compile - reciprocal
+compile - reciprocal
+compile - reciprocal
+compile - reciprocal
+compile - reciprocal
+compile - reciprocal
+Compiled 100000 lines at Tue Nov 30 17:50:23 2021
+compile - reciprocal
+compile - reciprocal
+compile - reciprocal
+compile - reciprocal
+compile - reciprocal
+compile - reciprocal
+compile - reciprocal
+compile - reciprocal
+compile - reciprocal
+compile - reciprocal
+compile - reciprocal
+compile - reciprocal
+Compiled 200000 lines at Tue Nov 30 17:50:26 2021
+compile - reciprocal
+compile - reciprocal
+compile - reciprocal
+compile - reciprocal
+compile - reciprocal
+compile - reciprocal
+compile - reciprocal
+compile - reciprocal
+compile - reciprocal
+compile - reciprocal
+compile - reciprocal
+compile - reciprocal
+Compiled 300000 lines at Tue Nov 30 17:50:30 2021
+compile - reciprocal
+compile - reciprocal
+compile - reciprocal
+compile - reciprocal
+compile - reciprocal
+compile - reciprocal
+compile - reciprocal
+compile - reciprocal
+compile - reciprocal
+compile - reciprocal
+compile - reciprocal
+compile - reciprocal
+Compiled 400000 lines at Tue Nov 30 17:50:33 2021
+compile - reciprocal
+compile - reciprocal
+compile - reciprocal
+compile - reciprocal
+compile - reciprocal
+compile - reciprocal
+compile - reciprocal
+compile - reciprocal
+compile - reciprocal
+compile - reciprocal
+compile - reciprocal
+compile - reciprocal
+Compiled 500000 lines at Tue Nov 30 17:50:36 2021
+compile - reciprocal
+compile - reciprocal
+compile - reciprocal
+compile - reciprocal
+compile - reciprocal
+compile - reciprocal
+compile - reciprocal
+compile - reciprocal
+compile - reciprocal
+compile - reciprocal
+compile - reciprocal
+compile - reciprocal
+Compiled 600000 lines at Tue Nov 30 17:50:40 2021
+compile - reciprocal
+compile - reciprocal
+compile - reciprocal
+compile - reciprocal
+compile - reciprocal
+compile - reciprocal
+compile - reciprocal
+compile - reciprocal
+compile - reciprocal
+compile - reciprocal
+compile - reciprocal
+compile - reciprocal
+compile - reciprocal
+Compiled 700000 lines at Tue Nov 30 17:50:42 2021
+compile - reciprocal
+compile - reciprocal
+compile - reciprocal
+compile - reciprocal
+compile - reciprocal
+compile - reciprocal
+compile - reciprocal
+compile - reciprocal
+compile - reciprocal
+compile - reciprocal
+compile - reciprocal
+compile - reciprocal
+Compiled 800000 lines at Tue Nov 30 17:50:46 2021
+compile - reciprocal
+compile - reciprocal
+Merging 40400 xors in round 1/160
+Merging 20200 xors in round 2/160
+Merging 20200 ands in round 3/160
+Merging 20200 xors in round 4/160
+Merging 30000 xors in round 5/160
+Merging 29700 ands in round 6/160
+Merging 17300 ands in round 7/160
+Merging 12900 ands in round 9/160
+Merging 10700 ands in round 11/160
+Merging 20000 xors in round 26/160
+Merging 19800 xors in round 30/160
+Merging 14900 ands in round 31/160
+Merging 11300 xors in round 71/160
+Writing to /root/MP-SPDZ/Programs/Schedules/benchmark_nonlinear-reciprocal.sch
+Writing to /root/MP-SPDZ/Programs/Bytecode/benchmark_nonlinear-reciprocal-0.bc
+Program requires:
+        1500 integer triples
+      248900 bit triples
+         400 integer dabits
+         160 virtual machine rounds

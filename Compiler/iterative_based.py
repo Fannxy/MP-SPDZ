@@ -11,6 +11,8 @@ import Compiler.building_blocks as bb
 import Compiler.ml as ml
 from Compiler import comparison, instructions, instructions_base
 
+PAI = 3.1415926
+TAU_2 = 0.959502
 
 def general_non_linear(x, coeffA, breaks):
     """The general non-linear function, defined by coeffA and breaks.
@@ -100,7 +102,6 @@ def general_non_linear_v3(x, coeffA, breaks):
     cipher_index = bb.get_last_one(comp)
 
     return sfix.dot_product(cipher_index, poss_res)
-
 
 
 def general_updated_non_linear(x, coeffA, breaks):
@@ -388,12 +389,16 @@ def pp_log(x, times=5):
     return res
 
 
-
 def mpc_sqrt(x, strategy='from_bits', coeffA=None, breaks=None):
     """sqrt functions in MPC.
     """
-    if strategy not in ['from_bits', 'from_comp', 'general']:
+    if strategy not in ['mp-spdz', 'from_bits', 'from_comp', 'general']:
         raise TypeError("The strategy of sqrt is not supported yet.")
+    
+    if strategy == 'mp-spdz':
+        iters = 4
+        init = sqrt_initial_from_bits(x)
+        return sqrt_iterative(x, init, iters)
     
     if strategy == 'from_bits':
         iters = 4
@@ -412,8 +417,11 @@ def mpc_sqrt(x, strategy='from_bits', coeffA=None, breaks=None):
 def mpc_reci(x, strategy='from_bits', coeffA=None, breaks=None):
     """sqrt functions in MPC.
     """
-    if strategy not in ['from_bits', 'from_comp', 'general']:
+    if strategy not in ['mp-spdz', 'from_bits', 'from_comp', 'general']:
         raise TypeError("The strategy of reci is not supported yet.")
+    
+    if strategy == 'mp-spdz':
+        return (sfix(1) / x)
     
     if strategy == 'from_bits':
         return dvide_goldschmidt(sfix(1), x)
@@ -428,10 +436,10 @@ def mpc_reci(x, strategy='from_bits', coeffA=None, breaks=None):
 def mpc_log(x, strategy='from_bits', coeffA=None, breaks=None):
     """log function in MPC.
     """
-    if strategy not in ['from_bits', 'from_comp', 'general']:
+    if strategy not in ['mp-spdz', 'from_bits', 'from_comp', 'general']:
         raise TypeError("The strategy of log is not supported yet.")
     
-    if strategy == 'from_bits':
+    if strategy == 'from_bits' or strategy == 'mp-spdz':
         return log_fx(x, e)
     if strategy == 'from_comp':
         return pp_log(x)
@@ -444,7 +452,7 @@ def mpc_exp(x, strategy='from_bits', coeffA=None, breaks=None):
     """
     if strategy not in ['from_bits', 'from_comp', 'general']:
         raise TypeError("The strategy of log is not supported yet.")
-    if strategy == 'from_bits':
+    if strategy == 'from_bits' or strategy == 'mp-spdz':
         return pow_fx(sfix(e), x)
     if strategy == 'from_comp':
         return pp_exp(x)
@@ -452,18 +460,23 @@ def mpc_exp(x, strategy='from_bits', coeffA=None, breaks=None):
         return general_non_linear(x, coeffA, breaks)
 
 
-
 def mpc_sigmoid(x, strategy='from_bits', coeffA=None, breaks=None):
     """Sigmoid funciton in MPC
     """
-    if strategy not in ['from_bits', 'general']:
+    if strategy not in ['mp-spdz', 'from_bits', 'general']:
         print_ln("Not support %s yet", strategy)
         return
 
     # invoke mp-spdz func directly.
-    if strategy == 'from_bits':
+    if strategy == 'from_bits' or strategy == 'mp-spdz':
         return ml.sigmoid(x)
     
     if strategy == 'general':
         return general_non_linear(x, coeffA, breaks)
 
+
+def mpc_tanh(x, strategy='mp-spdz', coeffA=None, breaks=None):
+    """Tanh fuction in MPC.
+    """
+    if strategy == 'mp-spdz':
+        return 

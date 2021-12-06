@@ -1,0 +1,114 @@
+
+
+Test benchmark_nonlinear-sigmoid using protocol replicated-ring-party.x 
+
+Starting timer 1 at 0 after 2.764e-06
+in sigmoid
+in sigmoid
+in sigmoid
+in sigmoid
+in sigmoid
+in sigmoid
+in sigmoid
+in sigmoid
+in sigmoid
+in sigmoid
+in sigmoid
+in sigmoid
+in sigmoid
+in sigmoid
+in sigmoid
+in sigmoid
+in sigmoid
+in sigmoid
+in sigmoid
+in sigmoid
+in sigmoid
+in sigmoid
+in sigmoid
+in sigmoid
+in sigmoid
+in sigmoid
+in sigmoid
+in sigmoid
+in sigmoid
+in sigmoid
+in sigmoid
+in sigmoid
+in sigmoid
+in sigmoid
+in sigmoid
+in sigmoid
+in sigmoid
+in sigmoid
+in sigmoid
+in sigmoid
+in sigmoid
+in sigmoid
+in sigmoid
+in sigmoid
+in sigmoid
+in sigmoid
+in sigmoid
+in sigmoid
+in sigmoid
+in sigmoid
+in sigmoid
+in sigmoid
+in sigmoid
+in sigmoid
+in sigmoid
+in sigmoid
+in sigmoid
+in sigmoid
+in sigmoid
+in sigmoid
+in sigmoid
+in sigmoid
+in sigmoid
+in sigmoid
+in sigmoid
+in sigmoid
+in sigmoid
+in sigmoid
+in sigmoid
+in sigmoid
+in sigmoid
+in sigmoid
+in sigmoid
+in sigmoid
+in sigmoid
+in sigmoid
+in sigmoid
+in sigmoid
+in sigmoid
+in sigmoid
+in sigmoid
+in sigmoid
+in sigmoid
+in sigmoid
+in sigmoid
+in sigmoid
+in sigmoid
+in sigmoid
+in sigmoid
+in sigmoid
+in sigmoid
+in sigmoid
+in sigmoid
+in sigmoid
+in sigmoid
+in sigmoid
+in sigmoid
+in sigmoid
+in sigmoid
+in sigmoid
+Stopped timer 1 at 0.110804
+Join timer: 0 0.111089
+Finish timer: 0.000676326
+Main time: 0.000100734 MS
+Time = 0.111877 seconds 
+Time1 = 0.110804 seconds 
+Data sent = 1.82013 MB in ~152 rounds (party 0)
+Global data sent = 6.46512 MB (all parties)
+Success

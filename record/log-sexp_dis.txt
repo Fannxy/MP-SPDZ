@@ -1,0 +1,11 @@
+Test function sexp_dis
+Starting timer 1 at 0 after 2.103e-06
+Stopped timer 1 at 0.0517342
+Join timer: 0 0.052085
+Finish timer: 0.000645075
+Main time: 4.8205e-05 MS
+Time = 0.0528363 seconds 
+Time1 = 0.0517342 seconds 
+Data sent = 1.01553 MB in ~48 rounds (party 0)
+Global data sent = 3.34092 MB (all parties)
+Success

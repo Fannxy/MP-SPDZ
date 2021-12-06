@@ -1,0 +1,27 @@
+"""Benchmark of basic non-linear functions, implemented in origional MP-SPDZ.
+"""
+import mpc_nonlinear as mn
+
+program.use_trunc_pr = True
+program.use_split(3)
+func_name = str(program.args[1])
+
+if func_name == "func_sqrt":
+    func_name = "sqrt"
+if func_name == "func_log":
+    func_name = "log"
+if func_name == "func_exp":
+    func_name = "exp"
+
+# Set the sfixed settings.
+sfix.set_precision(48, 100)
+N = 100
+x = Array.create_from([sfix(i) for i in range(N)])
+
+func_name = "mn."+"mpc_"+func_name
+print("func_name: ", func_name)
+
+start_timer(1)
+for i in range(N):
+    eval(func_name)(x[i])
+stop_timer(1)

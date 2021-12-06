@@ -1,0 +1,274 @@
+Default bit length: 255
+Default security parameter: 40
+Compiling file /root/MP-SPDZ/Programs/Source/benchmark_nonlinear.mpc
+func_name:  mn.mpc_tanh
+Compiled 100000 lines at Tue Nov 30 16:34:41 2021
+Compiled 200000 lines at Tue Nov 30 16:34:45 2021
+Compiled 300000 lines at Tue Nov 30 16:34:48 2021
+Compiled 400000 lines at Tue Nov 30 16:34:52 2021
+Compiled 500000 lines at Tue Nov 30 16:34:55 2021
+Compiled 600000 lines at Tue Nov 30 16:34:59 2021
+Compiled 700000 lines at Tue Nov 30 16:35:01 2021
+Compiled 800000 lines at Tue Nov 30 16:35:05 2021
+Compiled 900000 lines at Tue Nov 30 16:35:09 2021
+Compiled 1000000 lines at Tue Nov 30 16:35:12 2021
+Compiled 1100000 lines at Tue Nov 30 16:35:16 2021
+Compiled 1200000 lines at Tue Nov 30 16:35:19 2021
+Compiled 1300000 lines at Tue Nov 30 16:35:22 2021
+Compiled 1400000 lines at Tue Nov 30 16:35:27 2021
+Compiled 1500000 lines at Tue Nov 30 16:35:30 2021
+Compiled 1600000 lines at Tue Nov 30 16:35:32 2021
+Compiled 1700000 lines at Tue Nov 30 16:35:38 2021
+Compiled 1800000 lines at Tue Nov 30 16:35:40 2021
+Compiled 1900000 lines at Tue Nov 30 16:35:43 2021
+Compiled 2000000 lines at Tue Nov 30 16:35:46 2021
+Compiled 2100000 lines at Tue Nov 30 16:35:52 2021
+Compiled 2200000 lines at Tue Nov 30 16:35:55 2021
+Compiled 2300000 lines at Tue Nov 30 16:35:57 2021
+Compiled 2400000 lines at Tue Nov 30 16:36:00 2021
+Compiled 2500000 lines at Tue Nov 30 16:36:03 2021
+Compiled 2600000 lines at Tue Nov 30 16:36:06 2021
+Compiled 2700000 lines at Tue Nov 30 16:36:12 2021
+Compiled 2800000 lines at Tue Nov 30 16:36:15 2021
+Compiled 2900000 lines at Tue Nov 30 16:36:18 2021
+Compiled 3000000 lines at Tue Nov 30 16:36:21 2021
+Compiled 3100000 lines at Tue Nov 30 16:36:24 2021
+Compiled 3200000 lines at Tue Nov 30 16:36:27 2021
+Compiled 3300000 lines at Tue Nov 30 16:36:34 2021
+Compiled 3400000 lines at Tue Nov 30 16:36:37 2021
+Compiled 3500000 lines at Tue Nov 30 16:36:39 2021
+Compiled 3600000 lines at Tue Nov 30 16:36:42 2021
+Compiled 3700000 lines at Tue Nov 30 16:36:45 2021
+Compiled 3800000 lines at Tue Nov 30 16:36:48 2021
+Compiled 3900000 lines at Tue Nov 30 16:36:51 2021
+Compiled 4000000 lines at Tue Nov 30 16:36:54 2021
+Compiled 4100000 lines at Tue Nov 30 16:37:02 2021
+Compiled 4200000 lines at Tue Nov 30 16:37:05 2021
+Compiled 4300000 lines at Tue Nov 30 16:37:08 2021
+Compiled 4400000 lines at Tue Nov 30 16:37:10 2021
+Compiled 4500000 lines at Tue Nov 30 16:37:13 2021
+Compiled 4600000 lines at Tue Nov 30 16:37:16 2021
+Compiled 4700000 lines at Tue Nov 30 16:37:19 2021
+Compiled 4800000 lines at Tue Nov 30 16:37:22 2021
+Compiled 4900000 lines at Tue Nov 30 16:37:25 2021
+Compiled 5000000 lines at Tue Nov 30 16:37:27 2021
+Compiled 5100000 lines at Tue Nov 30 16:37:37 2021
+Compiled 5200000 lines at Tue Nov 30 16:37:40 2021
+Compiled 5300000 lines at Tue Nov 30 16:37:43 2021
+Compiled 5400000 lines at Tue Nov 30 16:37:46 2021
+Compiled 5500000 lines at Tue Nov 30 16:37:48 2021
+Compiled 5600000 lines at Tue Nov 30 16:37:51 2021
+Compiled 5700000 lines at Tue Nov 30 16:37:54 2021
+Compiled 5800000 lines at Tue Nov 30 16:37:57 2021
+Compiled 5900000 lines at Tue Nov 30 16:38:00 2021
+Compiled 6000000 lines at Tue Nov 30 16:38:03 2021
+Compiled 6100000 lines at Tue Nov 30 16:38:05 2021
+Compiled 6200000 lines at Tue Nov 30 16:38:08 2021
+Compiled 6300000 lines at Tue Nov 30 16:38:20 2021
+Compiled 6400000 lines at Tue Nov 30 16:38:22 2021
+Compiled 6500000 lines at Tue Nov 30 16:38:25 2021
+Compiled 6600000 lines at Tue Nov 30 16:38:28 2021
+Compiled 6700000 lines at Tue Nov 30 16:38:31 2021
+Compiled 6800000 lines at Tue Nov 30 16:38:34 2021
+Compiled 6900000 lines at Tue Nov 30 16:38:37 2021
+Compiled 7000000 lines at Tue Nov 30 16:38:39 2021
+Compiled 7100000 lines at Tue Nov 30 16:38:42 2021
+Compiled 7200000 lines at Tue Nov 30 16:38:45 2021
+Compiled 7300000 lines at Tue Nov 30 16:38:48 2021
+Compiled 7400000 lines at Tue Nov 30 16:38:51 2021
+Compiled 7500000 lines at Tue Nov 30 16:38:54 2021
+Compiled 7600000 lines at Tue Nov 30 16:38:57 2021
+Compiled 7700000 lines at Tue Nov 30 16:38:59 2021
+Compiled 7800000 lines at Tue Nov 30 16:39:13 2021
+Compiled 7900000 lines at Tue Nov 30 16:39:16 2021
+Compiled 8000000 lines at Tue Nov 30 16:39:19 2021
+Compiled 8100000 lines at Tue Nov 30 16:39:21 2021
+Compiled 8200000 lines at Tue Nov 30 16:39:24 2021
+Compiled 8300000 lines at Tue Nov 30 16:39:27 2021
+Compiled 8400000 lines at Tue Nov 30 16:39:30 2021
+Compiled 8500000 lines at Tue Nov 30 16:39:33 2021
+Compiled 8600000 lines at Tue Nov 30 16:39:36 2021
+Compiled 8700000 lines at Tue Nov 30 16:39:38 2021
+Compiled 8800000 lines at Tue Nov 30 16:39:41 2021
+Compiled 8900000 lines at Tue Nov 30 16:39:44 2021
+Compiled 9000000 lines at Tue Nov 30 16:39:47 2021
+Compiled 9100000 lines at Tue Nov 30 16:39:50 2021
+Compiled 9200000 lines at Tue Nov 30 16:39:53 2021
+Compiled 9300000 lines at Tue Nov 30 16:39:55 2021
+Compiled 9400000 lines at Tue Nov 30 16:39:58 2021
+Processed dependency of 1000000/9425200 instructions at Tue Nov 30 16:43:52 2021
+Processed dependency of 2000000/9425200 instructions at Tue Nov 30 16:44:40 2021
+Processed dependency of 3000000/9425200 instructions at Tue Nov 30 16:45:11 2021
+Processed dependency of 4000000/9425200 instructions at Tue Nov 30 16:45:41 2021
+Processed dependency of 5000000/9425200 instructions at Tue Nov 30 16:46:12 2021
+Processed dependency of 6000000/9425200 instructions at Tue Nov 30 16:46:42 2021
+Processed dependency of 7000000/9425200 instructions at Tue Nov 30 16:47:13 2021
+Processed dependency of 8000000/9425200 instructions at Tue Nov 30 16:47:43 2021
+Processed dependency of 9000000/9425200 instructions at Tue Nov 30 16:48:13 2021
+Merging instructions...
+Merging 262800 xors in round 1/476
+Merging 131400 xors in round 2/476
+Merging 131400 ands in round 3/476
+Merging 131400 xors in round 4/476
+Merging 219800 xors in round 5/476
+Merging 194300 ands in round 6/476
+Merging 109600 ands in round 7/476
+Merging 66000 xors in round 8/476
+Merging 75000 ands in round 9/476
+Merging 45400 xors in round 10/476
+Merging 59800 ands in round 11/476
+Merging 36300 xors in round 12/476
+Merging 48400 ands in round 13/476
+Merging 33600 xors in round 14/476
+Merging 33000 ands in round 15/476
+Merging 35200 xors in round 16/476
+Merging 25800 ands in round 17/476
+Merging 36200 xors in round 18/476
+Merging 29000 ands in round 19/476
+Merging 48600 xors in round 20/476
+Merging 26900 xors in round 21/476
+Merging 15600 ands in round 25/476
+Merging 15600 xors in round 28/476
+Merging 79200 xors in round 44/476
+Merging 39600 xors in round 45/476
+Merging 39600 ands in round 46/476
+Merging 40000 xors in round 47/476
+Merging 78400 xors in round 48/476
+Merging 58400 ands in round 49/476
+Merging 38800 ands in round 50/476
+Merging 20400 xors in round 51/476
+Merging 38000 ands in round 53/476
+Merging 20400 xors in round 54/476
+Merging 36800 ands in round 56/476
+Merging 20800 xors in round 57/476
+Merging 35200 ands in round 59/476
+Merging 22400 xors in round 60/476
+Merging 26800 ands in round 62/476
+Merging 25600 xors in round 63/476
+Merging 16000 xors in round 64/476
+Merging 15200 ands in round 65/476
+Merging 26800 xors in round 66/476
+Merging 20400 xors in round 67/476
+Merging 13600 xors in round 68/476
+Merging 39600 reveal in round 70/476
+Merging 19600 muls in round 71/476
+Merging 19600 muls in round 72/476
+Merging 19200 muls in round 73/476
+Merging 19200 muls in round 74/476
+Merging 19200 muls in round 75/476
+Merging 14000 muls in round 76/476
+Merging 14000 muls in round 77/476
+Merging 204800 xors in round 79/476
+Merging 102400 xors in round 80/476
+Merging 102400 ands in round 81/476
+Merging 102400 xors in round 82/476
+Merging 102800 xors in round 83/476
+Merging 152400 ands in round 84/476
+Merging 76000 ands in round 85/476
+Merging 50400 xors in round 86/476
+Merging 37600 ands in round 87/476
+Merging 25600 xors in round 88/476
+Merging 18800 ands in round 89/476
+Merging 12800 xors in round 90/476
+Merging 80000 xors in round 111/476
+Merging 40000 xors in round 112/476
+Merging 40000 ands in round 113/476
+Merging 40000 xors in round 114/476
+Merging 39200 xors in round 115/476
+Merging 58400 ands in round 116/476
+Merging 29200 ands in round 117/476
+Merging 19200 xors in round 118/476
+Merging 14000 ands in round 119/476
+Merging 80000 xors in round 136/476
+Merging 40000 xors in round 137/476
+Merging 40000 ands in round 138/476
+Merging 40000 xors in round 139/476
+Merging 79200 xors in round 140/476
+Merging 59600 ands in round 141/476
+Merging 39600 ands in round 142/476
+Merging 20800 xors in round 143/476
+Merging 38800 ands in round 145/476
+Merging 20800 xors in round 146/476
+Merging 38000 ands in round 148/476
+Merging 21200 xors in round 149/476
+Merging 36400 ands in round 151/476
+Merging 22000 xors in round 152/476
+Merging 31200 ands in round 154/476
+Merging 26400 xors in round 155/476
+Merging 17600 xors in round 156/476
+Merging 24800 ands in round 157/476
+Merging 29600 xors in round 158/476
+Merging 25600 xors in round 159/476
+Merging 12400 xors in round 160/476
+Merging 17600 ands in round 162/476
+Merging 17600 xors in round 163/476
+Merging 19600 xors in round 164/476
+Merging 18400 ands in round 165/476
+Merging 19200 xors in round 166/476
+Merging 16000 xors in round 167/476
+Merging 15200 ands in round 168/476
+Merging 16800 xors in round 169/476
+Merging 21200 xors in round 170/476
+Merging 20000 ands in round 171/476
+Merging 23200 xors in round 172/476
+Merging 19600 xors in round 173/476
+Merging 16000 ands in round 174/476
+Merging 22800 xors in round 175/476
+Merging 22800 xors in round 176/476
+Merging 15200 ands in round 177/476
+Merging 28800 xors in round 178/476
+Merging 32800 xors in round 179/476
+Merging 18400 ands in round 180/476
+Merging 45200 xors in round 181/476
+Merging 22800 xors in round 182/476
+Merging 32400 xors in round 184/476
+Merging 16000 xors in round 187/476
+Merging 12000 xors in round 189/476
+Merging 16800 xors in round 191/476
+Merging 14400 xors in round 196/476
+Merging 10800 xors in round 198/476
+Merging 15600 xors in round 200/476
+Merging 12800 xors in round 205/476
+Merging 14400 xors in round 209/476
+Merging 13200 xors in round 215/476
+Merging 12000 xors in round 224/476
+Merging 10800 xors in round 230/476
+Merging 40000 reveal in round 253/476
+Merging 80000 xors in round 273/476
+Merging 40000 xors in round 274/476
+Merging 40000 ands in round 275/476
+Merging 40000 xors in round 276/476
+Merging 80000 xors in round 277/476
+Merging 59200 ands in round 278/476
+Merging 39600 ands in round 279/476
+Merging 20400 xors in round 280/476
+Merging 38400 ands in round 282/476
+Merging 20400 xors in round 283/476
+Merging 36800 ands in round 285/476
+Merging 20000 xors in round 286/476
+Merging 35200 ands in round 288/476
+Merging 20800 xors in round 289/476
+Merging 27200 ands in round 291/476
+Merging 22400 xors in round 292/476
+Merging 12800 xors in round 293/476
+Merging 16000 ands in round 294/476
+Merging 21600 xors in round 295/476
+Merging 16800 xors in round 296/476
+Merging 20000 xors in round 317/476
+Merging 14600 ands in round 322/476
+Merging 20000 xors in round 342/476
+Merging 19800 xors in round 346/476
+Merging 14900 ands in round 347/476
+Merging 11300 xors in round 387/476
+Topological sort ...
+Done at Tue Nov 30 16:52:22 2021
+Allocating benchmark_nonlinear-tanh-0-post-start-timer-2, 1/4
+Allocated registers for 1000000 instructions at Tue Nov 30 16:56:02 2021
+Allocated registers for 2000000 instructions at Tue Nov 30 16:58:06 2021
+Writing to /root/MP-SPDZ/Programs/Schedules/benchmark_nonlinear-tanh.sch
+Writing to /root/MP-SPDZ/Programs/Bytecode/benchmark_nonlinear-tanh-0.bc
+Program requires:
+      159900 integer triples
+       47600 integer dabits
+     2618100 bit triples
+         476 virtual machine rounds

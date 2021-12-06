@@ -1,0 +1,114 @@
+
+
+Test benchmark_nonlinear-soft_plus using protocol replicated-ring-party.x 
+
+Starting timer 1 at 0 after 1.386e-06
+in log
+in log
+in log
+in log
+in log
+in log
+in log
+in log
+in log
+in log
+in log
+in log
+in log
+in log
+in log
+in log
+in log
+in log
+in log
+in log
+in log
+in log
+in log
+in log
+in log
+in log
+in log
+in log
+in log
+in log
+in log
+in log
+in log
+in log
+in log
+in log
+in log
+in log
+in log
+in log
+in log
+in log
+in log
+in log
+in log
+in log
+in log
+in log
+in log
+in log
+in log
+in log
+in log
+in log
+in log
+in log
+in log
+in log
+in log
+in log
+in log
+in log
+in log
+in log
+in log
+in log
+in log
+in log
+in log
+in log
+in log
+in log
+in log
+in log
+in log
+in log
+in log
+in log
+in log
+in log
+in log
+in log
+in log
+in log
+in log
+in log
+in log
+in log
+in log
+in log
+in log
+in log
+in log
+in log
+in log
+in log
+in log
+in log
+in log
+in log
+Stopped timer 1 at 0.273519
+Join timer: 0 0.273777
+Finish timer: 0.000620237
+Main time: 0.000285232 MS
+Time = 0.274522 seconds 
+Time1 = 0.273519 seconds 
+Data sent = 5.98443 MB in ~374 rounds (party 0)
+Global data sent = 19.7388 MB (all parties)
+Success

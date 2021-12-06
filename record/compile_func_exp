@@ -1,0 +1,371 @@
+Default bit length: 255
+Default security parameter: 40
+Compiling file /root/MP-SPDZ/Programs/Source/non_linear_funcs.mpc
+Test functions  func_exp
+breaks:  [-11.0, -5.5, 6.875, 8.25, 9.625, 9.7109375, 9.796875, 9.8076171875, 9.818359375, 9.8291015625, 9.83984375, 9.84521484375, 9.8505859375, 9.8720703125, 9.8828125, 9.8935546875, 9.904296875, 9.9150390625, 9.92578125, 9.933837890625, 9.9365234375, 9.95263671875, 10.0546875, 10.076171875, 10.09765625, 10.119140625, 10.1298828125, 10.140625, 10.2265625, 10.333984375, 10.3447265625, 10.35009765625, 10.36083984375, 10.3662109375, 10.376953125, 10.3984375, 10.4091796875, 10.419921875, 10.42529296875, 10.4306640625, 10.44140625, 10.484375, 10.5703125, 10.65625, 10.6669921875, 10.677734375, 10.6884765625, 10.7099609375, 10.71533203125, 10.720703125, 10.731613159179688, 10.731697082519531, 10.732200622558594, 10.732620239257812, 10.732704162597656, 10.7327880859375, 10.732955932617188, 10.733123779296875, 10.733627319335938, 10.733795166015625, 10.734298706054688, 10.734466552734375, 10.734634399414062, 10.73480224609375, 10.735305786132812, 10.7354736328125, 10.735557556152344, 10.735641479492188, 10.735977172851562, 10.736228942871094, 10.736480712890625, 10.73681640625, 10.828125, 10.9248046875, 10.924972534179688, 10.925308227539062, 10.925350189208984, 10.925392150878906, 10.925643920898438, 10.925811767578125, 10.9261474609375, 10.926315307617188, 10.926483154296875, 10.926567077636719, 10.926651000976562, 10.926986694335938, 10.927154541015625, 10.927322387695312, 10.927490234375, 10.927658081054688, 10.927783966064453, 10.928077697753906, 10.92816162109375, 10.928245544433594, 10.928329467773438, 10.928665161132812, 10.9288330078125, 10.929168701171875, 10.92950439453125, 10.929672241210938, 10.929840087890625, 10.929924011230469, 10.94091796875, 10.941085815429688, 10.941169738769531, 10.941253662109375, 10.941421508789062, 10.94158935546875, 10.941925048828125, 10.942092895507812, 10.9422607421875, 10.942428588867188, 10.942596435546875, 10.942764282226562, 10.94293212890625, 10.943016052246094, 10.943183898925781, 10.943267822265625, 10.943603515625, 10.943645477294922, 10.943771362304688, 10.943939208984375, 10.94427490234375, 10.944358825683594, 10.944610595703125, 10.944778442382812, 10.9449462890625, 10.945198059082031, 10.945281982421875, 10.945449829101562, 10.94561767578125, 10.945785522460938, 10.945953369140625, 10.946205139160156, 10.95166015625, 10.95703125, 10.9677734375, 10.978851318359375, 10.979103088378906, 10.979354858398438, 10.979438781738281, 10.979522705078125, 10.9798583984375, 10.980194091796875, 10.980278015136719, 10.980361938476562, 10.980697631835938, 10.980781555175781, 10.981033325195312, 10.981201171875, 10.981369018554688, 10.981536865234375, 10.981704711914062, 10.982292175292969, 10.9825439453125, 10.982879638671875, 10.98321533203125, 10.983299255371094, 10.983383178710938, 10.983551025390625, 10.992279052734375, 10.992362976074219, 10.99261474609375, 10.992782592773438, 10.992950439453125, 10.993118286132812, 10.9932861328125, 10.993621826171875, 10.99395751953125, 10.994461059570312, 10.99462890625]
+Compiled 100000 lines at Tue Nov 30 18:37:38 2021
+Compiled 200000 lines at Tue Nov 30 18:37:42 2021
+Compiled 300000 lines at Tue Nov 30 18:37:46 2021
+Compiled 400000 lines at Tue Nov 30 18:37:50 2021
+Compiled 500000 lines at Tue Nov 30 18:37:53 2021
+Compiled 600000 lines at Tue Nov 30 18:37:58 2021
+Compiled 700000 lines at Tue Nov 30 18:38:01 2021
+Compiled 800000 lines at Tue Nov 30 18:38:05 2021
+Compiled 900000 lines at Tue Nov 30 18:38:10 2021
+Compiled 1000000 lines at Tue Nov 30 18:38:13 2021
+Compiled 1100000 lines at Tue Nov 30 18:38:18 2021
+Compiled 1200000 lines at Tue Nov 30 18:38:22 2021
+Compiled 1300000 lines at Tue Nov 30 18:38:25 2021
+Compiled 1400000 lines at Tue Nov 30 18:38:30 2021
+Compiled 1500000 lines at Tue Nov 30 18:38:34 2021
+Compiled 1600000 lines at Tue Nov 30 18:38:37 2021
+Compiled 1700000 lines at Tue Nov 30 18:38:43 2021
+Compiled 1800000 lines at Tue Nov 30 18:38:47 2021
+Compiled 1900000 lines at Tue Nov 30 18:38:50 2021
+Compiled 2000000 lines at Tue Nov 30 18:38:53 2021
+Compiled 2100000 lines at Tue Nov 30 18:38:59 2021
+Compiled 2200000 lines at Tue Nov 30 18:39:05 2021
+Compiled 2300000 lines at Tue Nov 30 18:39:10 2021
+Compiled 2400000 lines at Tue Nov 30 18:39:13 2021
+Compiled 2500000 lines at Tue Nov 30 18:39:16 2021
+Compiled 2600000 lines at Tue Nov 30 18:39:25 2021
+Compiled 2700000 lines at Tue Nov 30 18:39:29 2021
+Compiled 2800000 lines at Tue Nov 30 18:39:32 2021
+Compiled 2900000 lines at Tue Nov 30 18:39:37 2021
+Compiled 3000000 lines at Tue Nov 30 18:39:40 2021
+Compiled 3100000 lines at Tue Nov 30 18:39:43 2021
+Compiled 3200000 lines at Tue Nov 30 18:39:54 2021
+Compiled 3300000 lines at Tue Nov 30 18:39:57 2021
+Compiled 3400000 lines at Tue Nov 30 18:40:00 2021
+Compiled 3500000 lines at Tue Nov 30 18:40:07 2021
+Compiled 3600000 lines at Tue Nov 30 18:40:10 2021
+Compiled 3700000 lines at Tue Nov 30 18:40:13 2021
+Compiled 3800000 lines at Tue Nov 30 18:40:19 2021
+Compiled 3900000 lines at Tue Nov 30 18:40:22 2021
+Compiled 4000000 lines at Tue Nov 30 18:40:31 2021
+Compiled 4100000 lines at Tue Nov 30 18:40:38 2021
+Compiled 4200000 lines at Tue Nov 30 18:40:41 2021
+Compiled 4300000 lines at Tue Nov 30 18:40:44 2021
+Compiled 4400000 lines at Tue Nov 30 18:40:51 2021
+Compiled 4500000 lines at Tue Nov 30 18:40:54 2021
+Compiled 4600000 lines at Tue Nov 30 18:41:01 2021
+Compiled 4700000 lines at Tue Nov 30 18:41:05 2021
+Compiled 4800000 lines at Tue Nov 30 18:41:08 2021
+Compiled 4900000 lines at Tue Nov 30 18:41:22 2021
+Compiled 5000000 lines at Tue Nov 30 18:41:26 2021
+Compiled 5100000 lines at Tue Nov 30 18:41:29 2021
+Compiled 5200000 lines at Tue Nov 30 18:41:37 2021
+Compiled 5300000 lines at Tue Nov 30 18:41:40 2021
+Compiled 5400000 lines at Tue Nov 30 18:41:43 2021
+Compiled 5500000 lines at Tue Nov 30 18:41:51 2021
+Compiled 5600000 lines at Tue Nov 30 18:41:54 2021
+Compiled 5700000 lines at Tue Nov 30 18:41:57 2021
+Compiled 5800000 lines at Tue Nov 30 18:42:06 2021
+Compiled 5900000 lines at Tue Nov 30 18:42:09 2021
+Compiled 6000000 lines at Tue Nov 30 18:42:20 2021
+Compiled 6100000 lines at Tue Nov 30 18:42:29 2021
+Compiled 6200000 lines at Tue Nov 30 18:42:32 2021
+Compiled 6300000 lines at Tue Nov 30 18:42:35 2021
+Compiled 6400000 lines at Tue Nov 30 18:42:45 2021
+Compiled 6500000 lines at Tue Nov 30 18:42:48 2021
+Compiled 6600000 lines at Tue Nov 30 18:42:51 2021
+Compiled 6700000 lines at Tue Nov 30 18:43:00 2021
+Compiled 6800000 lines at Tue Nov 30 18:43:03 2021
+Compiled 6900000 lines at Tue Nov 30 18:43:12 2021
+Compiled 7000000 lines at Tue Nov 30 18:43:16 2021
+Compiled 7100000 lines at Tue Nov 30 18:43:19 2021
+Compiled 7200000 lines at Tue Nov 30 18:43:29 2021
+Compiled 7300000 lines at Tue Nov 30 18:43:43 2021
+Compiled 7400000 lines at Tue Nov 30 18:43:46 2021
+Compiled 7500000 lines at Tue Nov 30 18:43:56 2021
+Compiled 7600000 lines at Tue Nov 30 18:43:59 2021
+Compiled 7700000 lines at Tue Nov 30 18:44:02 2021
+Compiled 7800000 lines at Tue Nov 30 18:44:12 2021
+Compiled 7900000 lines at Tue Nov 30 18:44:16 2021
+Compiled 8000000 lines at Tue Nov 30 18:44:19 2021
+Compiled 8100000 lines at Tue Nov 30 18:44:29 2021
+Compiled 8200000 lines at Tue Nov 30 18:44:32 2021
+Compiled 8300000 lines at Tue Nov 30 18:44:35 2021
+Compiled 8400000 lines at Tue Nov 30 18:44:46 2021
+Compiled 8500000 lines at Tue Nov 30 18:44:50 2021
+Compiled 8600000 lines at Tue Nov 30 18:44:53 2021
+Compiled 8700000 lines at Tue Nov 30 18:45:04 2021
+Compiled 8800000 lines at Tue Nov 30 18:45:07 2021
+Compiled 8900000 lines at Tue Nov 30 18:45:10 2021
+Compiled 9000000 lines at Tue Nov 30 18:45:35 2021
+Compiled 9100000 lines at Tue Nov 30 18:45:38 2021
+Compiled 9200000 lines at Tue Nov 30 18:45:41 2021
+Compiled 9300000 lines at Tue Nov 30 18:45:53 2021
+Compiled 9400000 lines at Tue Nov 30 18:45:56 2021
+Compiled 9500000 lines at Tue Nov 30 18:46:07 2021
+Compiled 9600000 lines at Tue Nov 30 18:46:11 2021
+Compiled 9700000 lines at Tue Nov 30 18:46:14 2021
+Compiled 9800000 lines at Tue Nov 30 18:46:27 2021
+Compiled 9900000 lines at Tue Nov 30 18:46:30 2021
+Compiled 10000000 lines at Tue Nov 30 18:46:33 2021
+Compiled 10100000 lines at Tue Nov 30 18:46:46 2021
+Compiled 10200000 lines at Tue Nov 30 18:46:49 2021
+Compiled 10300000 lines at Tue Nov 30 18:46:52 2021
+Compiled 10400000 lines at Tue Nov 30 18:47:05 2021
+Compiled 10500000 lines at Tue Nov 30 18:47:08 2021
+Compiled 10600000 lines at Tue Nov 30 18:47:11 2021
+Compiled 10700000 lines at Tue Nov 30 18:47:24 2021
+Compiled 10800000 lines at Tue Nov 30 18:47:28 2021
+Compiled 10900000 lines at Tue Nov 30 18:47:47 2021
+Compiled 11000000 lines at Tue Nov 30 18:48:00 2021
+Compiled 11100000 lines at Tue Nov 30 18:48:03 2021
+Compiled 11200000 lines at Tue Nov 30 18:48:06 2021
+Compiled 11300000 lines at Tue Nov 30 18:48:20 2021
+Compiled 11400000 lines at Tue Nov 30 18:48:23 2021
+Compiled 11500000 lines at Tue Nov 30 18:48:26 2021
+Compiled 11600000 lines at Tue Nov 30 18:48:41 2021
+Compiled 11700000 lines at Tue Nov 30 18:48:44 2021
+Compiled 11800000 lines at Tue Nov 30 18:48:56 2021
+Compiled 11900000 lines at Tue Nov 30 18:49:01 2021
+Compiled 12000000 lines at Tue Nov 30 18:49:04 2021
+Compiled 12100000 lines at Tue Nov 30 18:49:19 2021
+Compiled 12200000 lines at Tue Nov 30 18:49:22 2021
+Compiled 12300000 lines at Tue Nov 30 18:49:25 2021
+Compiled 12400000 lines at Tue Nov 30 18:49:40 2021
+Compiled 12500000 lines at Tue Nov 30 18:49:43 2021
+Compiled 12600000 lines at Tue Nov 30 18:49:46 2021
+Compiled 12700000 lines at Tue Nov 30 18:50:01 2021
+Compiled 12800000 lines at Tue Nov 30 18:50:05 2021
+Compiled 12900000 lines at Tue Nov 30 18:50:08 2021
+Compiled 13000000 lines at Tue Nov 30 18:50:24 2021
+Compiled 13100000 lines at Tue Nov 30 18:50:27 2021
+Compiled 13200000 lines at Tue Nov 30 18:50:30 2021
+Compiled 13300000 lines at Tue Nov 30 18:51:18 2021
+Compiled 13400000 lines at Tue Nov 30 18:51:21 2021
+Compiled 13500000 lines at Tue Nov 30 18:51:24 2021
+Compiled 13600000 lines at Tue Nov 30 18:51:41 2021
+Compiled 13700000 lines at Tue Nov 30 18:51:44 2021
+Compiled 13800000 lines at Tue Nov 30 18:51:47 2021
+Compiled 13900000 lines at Tue Nov 30 18:52:03 2021
+Compiled 14000000 lines at Tue Nov 30 18:52:06 2021
+Compiled 14100000 lines at Tue Nov 30 18:52:21 2021
+Compiled 14200000 lines at Tue Nov 30 18:52:26 2021
+Compiled 14300000 lines at Tue Nov 30 18:52:29 2021
+Compiled 14400000 lines at Tue Nov 30 18:52:46 2021
+Compiled 14500000 lines at Tue Nov 30 18:52:49 2021
+Compiled 14600000 lines at Tue Nov 30 18:52:52 2021
+Compiled 14700000 lines at Tue Nov 30 18:53:09 2021
+Compiled 14800000 lines at Tue Nov 30 18:53:13 2021
+Compiled 14900000 lines at Tue Nov 30 18:53:16 2021
+Compiled 15000000 lines at Tue Nov 30 18:53:33 2021
+Compiled 15100000 lines at Tue Nov 30 18:53:36 2021
+Compiled 15200000 lines at Tue Nov 30 18:53:39 2021
+Compiled 15300000 lines at Tue Nov 30 18:53:57 2021
+Compiled 15400000 lines at Tue Nov 30 18:54:00 2021
+Compiled 15500000 lines at Tue Nov 30 18:54:03 2021
+Compiled 15600000 lines at Tue Nov 30 18:54:21 2021
+Compiled 15700000 lines at Tue Nov 30 18:54:24 2021
+Compiled 15800000 lines at Tue Nov 30 18:54:27 2021
+Compiled 15900000 lines at Tue Nov 30 18:54:46 2021
+Compiled 16000000 lines at Tue Nov 30 18:54:49 2021
+Compiled 16100000 lines at Tue Nov 30 18:55:17 2021
+Compiled 16200000 lines at Tue Nov 30 18:55:35 2021
+Compiled 16300000 lines at Tue Nov 30 18:55:38 2021
+Compiled 16400000 lines at Tue Nov 30 18:55:41 2021
+Compiled 16500000 lines at Tue Nov 30 18:56:01 2021
+Compiled 16600000 lines at Tue Nov 30 18:56:04 2021
+Compiled 16700000 lines at Tue Nov 30 18:56:20 2021
+Compiled 16800000 lines at Tue Nov 30 18:56:26 2021
+Compiled 16900000 lines at Tue Nov 30 18:56:29 2021
+Compiled 17000000 lines at Tue Nov 30 18:56:48 2021
+Compiled 17100000 lines at Tue Nov 30 18:56:52 2021
+Compiled 17200000 lines at Tue Nov 30 18:56:55 2021
+Compiled 17300000 lines at Tue Nov 30 18:57:14 2021
+Compiled 17400000 lines at Tue Nov 30 18:57:18 2021
+Compiled 17500000 lines at Tue Nov 30 18:57:21 2021
+Compiled 17600000 lines at Tue Nov 30 18:57:40 2021
+Compiled 17700000 lines at Tue Nov 30 18:57:44 2021
+Compiled 17800000 lines at Tue Nov 30 18:57:47 2021
+Compiled 17900000 lines at Tue Nov 30 18:58:07 2021
+Compiled 18000000 lines at Tue Nov 30 18:58:10 2021
+Compiled 18100000 lines at Tue Nov 30 18:58:13 2021
+Compiled 18200000 lines at Tue Nov 30 18:58:33 2021
+Compiled 18300000 lines at Tue Nov 30 18:58:36 2021
+Compiled 18400000 lines at Tue Nov 30 18:58:39 2021
+Compiled 18500000 lines at Tue Nov 30 18:59:00 2021
+Compiled 18600000 lines at Tue Nov 30 18:59:03 2021
+Compiled 18700000 lines at Tue Nov 30 18:59:06 2021
+Compiled 18800000 lines at Tue Nov 30 18:59:28 2021
+Compiled 18900000 lines at Tue Nov 30 18:59:31 2021
+Compiled 19000000 lines at Tue Nov 30 18:59:49 2021
+Compiled 19100000 lines at Tue Nov 30 18:59:55 2021
+Compiled 19200000 lines at Tue Nov 30 18:59:58 2021
+Compiled 19300000 lines at Tue Nov 30 19:00:19 2021
+Compiled 19400000 lines at Tue Nov 30 19:00:51 2021
+Compiled 19500000 lines at Tue Nov 30 19:00:54 2021
+Compiled 19600000 lines at Tue Nov 30 19:01:15 2021
+Compiled 19700000 lines at Tue Nov 30 19:01:18 2021
+Compiled 19800000 lines at Tue Nov 30 19:01:21 2021
+Compiled 19900000 lines at Tue Nov 30 19:01:44 2021
+Compiled 20000000 lines at Tue Nov 30 19:01:47 2021
+Compiled 20100000 lines at Tue Nov 30 19:01:50 2021
+Compiled 20200000 lines at Tue Nov 30 19:02:13 2021
+Compiled 20300000 lines at Tue Nov 30 19:02:16 2021
+Compiled 20400000 lines at Tue Nov 30 19:02:19 2021
+Compiled 20500000 lines at Tue Nov 30 19:02:42 2021
+Compiled 20600000 lines at Tue Nov 30 19:02:45 2021
+Compiled 20700000 lines at Tue Nov 30 19:02:48 2021
+Compiled 20800000 lines at Tue Nov 30 19:03:11 2021
+Compiled 20900000 lines at Tue Nov 30 19:03:14 2021
+Compiled 21000000 lines at Tue Nov 30 19:03:17 2021
+Compiled 21100000 lines at Tue Nov 30 19:03:40 2021
+Compiled 21200000 lines at Tue Nov 30 19:03:43 2021
+Compiled 21300000 lines at Tue Nov 30 19:04:04 2021
+Compiled 21400000 lines at Tue Nov 30 19:04:10 2021
+Compiled 21500000 lines at Tue Nov 30 19:04:13 2021
+Compiled 21600000 lines at Tue Nov 30 19:04:37 2021
+Compiled 21700000 lines at Tue Nov 30 19:04:40 2021
+Compiled 21800000 lines at Tue Nov 30 19:04:43 2021
+Compiled 21900000 lines at Tue Nov 30 19:05:07 2021
+Compiled 22000000 lines at Tue Nov 30 19:05:10 2021
+Compiled 22100000 lines at Tue Nov 30 19:05:13 2021
+Compiled 22200000 lines at Tue Nov 30 19:05:38 2021
+Compiled 22300000 lines at Tue Nov 30 19:05:41 2021
+Compiled 22400000 lines at Tue Nov 30 19:05:44 2021
+Compiled 22500000 lines at Tue Nov 30 19:06:09 2021
+Compiled 22600000 lines at Tue Nov 30 19:06:12 2021
+Compiled 22700000 lines at Tue Nov 30 19:06:15 2021
+Compiled 22800000 lines at Tue Nov 30 19:06:40 2021
+Compiled 22900000 lines at Tue Nov 30 19:06:43 2021
+Compiled 23000000 lines at Tue Nov 30 19:06:46 2021
+Compiled 23100000 lines at Tue Nov 30 19:07:11 2021
+Compiled 23200000 lines at Tue Nov 30 19:07:14 2021
+Compiled 23300000 lines at Tue Nov 30 19:07:51 2021
+Compiled 23400000 lines at Tue Nov 30 19:08:16 2021
+Compiled 23500000 lines at Tue Nov 30 19:08:19 2021
+Compiled 23600000 lines at Tue Nov 30 19:08:41 2021
+Compiled 23700000 lines at Tue Nov 30 19:08:48 2021
+Compiled 23800000 lines at Tue Nov 30 19:08:51 2021
+Compiled 23900000 lines at Tue Nov 30 19:09:17 2021
+Compiled 24000000 lines at Tue Nov 30 19:09:20 2021
+Compiled 24100000 lines at Tue Nov 30 19:09:23 2021
+Compiled 24200000 lines at Tue Nov 30 19:09:50 2021
+Compiled 24300000 lines at Tue Nov 30 19:09:53 2021
+Compiled 24400000 lines at Tue Nov 30 19:09:56 2021
+Compiled 24500000 lines at Tue Nov 30 19:10:22 2021
+Compiled 24600000 lines at Tue Nov 30 19:10:26 2021
+Compiled 24700000 lines at Tue Nov 30 19:10:29 2021
+Compiled 24800000 lines at Tue Nov 30 19:10:56 2021
+Compiled 24900000 lines at Tue Nov 30 19:10:59 2021
+Compiled 25000000 lines at Tue Nov 30 19:11:02 2021
+Compiled 25100000 lines at Tue Nov 30 19:11:29 2021
+Compiled 25200000 lines at Tue Nov 30 19:11:32 2021
+Compiled 25300000 lines at Tue Nov 30 19:11:35 2021
+Compiled 25400000 lines at Tue Nov 30 19:12:03 2021
+Compiled 25500000 lines at Tue Nov 30 19:12:06 2021
+Compiled 25600000 lines at Tue Nov 30 19:12:09 2021
+Compiled 25700000 lines at Tue Nov 30 19:12:40 2021
+Compiled 25800000 lines at Tue Nov 30 19:12:43 2021
+Compiled 25900000 lines at Tue Nov 30 19:12:46 2021
+Compiled 26000000 lines at Tue Nov 30 19:13:14 2021
+Compiled 26100000 lines at Tue Nov 30 19:13:18 2021
+Compiled 26200000 lines at Tue Nov 30 19:13:42 2021
+Compiled 26300000 lines at Tue Nov 30 19:13:50 2021
+Compiled 26400000 lines at Tue Nov 30 19:13:52 2021
+Compiled 26500000 lines at Tue Nov 30 19:14:21 2021
+Compiled 26600000 lines at Tue Nov 30 19:14:25 2021
+Compiled 26700000 lines at Tue Nov 30 19:14:28 2021
+Compiled 26800000 lines at Tue Nov 30 19:14:57 2021
+Compiled 26900000 lines at Tue Nov 30 19:15:00 2021
+Compiled 27000000 lines at Tue Nov 30 19:15:03 2021
+Compiled 27100000 lines at Tue Nov 30 19:15:32 2021
+Compiled 27200000 lines at Tue Nov 30 19:15:35 2021
+Compiled 27300000 lines at Tue Nov 30 19:15:38 2021
+Compiled 27400000 lines at Tue Nov 30 19:16:07 2021
+Compiled 27500000 lines at Tue Nov 30 19:16:10 2021
+Compiled 27600000 lines at Tue Nov 30 19:16:13 2021
+Compiled 27700000 lines at Tue Nov 30 19:16:43 2021
+Compiled 27800000 lines at Tue Nov 30 19:17:31 2021
+Compiled 27900000 lines at Tue Nov 30 19:17:34 2021
+Compiled 28000000 lines at Tue Nov 30 19:18:04 2021
+Compiled 28100000 lines at Tue Nov 30 19:18:07 2021
+Compiled 28200000 lines at Tue Nov 30 19:18:10 2021
+Compiled 28300000 lines at Tue Nov 30 19:18:41 2021
+Compiled 28400000 lines at Tue Nov 30 19:18:44 2021
+Compiled 28500000 lines at Tue Nov 30 19:19:11 2021
+Compiled 28600000 lines at Tue Nov 30 19:19:18 2021
+Compiled 28700000 lines at Tue Nov 30 19:19:21 2021
+Processed dependency of 1000000/27584800 instructions at Tue Nov 30 19:30:10 2021
+Processed dependency of 2000000/27584800 instructions at Tue Nov 30 19:30:39 2021
+Processed dependency of 3000000/27584800 instructions at Tue Nov 30 19:31:10 2021
+Processed dependency of 4000000/27584800 instructions at Tue Nov 30 19:31:40 2021
+Processed dependency of 5000000/27584800 instructions at Tue Nov 30 19:32:10 2021
+Processed dependency of 6000000/27584800 instructions at Tue Nov 30 19:32:40 2021
+Processed dependency of 7000000/27584800 instructions at Tue Nov 30 19:33:09 2021
+Processed dependency of 8000000/27584800 instructions at Tue Nov 30 19:33:40 2021
+Processed dependency of 9000000/27584800 instructions at Tue Nov 30 19:34:10 2021
+Processed dependency of 10000000/27584800 instructions at Tue Nov 30 19:34:40 2021
+Processed dependency of 11000000/27584800 instructions at Tue Nov 30 19:35:11 2021
+Processed dependency of 12000000/27584800 instructions at Tue Nov 30 19:35:40 2021
+Processed dependency of 13000000/27584800 instructions at Tue Nov 30 19:36:10 2021
+Processed dependency of 14000000/27584800 instructions at Tue Nov 30 19:36:40 2021
+Processed dependency of 15000000/27584800 instructions at Tue Nov 30 19:37:09 2021
+Processed dependency of 16000000/27584800 instructions at Tue Nov 30 19:37:41 2021
+Processed dependency of 17000000/27584800 instructions at Tue Nov 30 19:38:11 2021
+Processed dependency of 18000000/27584800 instructions at Tue Nov 30 19:38:40 2021
+Processed dependency of 19000000/27584800 instructions at Tue Nov 30 19:39:11 2021
+Processed dependency of 20000000/27584800 instructions at Tue Nov 30 19:39:42 2021
+Processed dependency of 21000000/27584800 instructions at Tue Nov 30 19:40:15 2021
+Processed dependency of 22000000/27584800 instructions at Tue Nov 30 19:40:44 2021
+Processed dependency of 23000000/27584800 instructions at Tue Nov 30 19:41:12 2021
+Processed dependency of 24000000/27584800 instructions at Tue Nov 30 19:41:41 2021
+Processed dependency of 25000000/27584800 instructions at Tue Nov 30 19:42:10 2021
+Processed dependency of 26000000/27584800 instructions at Tue Nov 30 19:42:38 2021
+Processed dependency of 27000000/27584800 instructions at Tue Nov 30 19:43:08 2021
+Merging instructions...
+Merging 17900 trunc_pr in round 2/37
+Merging 17900 trunc_pr in round 4/37
+Merging 35000 trunc_pr in round 6/37
+Merging 69200 trunc_pr in round 8/37
+Merging 136600 trunc_pr in round 9/37
+Merging 3454200 xors in round 10/37
+Merging 1727100 xors in round 11/37
+Merging 1727100 ands in round 12/37
+Merging 1727100 xors in round 13/37
+Merging 1692900 xors in round 14/37
+Merging 2530800 ands in round 15/37
+Merging 1265400 ands in round 16/37
+Merging 837900 xors in round 17/37
+Merging 598500 ands in round 18/37
+Merging 427500 xors in round 19/37
+Merging 290700 ands in round 20/37
+Merging 205200 xors in round 21/37
+Merging 136800 ands in round 22/37
+Merging 102600 xors in round 23/37
+Merging 68400 ands in round 24/37
+Merging 51300 xors in round 25/37
+Merging 34200 ands in round 26/37
+Merging 34200 xors in round 27/37
+Merging 17100 ands in round 28/37
+Merging 17100 xors in round 29/37
+Merging 17100 xors in round 30/37
+Merging 17100 xors in round 31/37
+Merging 17100 xors in round 32/37
+Merging 17100 reveal in round 33/37
+Merging 17100 muls in round 34/37
+Merging 17100 trunc_pr in round 35/37
+Topological sort ...
+Done at Tue Nov 30 19:56:27 2021
+Allocating non_linear_funcs-func_exp-0-post-start-timer-2, 1/4
+Allocated registers for 1000000 instructions at Tue Nov 30 20:10:12 2021
+Allocated registers for 2000000 instructions at Tue Nov 30 20:10:55 2021
+Allocated registers for 3000000 instructions at Tue Nov 30 20:11:33 2021
+Allocated registers for 4000000 instructions at Tue Nov 30 20:12:15 2021
+Allocated registers for 5000000 instructions at Tue Nov 30 20:12:53 2021
+Allocated registers for 6000000 instructions at Tue Nov 30 20:13:31 2021
+Allocated registers for 7000000 instructions at Tue Nov 30 20:14:09 2021
+Allocated registers for 8000000 instructions at Tue Nov 30 20:14:48 2021
+Allocated registers for 9000000 instructions at Tue Nov 30 20:15:26 2021
+Allocated registers for 10000000 instructions at Tue Nov 30 20:16:04 2021
+Writing to /root/MP-SPDZ/Programs/Schedules/non_linear_funcs-func_exp.sch
+Writing to /root/MP-SPDZ/Programs/Bytecode/non_linear_funcs-func_exp-0.bc
+Program requires:
+     6669000 bit triples
+       17100 integer dabits
+       37500 integer triples
+          37 virtual machine rounds

@@ -1,0 +1,234 @@
+Starting timer 1 at 0 after 1.734e-06
+Starting timer 1 at 0 after 1.932e-06
+Stopped timer 1 at 0.0647826
+Stopped timer 1 at 0.0653208
+Join timer: 0 0.0650372
+Finish timer: 0.000725675
+Main time: 5.6947e-05 MS
+Time = 0.0658773 seconds 
+Time1 = 0.0647826 seconds 
+Data sent = 2.0949 MB in ~42 rounds (party 2)
+Join timer: 0 0.0655665
+Finish timer: 0.000644222
+Main time: 5.9209e-05 MS
+Time = 0.0663008 seconds 
+Time1 = 0.0653208 seconds 
+Data sent = 1.3013 MB in ~48 rounds (party 1)
+Global data sent = 4.69752 MB (all parties)
+Global data sent = 4.69752 MB (all parties)
+Starting timer 1 at 0 after 2.04e-06
+Starting timer 1 at 0 after 1.336e-06
+Stopped timer 1 at 0.0690054
+Stopped timer 1 at 0.0695139
+Join timer: 0 0.0692726
+Finish timer: 0.000818739
+Main time: 6.1315e-05 MS
+Time = 0.0702101 seconds 
+Time1 = 0.0690054 seconds 
+Data sent = 2.0949 MB in ~42 rounds (party 2)
+Join timer: 0 0.0697466
+Finish timer: 0.00062217
+Main time: 6.3424e-05 MS
+Time = 0.0704721 seconds 
+Time1 = 0.0695139 seconds 
+Data sent = 1.3013 MB in ~48 rounds (party 1)
+Global data sent = 4.69752 MB (all parties)
+Global data sent = 4.69752 MB (all parties)
+Starting timer 1 at 0 after 1.941e-06
+Starting timer 1 at 0 after 2.869e-06
+Stopped timer 1 at 0.0674053
+Stopped timer 1 at 0.0692368
+Join timer: 0 0.0677139
+Finish timer: 0.000790567
+Main time: 5.7754e-05 MS
+Time = 0.0686112 seconds 
+Time1 = 0.0674053 seconds 
+Data sent = 2.0949 MB in ~42 rounds (party 2)
+Join timer: 0 0.0694752
+Finish timer: 0.000757039
+Main time: 6.0408e-05 MS
+Time = 0.0703256 seconds 
+Time1 = 0.0692368 seconds 
+Data sent = 1.3013 MB in ~48 rounds (party 1)
+Global data sent = 4.69752 MB (all parties)
+Global data sent = 4.69752 MB (all parties)
+Starting timer 1 at 0 after 1.988e-06
+Starting timer 1 at 0 after 1.643e-06
+Stopped timer 1 at 0.0662068
+Stopped timer 1 at 0.0668986
+Join timer: 0 0.0664607
+Finish timer: 0.000958352
+Main time: 5.6902e-05 MS
+Time = 0.0675036 seconds 
+Time1 = 0.0662068 seconds 
+Data sent = 1.8837 MB in ~42 rounds (party 2)
+Join timer: 0 0.0671577
+Finish timer: 0.000863087
+Main time: 5.8884e-05 MS
+Time = 0.068124 seconds 
+Time1 = 0.0668986 seconds 
+Data sent = 1.2437 MB in ~48 rounds (party 1)
+Global data sent = 4.37112 MB (all parties)
+Global data sent = 4.37112 MB (all parties)
+Starting timer 1 at 0 after 1.634e-06
+Starting timer 1 at 0 after 1.527e-06
+Stopped timer 1 at 0.0815737
+Stopped timer 1 at 0.0821821
+Join timer: 0 0.0818412
+Finish timer: 0.000721424
+Main time: 6.6948e-05 MS
+Time = 0.0826751 seconds 
+Time1 = 0.0815737 seconds 
+Data sent = 2.5173 MB in ~45 rounds (party 2)
+Join timer: 0 0.0824388
+Finish timer: 0.000684341
+Main time: 7.3001e-05 MS
+Time = 0.0832376 seconds 
+Time1 = 0.0821821 seconds 
+Data sent = 1.4165 MB in ~52 rounds (party 1)
+Global data sent = 5.35032 MB (all parties)
+Global data sent = 5.35032 MB (all parties)
+Starting timer 1 at 0 after 1.495e-06
+Starting timer 1 at 0 after 1.429e-06
+Stopped timer 1 at 0.0460802
+Stopped timer 1 at 0.0466259
+Join timer: 0 0.0463304
+Finish timer: 0.000662518
+Main time: 4.1051e-05 MS
+Time = 0.0471021 seconds 
+Time1 = 0.0460802 seconds 
+Data sent = 1.4123 MB in ~42 rounds (party 2)
+Join timer: 0 0.0468734
+Finish timer: 0.00117665
+Main time: 4.1731e-05 MS
+Time = 0.0481515 seconds 
+Time1 = 0.0466259 seconds 
+Data sent = 1.0411 MB in ~48 rounds (party 1)
+Global data sent = 3.49452 MB (all parties)
+Global data sent = 3.49452 MB (all parties)
+Starting timer 1 at 0 after 2.045e-06
+Starting timer 1 at 0 after 2.075e-06
+Stopped timer 1 at 0.0513819
+Stopped timer 1 at 0.0519073
+Join timer: 0 0.0516193
+Finish timer: 0.000582468
+Main time: 3.9564e-05 MS
+Time = 0.0522913 seconds 
+Time1 = 0.0513819 seconds 
+Data sent = 1.3099 MB in ~42 rounds (party 2)
+Join timer: 0 0.0521356
+Finish timer: 0.00129021
+Main time: 4.1834e-05 MS
+Time = 0.0535082 seconds 
+Time1 = 0.0519073 seconds 
+Data sent = 1.0155 MB in ~48 rounds (party 1)
+Global data sent = 3.34092 MB (all parties)
+Global data sent = 3.34092 MB (all parties)
+Starting timer 1 at 0 after 1.897e-06
+Starting timer 1 at 0 after 2.039e-06
+Stopped timer 1 at 0.0419212
+Stopped timer 1 at 0.0416875
+Join timer: 0 0.0421976
+Finish timer: 0.000940918
+Main time: 3.5591e-05 MS
+Time = 0.04326 seconds 
+Time1 = 0.0419212 seconds 
+Data sent = 1.3213 MB in ~45 rounds (party 2)
+Join timer: 0 0.0420266
+Finish timer: 0.000644415
+Main time: 3.7009e-05 MS
+Time = 0.0427754 seconds 
+Time1 = 0.0416875 seconds 
+Data sent = 0.988496 MB in ~52 rounds (party 1)
+Global data sent = 3.29832 MB (all parties)
+Global data sent = 3.29832 MB (all parties)
+Starting timer 1 at 0 after 1.605e-06
+Starting timer 1 at 0 after 1.396e-06
+Stopped timer 1 at 0.0648966
+Stopped timer 1 at 0.0653241
+Join timer: 0 0.0651594
+Finish timer: 0.000669395
+Main time: 5.7462e-05 MS
+Time = 0.0659523 seconds 
+Time1 = 0.0648966 seconds 
+Data sent = 2.3271 MB in ~45 rounds (party 2)
+Join timer: 0 0.0655878
+Finish timer: 0.000555582
+Main time: 6.1068e-05 MS
+Time = 0.0662516 seconds 
+Time1 = 0.0653241 seconds 
+Data sent = 1.3415 MB in ~52 rounds (party 1)
+Global data sent = 5.01012 MB (all parties)
+Global data sent = 5.01012 MB (all parties)
+Starting timer 1 at 0 after 1.76e-06
+Starting timer 1 at 0 after 1.536e-06
+Stopped timer 1 at 2.91369
+Stopped timer 1 at 2.914
+Join timer: 0 2.91411
+Finish timer: 0.00107158
+Main time: 0.0025754 MS
+Time = 2.9153 seconds 
+Time1 = 2.91369 seconds 
+Data sent = 53.0691 MB in ~3021 rounds (party 2)
+Join timer: 0 2.91438
+Finish timer: 0.00107361
+Main time: 0.00271083 MS
+Time = 2.91557 seconds 
+Time1 = 2.914 seconds 
+Data sent = 26.1443 MB in ~3721 rounds (party 1)
+Global data sent = 105.358 MB (all parties)
+Global data sent = 105.358 MB (all parties)
+Starting timer 1 at 0 after 3.666e-06
+Starting timer 1 at 0 after 1.38e-06
+Stopped timer 1 at 0.289577
+Stopped timer 1 at 0.29005
+Join timer: 0 0.289812
+Finish timer: 0.00393296
+Main time: 0.000259719 MS
+Time = 0.293849 seconds 
+Time1 = 0.289577 seconds 
+Data sent = 7.4659 MB in ~42 rounds (party 2)
+Join timer: 0 0.290414
+Finish timer: 0.00394158
+Main time: 0.000269915 MS
+Time = 0.294457 seconds 
+Time1 = 0.29005 seconds 
+Data sent = 3.7155 MB in ~48 rounds (party 1)
+Global data sent = 14.8969 MB (all parties)
+Global data sent = 14.8969 MB (all parties)
+Starting timer 1 at 0 after 2.373e-06
+Starting timer 1 at 0 after 1.669e-06
+Stopped timer 1 at 0.308487
+Stopped timer 1 at 0.309068
+Join timer: 0 0.308724
+Finish timer: 0.00348271
+Main time: 0.000255095 MS
+Time = 0.312308 seconds 
+Time1 = 0.308487 seconds 
+Data sent = 6.7901 MB in ~42 rounds (party 2)
+Join timer: 0 0.309311
+Finish timer: 0.00340643
+Main time: 0.000253181 MS
+Time = 0.312817 seconds 
+Time1 = 0.309068 seconds 
+Data sent = 3.3853 MB in ~48 rounds (party 1)
+Global data sent = 13.5607 MB (all parties)
+Global data sent = 13.5607 MB (all parties)
+Starting timer 1 at 0 after 3.04e-06
+Starting timer 1 at 0 after 2.156e-06
+Stopped timer 1 at 1.85321
+Stopped timer 1 at 1.85886
+Join timer: 0 1.85353
+Finish timer: 0.0215824
+Main time: 0.001392 MS
+Time = 1.87523 seconds 
+Time1 = 1.85321 seconds 
+Data sent = 83.6315 MB in ~47 rounds (party 2)
+Join timer: 0 1.85906
+Finish timer: 0.0248309
+Main time: 0.00170446 MS
+Time = 1.88399 seconds 
+Time1 = 1.85886 seconds 
+Data sent = 27.5419 MB in ~54 rounds (party 1)
+Global data sent = 138.395 MB (all parties)
+Global data sent = 138.395 MB (all parties)

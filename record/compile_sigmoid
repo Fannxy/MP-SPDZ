@@ -1,0 +1,31 @@
+Default bit length: 255
+Default security parameter: 40
+Compiling file /root/MP-SPDZ/Programs/Source/non_linear_funcs.mpc
+Test functions  sigmoid
+breaks:  [-50.0, -12.5, -3.125, 0.0, 3.125, 12.5]
+Compiled 100000 lines at Tue Nov 30 16:24:54 2021
+Compiled 200000 lines at Tue Nov 30 16:25:00 2021
+Compiled 300000 lines at Tue Nov 30 16:25:06 2021
+Compiled 400000 lines at Tue Nov 30 16:25:14 2021
+Compiled 500000 lines at Tue Nov 30 16:25:22 2021
+Compiled 600000 lines at Tue Nov 30 16:25:32 2021
+Compiled 700000 lines at Tue Nov 30 16:25:42 2021
+Compiled 800000 lines at Tue Nov 30 16:25:54 2021
+Merging 121200 xors in round 8/35
+Merging 60600 xors in round 9/35
+Merging 60600 ands in round 10/35
+Merging 60600 xors in round 11/35
+Merging 59400 xors in round 12/35
+Merging 88800 ands in round 13/35
+Merging 44400 ands in round 14/35
+Merging 29400 xors in round 15/35
+Merging 21000 ands in round 16/35
+Merging 15000 xors in round 17/35
+Merging 10200 ands in round 18/35
+Writing to /root/MP-SPDZ/Programs/Schedules/non_linear_funcs-sigmoid.sch
+Writing to /root/MP-SPDZ/Programs/Bytecode/non_linear_funcs-sigmoid-0.bc
+Program requires:
+         600 integer dabits
+        2200 integer triples
+      234000 bit triples
+          35 virtual machine rounds

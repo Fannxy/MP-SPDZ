@@ -1,0 +1,14 @@
+
+
+Test benchmark_nonlinear-chi_square using protocol replicated-ring-party.x 
+
+Starting timer 1 at 0 after 1.685e-06
+Stopped timer 1 at 1.69226
+Join timer: 0 1.69251
+Finish timer: 0.000697158
+Main time: 0.00208044 MS
+Time = 1.69331 seconds 
+Time1 = 1.69226 seconds 
+Data sent = 3.56143 MB in ~23017 rounds (party 0)
+Global data sent = 12.5594 MB (all parties)
+Success

@@ -1,0 +1,11 @@
+Test function gamma_dis
+Starting timer 1 at 0 after 1.809e-06
+Stopped timer 1 at 0.0463522
+Join timer: 0 0.0466712
+Finish timer: 0.00058115
+Main time: 4.2588e-05 MS
+Time = 0.0473505 seconds 
+Time1 = 0.0463522 seconds 
+Data sent = 1.04113 MB in ~48 rounds (party 0)
+Global data sent = 3.49452 MB (all parties)
+Success

@@ -1,0 +1,11 @@
+Test function sigmoid
+Starting timer 1 at 0 after 1.238e-06
+Stopped timer 1 at 0.0651629
+Join timer: 0 0.0654306
+Finish timer: 0.000653587
+Main time: 6.0861e-05 MS
+Time = 0.0661707 seconds 
+Time1 = 0.0651629 seconds 
+Data sent = 1.30133 MB in ~48 rounds (party 0)
+Global data sent = 4.69752 MB (all parties)
+Success

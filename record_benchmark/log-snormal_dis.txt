@@ -1,0 +1,19 @@
+
+
+Test benchmark_nonlinear-snormal_dis using protocol replicated-ring-party.x 
+
+Success
+
+
+Test benchmark_nonlinear-snormal_dis using protocol replicated-ring-party.x 
+
+Starting timer 1 at 0 after 2.22e-06
+Stopped timer 1 at 1.65109
+Join timer: 0 1.65135
+Finish timer: 0.00072525
+Main time: 0.00208198 MS
+Time = 1.65222 seconds 
+Time1 = 1.65109 seconds 
+Data sent = 3.56143 MB in ~22918 rounds (party 0)
+Global data sent = 12.5594 MB (all parties)
+Success

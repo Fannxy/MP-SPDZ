@@ -1,53 +1,47 @@
 """Test non-linear functions performance.
 """
-import iterative_based as ite
+import mpc_nonlinear as mn
 from nonlinear_config import *
 
 program.use_trunc_pr = True
 program.use_split(3)
-
 func_name = program.args[1]
 
+# Set the sfixed settings.
+sfix.set_precision(48, 100)
+N = 100
+
+# Print the test target in compile and execution stage.
 print_ln("Test function %s", func_name)
 print("Test functions ", func_name)
 func_config = eval(func_name + '_config')
 
-sfix.set_precision(48, 100)
-N = 100
-
+# Fetch the corresponding config information.
 coeffA = func_config['coeffA']
 breaks = func_config['breaks'][:-1]
+m = len(breaks)
+k = len(coeffA[0])
 print("breaks: ", breaks)
 
+
+# Test
 x = Array.create_from([sfix(i) for i in range(N)])
-start_timer(1)
-for i in range(N):
-    ite.general_non_linear_v2(x[i], coeffA, breaks)
-break_point()
-stop_timer(1)
 
-
-
-
-# x = sfix(5)
-# degree = n-1
-# pre_muls = floatingpoint.PreOpL(lambda a,b,_: a * b, [x] * degree)
-
-# poss_res = [0]*m
-# for i in range(m):
-#     poss_res[i] = coeffA[i][0]
-#     for j in range(n-1):
-#         # poss_res[i] += coeffA[i][j+1] * pre_muls[j]
-#         poss_res[i] += pre_muls[i].mul_no_reduce(x.coerce(coeffA[i][j+1]))
-#     poss_res[i] = poss_res[i].reduce_after_mul()
-
-# comp = sfix.Array(m)
-# @for_range_opt(m)
-# def _(i):
-#     comp[i] = x >= breaks[i]
-# break_point()
-# cipher_index = bb.get_last_one(comp)
-
-# res = sfix.dot_product(cipher_index, poss_res)
+if (max(m, k) < 200):
+    start_timer(1)
+    for i in range(N):
+        mn.general_non_linear(x[i], coeffA, breaks)
+    break_point()
+    stop_timer(1)
+else: 
+    # for too large (k, m) pairs, using @for_range_opt to avoid too heavy compile requirement
+    start_timer(1)
+    @for_range_opt(N)
+    def _(i):
+        global breaks
+        global coeffA
+        ite.general_non_linear_v2(x[i], coeffA, breaks)
+    break_point()
+    stop_timer(1)
 
 

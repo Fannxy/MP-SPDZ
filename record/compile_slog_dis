@@ -1,0 +1,29 @@
+Default bit length: 255
+Default security parameter: 40
+Compiling file /root/MP-SPDZ/Programs/Source/non_linear_funcs.mpc
+Test functions  slog_dis
+breaks:  [1e-05, 0.1953224609375, 1.5625096875, 6.25000875, 25.000005]
+Compiled 100000 lines at Tue Nov 30 17:47:39 2021
+Compiled 200000 lines at Tue Nov 30 17:47:45 2021
+Compiled 300000 lines at Tue Nov 30 17:47:51 2021
+Compiled 400000 lines at Tue Nov 30 17:47:59 2021
+Compiled 500000 lines at Tue Nov 30 17:48:09 2021
+Compiled 600000 lines at Tue Nov 30 17:48:19 2021
+Compiled 700000 lines at Tue Nov 30 17:48:31 2021
+Merging 101000 xors in round 10/37
+Merging 50500 xors in round 11/37
+Merging 50500 ands in round 12/37
+Merging 50500 xors in round 13/37
+Merging 49500 xors in round 14/37
+Merging 74000 ands in round 15/37
+Merging 37000 ands in round 16/37
+Merging 24500 xors in round 17/37
+Merging 17500 ands in round 18/37
+Merging 12500 xors in round 19/37
+Writing to /root/MP-SPDZ/Programs/Schedules/non_linear_funcs-slog_dis.sch
+Writing to /root/MP-SPDZ/Programs/Bytecode/non_linear_funcs-slog_dis-0.bc
+Program requires:
+      195000 bit triples
+         500 integer dabits
+        2600 integer triples
+          37 virtual machine rounds

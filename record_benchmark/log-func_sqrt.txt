@@ -1,0 +1,114 @@
+
+
+Test benchmark_nonlinear-func_sqrt using protocol replicated-ring-party.x 
+
+Starting timer 1 at 0 after 1.692e-06
+execute - sqrt
+execute - sqrt
+execute - sqrt
+execute - sqrt
+execute - sqrt
+execute - sqrt
+execute - sqrt
+execute - sqrt
+execute - sqrt
+execute - sqrt
+execute - sqrt
+execute - sqrt
+execute - sqrt
+execute - sqrt
+execute - sqrt
+execute - sqrt
+execute - sqrt
+execute - sqrt
+execute - sqrt
+execute - sqrt
+execute - sqrt
+execute - sqrt
+execute - sqrt
+execute - sqrt
+execute - sqrt
+execute - sqrt
+execute - sqrt
+execute - sqrt
+execute - sqrt
+execute - sqrt
+execute - sqrt
+execute - sqrt
+execute - sqrt
+execute - sqrt
+execute - sqrt
+execute - sqrt
+execute - sqrt
+execute - sqrt
+execute - sqrt
+execute - sqrt
+execute - sqrt
+execute - sqrt
+execute - sqrt
+execute - sqrt
+execute - sqrt
+execute - sqrt
+execute - sqrt
+execute - sqrt
+execute - sqrt
+execute - sqrt
+execute - sqrt
+execute - sqrt
+execute - sqrt
+execute - sqrt
+execute - sqrt
+execute - sqrt
+execute - sqrt
+execute - sqrt
+execute - sqrt
+execute - sqrt
+execute - sqrt
+execute - sqrt
+execute - sqrt
+execute - sqrt
+execute - sqrt
+execute - sqrt
+execute - sqrt
+execute - sqrt
+execute - sqrt
+execute - sqrt
+execute - sqrt
+execute - sqrt
+execute - sqrt
+execute - sqrt
+execute - sqrt
+execute - sqrt
+execute - sqrt
+execute - sqrt
+execute - sqrt
+execute - sqrt
+execute - sqrt
+execute - sqrt
+execute - sqrt
+execute - sqrt
+execute - sqrt
+execute - sqrt
+execute - sqrt
+execute - sqrt
+execute - sqrt
+execute - sqrt
+execute - sqrt
+execute - sqrt
+execute - sqrt
+execute - sqrt
+execute - sqrt
+execute - sqrt
+execute - sqrt
+execute - sqrt
+execute - sqrt
+execute - sqrt
+Stopped timer 1 at 0.120673
+Join timer: 0 0.120887
+Finish timer: 0.000690536
+Main time: 0.000123502 MS
+Time = 0.121687 seconds 
+Time1 = 0.120673 seconds 
+Data sent = 2.78433 MB in ~190 rounds (party 0)
+Global data sent = 9.22972 MB (all parties)
+Success

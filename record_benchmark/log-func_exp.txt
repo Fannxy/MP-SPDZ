@@ -1,0 +1,14 @@
+
+
+Test benchmark_nonlinear-func_exp using protocol replicated-ring-party.x 
+
+Starting timer 1 at 0 after 1.996e-06
+Stopped timer 1 at 0.171803
+Join timer: 0 0.172118
+Finish timer: 0.000783923
+Main time: 0.000172446 MS
+Time = 0.173019 seconds 
+Time1 = 0.171803 seconds 
+Data sent = 3.47403 MB in ~216 rounds (party 0)
+Global data sent = 12.182 MB (all parties)
+Success

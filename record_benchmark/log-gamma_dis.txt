@@ -1,0 +1,14 @@
+
+
+Test benchmark_nonlinear-gamma_dis using protocol replicated-ring-party.x 
+
+Starting timer 1 at 0 after 1.963e-06
+Stopped timer 1 at 1.68265
+Join timer: 0 1.68296
+Finish timer: 0.000901078
+Main time: 0.00207488 MS
+Time = 1.68396 seconds 
+Time1 = 1.68265 seconds 
+Data sent = 3.55503 MB in ~22717 rounds (party 0)
+Global data sent = 12.521 MB (all parties)
+Success
