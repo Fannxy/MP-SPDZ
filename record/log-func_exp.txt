@@ -1,11 +1,11 @@
 Test function func_exp
-Starting timer 1 at 0 after 1.462e-06
-Stopped timer 1 at 1.85862
-Join timer: 0 1.85889
-Finish timer: 0.0211128
-Main time: 0.00172174 MS
-Time = 1.88011 seconds 
-Time1 = 1.85862 seconds 
-Data sent = 27.2219 MB in ~54 rounds (party 0)
-Global data sent = 138.395 MB (all parties)
+Starting timer 1 at 0 after 1.8e-06
+Stopped timer 1 at 0.0678822
+Join timer: 0 0.0682115
+Finish timer: 0.000671381
+Main time: 6.1418e-05 MS
+Time = 0.0689889 seconds 
+Time1 = 0.0678822 seconds 
+Data sent = 1.44753 MB in ~56 rounds (party 0)
+Global data sent = 5.71212 MB (all parties)
 Success
