@@ -1,70 +1,65 @@
-import random
-from math import *
-from iterative_based import *
+"""Test non-linear functions accuracy.
+"""
 
-def generate_test_plain_text(n, min, max):
-    """Generate the test data from min to max.
-    """
-    step = (max - min) / n
-    return [min + i*step for i in range(n)]
+from Compiler.instructions import print_float_prec
+import mpc_nonlinear as mn
+from nonlinear_config import *
 
+program.use_trunc_pr = True
+program.use_split(3)
+func_name = program.args[1]
 
-def error_report(ref_list, res_list):
-    """Print_ln the error report.
-    """
-    n = len(ref_list)
-    # print_ln("Ref answer = %s", ref_list)
+# Set the sfixed settings.
+sfix.set_precision(48, 128)
 
-    error_list = sfix.Array(n)
-    for i in range(n):
-        error_list[i] = sfix(ref_list[i]) - res_list[i]
+# Test accuracy mse
+min_max_dict = {
+    'sigmoid': (-50, 50),
+    'tanh': (-50, 50), 
+    'soft_plus': (-20, 50),
+    'snormal_dis': (-5, 5),
+    'scauchy_dis': (-50, 50),
+    'gamma_dis': (0, 10),
+    'sexp_dis': (10**-5, 10),
+    'chi_square': (0, 50), 
+    'slog_dis': (10**-3, 20),
+    'reciprocal': (10**(-5), 10**5),
+    'func_sqrt': (10**(-5), 10**5),
+    'func_log': (10**(-5), 10**5),
+    'func_exp': (-10, 10),
+}
 
-    # print_ln("Result = %s", res_list.reveal())
-    print_ln("Error = %s", error_list.reveal())
+# Print the test target in compile and execution stage.
+print_ln("Test function %s", func_name)
+print("Test functions ", func_name)
+func_config = eval(func_name + '_config')[0]
 
+# Fetch the corresponding config information.
+coeffA = func_config['coeffA']
+scaler = func_config['scaler']
+breaks = func_config['breaks'][:-1]
+a, b = min_max_dict[func_name]
+print("min = %.3f | max = %.3f"%(a, b))
+m = len(breaks)
+k = len(coeffA[0])
 
-def test_func(test_data, func='sqrt'):
-    """Test the function's performance.
-    """
-    n = len(test_data)
-    res_list = sfix.Array(n)
+# Test accuracy
+n = 1000 # sample n samples and calculate the result.
+step = (b-a) / n 
+x_list = Array.create_from([sfix(round(a+step*i, 14)) for i in range(n)])
+test_list = Array.create_from([sfix(0) for i in range(n)])
 
-    if func == 'sqrt':
-        ref_list = [x**(0.5) for x in test_data]
-        for i in range(n):
-            res_list[i] = mpc_sqrt(sfix(test_data[i]))
-        error_report(ref_list, res_list)
-        return
+plain_func = 'mn.'+func_name
+
+@for_range_opt(n)
+def _(i):
+    global plain_func
+    global coeffA
+    global scaler
+    global breaks
     
-    if func == 'reci':
-        ref_list = [1/x for x in test_data]
-        for i in range(n):
-            res_list[i] = mpc_reci(sfix(test_data[i]))
-        error_report(ref_list, res_list)
-        return
+    test_res = mn.general_non_linear(x_list[i], coeffA, breaks, scaler)
+    test_list[i] = test_res
     
-    if func == 'log':
-        ref_list = [log(x) for x in test_data]
-        for i in range(n):
-            res_list[i] = mpc_log(sfix(test_data[i]))
-        error_report(ref_list, res_list)
-        return 
-        
-    if func == 'exp':
-        ref_list = [e**x for x in test_data]
-        for i in range(n):
-            res_list[i] = mpc_exp(sfix(test_data[i]))
-        error_report(ref_list, res_list)
-        return 
-
-sfix.set_precision(48, 100)
-n = 100
-# min_max_list = [(10**(-5), 10), (10**(-5), 10**2), (10**(-5), 10**5), (-10, 10)]
-min_max_list = [(10**(-5), 10**5), (-10, 10)]
-func_list = ['log', 'exp']
-# func_list = ['reci', 'sqrt']
-
-for i in range(len(func_list)):
-    test_data = generate_test_plain_text(n, min_max_list[i][0], min_max_list[i][1])
-    test_func(test_data, func_list[i])
-    
+print_float_prec(14)
+print_ln("Pred value = %s", test_list.reveal())

@@ -1,11 +1,13 @@
+logFolder=./Record/accuracy/
+
 echo "Test $1 using protocol $2"
 if [ ! -n "$3" ] ;then
-    logFile=./record_benchmark/log-$2.txt
+    logFile=${logFolder}log-$2.txt
 else
-    logFile=./record_benchmark/log-$3.txt
+    logFile=${logFolder}log-$3.txt
 fi
 
-logTmp=./record_benchmark/tmp.txt
+logTmp=${logFolder}tmp.txt
 
 echo "\n\nTest $1 using protocol $2 \n" >> ${logFile}
 

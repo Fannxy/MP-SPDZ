@@ -24,7 +24,6 @@ def get_last_one(arr, type='quick'):
         def _(i):
             last[i] = arr[i+regint(1)]
             arr[i] = arr[i]*(arr[i] - last[i])
-        arr[n-1] = arr[n-1]*(arr[n-1] - sfix(1))
         return arr
 
 

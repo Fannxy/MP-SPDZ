@@ -61,6 +61,7 @@ void MAC_Check_Base<T>::prepare_open(const T& secret)
 template<class T>
 typename T::open_type MAC_Check_Base<T>::finalize_open()
 {
+    cout << "Test print_ln here " << endl;
     return values.next();
 }
 

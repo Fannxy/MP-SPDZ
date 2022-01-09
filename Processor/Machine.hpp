@@ -360,7 +360,7 @@ void Machine<sint, sgf2n>::run()
     cout << "Join timer: " << i << " " << join_timer[i].elapsed() << endl;
     cout << "Finish timer: " << finish_timer.elapsed() << endl;
   
-  cout << "Main time: " << ((timeMainEnd - timeMainStart)/CLOCKS_PER_SEC)*1e+3 << "MS" << endl;
+  cout << "Main time: " << ((timeMainEnd - timeMainStart) * 1.0 / CLOCKS_PER_SEC)*1000 << " MS" << endl;
   
 #ifdef VERBOSE
   cerr << "Memory usage: ";
