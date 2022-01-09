@@ -1,7 +1,7 @@
 logFolder=./Record/accuracy/
 
 plogFile=${logFolder}compile_log
-sourceFile=non_linear_funcs
+sourceFile=accuracy_test
 testProtocol=replicated-ring-party.x
 
 func_array=(sigmoid tanh soft_plus snormal_dis scauchy_dis gamma_dis sexp_dis chi_square slog_dis reciprocal func_sqrt func_log func_exp);
