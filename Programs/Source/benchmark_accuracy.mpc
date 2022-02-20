@@ -1,0 +1,60 @@
+"""Test the accuracy for each MP-SPDZ origional non-linear functions.
+"""
+from nonlinear_config_rep3 import *
+import mpc_nonlinear as mn
+
+# different function config.
+func_name = str(program.args[1])
+func_config = eval(func_name + '_config')[0]
+# Fetch the corresponding config information.
+coeffA = func_config['coeffA']
+scaler = func_config['scaler']
+breaks = func_config['breaks']
+a, b = breaks[0], breaks[-1]
+breaks = breaks[:-1]
+
+print("min = %.3f | max = %.3f"%(a, b))
+m = len(breaks)
+k = len(coeffA[0])
+  
+# system settings.  
+if str(program.args[2]) == "ring": 
+    program.use_trunc_pr = True
+    program.use_split(3)
+elif str(program.args[2]) == "field":
+    program.use_edabit(True)
+
+sfix.set_precision(48)
+# generate test data
+N = 1000
+step = (b - a) / N
+x_list = Array.create_from([sfix(a+step*i) for i in range(N)])
+
+# Test approximation, 1e-3 relative accuracy
+general_res = Array.create_from([sfix(0) for _ in range(N)])
+@for_range_opt(N)
+def _(i):
+    general_res[i] = mn.general_non_linear(x_list[i], coeffA, breaks, scaler)
+
+print_ln("General res:")
+print_float_prec(14)
+print_ln("approximation = %s", general_res.reveal())
+
+# Test benchmark accuracy.
+if func_name == "func_sqrt":
+    func_name = "sqrt"
+if func_name == "func_log":
+    func_name = "log"
+if func_name == "func_exp":
+    func_name = "exp"
+
+benchmark_res = Array.create_from([sfix(0) for _ in range(N)])
+# print_ln("Check x_list: %s", x_list.reveal())
+@for_range_opt(N)
+def _(i):
+    global func_name
+    benchmark_res[i] = eval("mn."+"mpc_"+func_name)(x_list[i])
+
+print_ln("Benchmark res:")
+print_float_prec(14)
+print_ln("benchmark = %s", benchmark_res.reveal())

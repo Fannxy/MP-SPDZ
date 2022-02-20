@@ -11,9 +11,14 @@ from Compiler import types
 
 DEBUG = False
 
+# constant factors
 PAI = 3.1415926
 TAU_2 = 0.959502
-E = 2.718281828459045
+ALPHA1 = 1.0
+ALPHA2 = 1.6732632
+LAMBDA = 1.0507010
+E = 2.7182818
+C1 = 0.044715
 
 @types.vectorize
 def general_non_linear(x, coeffA, breaks, scaler):
@@ -47,7 +52,7 @@ def general_non_linear(x, coeffA, breaks, scaler):
     return sfix.dot_product(cipher_index, poss_res)
 
 
-# benchmark mpc function.
+# four fundenmental mpc functions.
 def mpc_sqrt(x):
     """[summary]
 
@@ -66,7 +71,7 @@ def mpc_reciprocal(x):
     Args:
         x ([type]): [description]
     """
-    return sfix(1) / x
+    return 1 / x
 
 def mpc_log(x):
     """[summary]
@@ -85,6 +90,7 @@ def mpc_exp(x):
     """
     return pow_fx(sfix(E), x)
 
+# ML functions.
 def mpc_sigmoid(x):
     """[summary]
 
@@ -111,6 +117,34 @@ def mpc_soft_plus(x):
     return mpc_log(1 + mpc_exp(x))
 
 
+def mpc_elu(x):
+    pos_flag = sfix(x > 0)
+    res = x * pos_flag + (1-pos_flag)*ALPHA1*(mpc_exp(x)-1)
+    return res
+
+
+def mpc_selu(x):
+    pos_flag = sfix(x > 0)
+    res = LAMBDA * x * pos_flag + (1 - pos_flag) * LAMBDA * (pow_fx(sfix(ALPHA2), x) - ALPHA2)
+    return res
+
+
+def mpc_gelu(x):
+    constant = math.sqrt(2/PAI)
+    triple_x = x * x * x
+    return 0.5 * x * (1 + mpc_tanh(constant * (x + C1*triple_x)))
+
+
+def mpc_soft_sign(x):
+    pos_flag = sfix(x > 0)
+    return (x / (1 + x)) * pos_flag + (1 - pos_flag) * (x / (1 - x))
+
+
+def mpc_isru(x):
+    return x / mpc_sqrt(1 + ALPHA1*(x*x))
+
+
+# 6 probability functions.
 def mpc_snormal_dis(x):
     return mpc_exp((-x*x)/2) / (2*PAI)**0.5
 
@@ -133,6 +167,8 @@ def mpc_sexp_dis(x):
 
 def mpc_slog_dis(x):
     return mpc_exp(-(mpc_log(x)*mpc_log(x))/2) / (x * (2*PAI)**0.5)
+
+
 
 # benchmark plain-text function.
 def snormal_dis(x):
@@ -187,6 +223,7 @@ def sigmoid(x):
     res = round(1 / (1 + math.exp(-x)), 14)
     return res
 
+# basic functions.
 def reciprocal(x):
     x = round(14)
     res = round(1/x, 14)

@@ -185,13 +185,13 @@ def vector_test(a, b, func='add', debug=True):
         
 
 
-def test_basic_ops(n, repeats=1):
+def test_basic_ops(n, repeats=1, func_list=None):
     """basic function test
     """
     # func_list = ['add', 'mul', 'gt', 'eq', 'dot_product', 'normed_bits', 'trunc', 'extend']
-    func_list = ['add', 'mul', 'gt', 'eq', 'dot_product', 'normed_bits', 'trunc', 'extend', 'bit_decompose', 'bit_compose']
-    # # func_list = ['trunc']
-    # # type_list = ['sfix', 'sint']
+    if func_list is None:
+        func_list = ['add', 'mul', 'gt', 'eq', 'dot_product', 'normed_bits', 'trunc', 'extend', 'bit_decompose', 'bit_compose']
+        
     type_list = ['sfix']
 
     for type in type_list:
@@ -212,41 +212,39 @@ def test_basic_ops(n, repeats=1):
                 print_ln(">>> finish %s", func)
     
     # type get_last_one
-    a = create_arrays_get_last_one(n, 'sfix')
-    if repeats == 1:
-        vector_test(a, None, 'get_last_one')
-        print_ln("test get_last_one")
-    else:
-        print_ln("data size: %s\nrepeats: %s", n, repeats)
+    # a = create_arrays_get_last_one(n, 'sfix')
+    # if repeats == 1:
+    #     vector_test(a, None, 'get_last_one')
+    #     print_ln("test get_last_one")
+    # else:
+    #     print_ln("data size: %s\nrepeats: %s", n, repeats)
 
-        start_timer(1)
-        @for_range(repeats)
-        def _(i):
-            vector_test(a, None, 'get_last_one', debug=False)
-        stop_timer(1)
-        print_ln(">>> finish %s", "get_last_one")
+    #     start_timer(1)
+    #     @for_range(repeats)
+    #     def _(i):
+    #         vector_test(a, None, 'get_last_one', debug=False)
+    #     stop_timer(1)
+    #     print_ln(">>> finish %s", "get_last_one")
 
 
-sfix.set_precision(16, 64)
-TEST_STEP = 2 # TEST FOR [1, 2, 3, 4]
-test_len = [0, 50, 100, 150, 200]
-p = test_len[TEST_STEP - 1]
-q = test_len[TEST_STEP]
-sfix.set_precision(16, 64)
-n_list = [10*i for i in range(1, 200)]
-repeats = [200]*50
-repeats.extend([50]*50)
-repeats.extend([30]*100)
+sfix.set_precision(48, 128)
+if str(program.args[1]) == "ring":
+    program.use_trunc_pr = True
+    program.use_split(3)
+    print("compiled for ring")
+elif str(program.args[1]) == "field":
+    program.use_edabit(True)
+    print("compiled for field")
 
-for i in range(p, q):
-    test_basic_ops(n_list[i], repeats[i])
+# TEST_STEP = 2 # TEST FOR [1, 2, 3, 4]
+# test_len = [0, 50, 100, 150, 200]
+# p = test_len[TEST_STEP - 1]
+# q = test_len[TEST_STEP]
+# sfix.set_precision(16, 64)
+# n_list = [10*i for i in range(1, 200)]
+# repeats = [200]*50
+# repeats.extend([50]*50)
+# repeats.extend([30]*100)
 
-# # Test large numbers
-# n_list = [i*10**4 for i in range(5)]
-# n_list.extend([10*i**6 for i in range(5)])
-# n_list.extend([10*i**8 for i in range(5)])
-
-# repeats = [20]*15
-
-# for i in range(len(n_list)):
-#     test_basic_ops(n_list[i], repeats[i])
+func_list = ['mul', 'gt']
+test_basic_ops(1000, repeats=10, func_list=func_list)

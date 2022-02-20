@@ -1,4 +1,4 @@
-logFolder=./Record/efficiency/
+logFolder=$4
 
 echo "Test $1 using protocol $2"
 if [ ! -n "$3" ] ;then

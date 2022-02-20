@@ -1,4 +1,4 @@
-logFolder=./Record/accuracy/
+logFolder=$4
 
 echo "Test $1 using protocol $2"
 if [ ! -n "$3" ] ;then
@@ -12,5 +12,5 @@ logTmp=${logFolder}tmp.txt
 echo "\n\nTest $1 using protocol $2 \n" >> ${logFile}
 
 ./$2 -p 0 $1 >> ${logFile} & ./$2 -p 1 $1 >> ${logTmp} & ./$2 -p 2 $1 >> ${logTmp} &
-wait
+wait;
 echo "Success" >> ${logFile}

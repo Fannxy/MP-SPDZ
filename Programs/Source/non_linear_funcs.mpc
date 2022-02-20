@@ -1,30 +1,19 @@
 """Test non-linear functions performance.
 """
 import mpc_nonlinear as mn
-from nonlinear_config import *
-
-program.use_trunc_pr = True
-program.use_split(3)
-func_name = program.args[1]
+from nonlinear_config_rep3 import *
 
 # Set the sfixed settings.
+func_name = program.args[1]
 sfix.set_precision(48, 128)
 
-min_max_dict = {
-    'sigmoid': (-50, 50),
-    'tanh': (-50, 50), 
-    'soft_plus': (-20, 50),
-    'snormal_dis': (-5, 5),
-    'scauchy_dis': (-50, 50),
-    'gamma_dis': (0, 10),
-    'sexp_dis': (10**-5, 10),
-    'chi_square': (0, 50), 
-    'slog_dis': (10**-3, 20),
-    'reciprocal': (10**(-5), 10**5),
-    'func_sqrt': (10**(-5), 10**5),
-    'func_log': (10**(-5), 10**5),
-    'func_exp': (-10, 10),
-}
+if (str(program.args[2]) == "ring"):
+    program.use_trunc_pr = True
+    program.use_split(3)
+    print("compiled for ring")
+elif (str(program.args[2]) == "field"):
+    program.use_edabit(True)
+    print("compiled for field")
 
 # Print the test target in compile and execution stage.
 print_ln("Test function %s", func_name)
@@ -34,8 +23,10 @@ func_config = eval(func_name + '_config')[0]
 # Fetch the corresponding config information.
 coeffA = func_config['coeffA']
 scaler = func_config['scaler']
-breaks = func_config['breaks'][:-1]
-a, b = min_max_dict[func_name]
+breaks = func_config['breaks']
+a, b = breaks[0], breaks[-1]
+breaks = breaks[:-1]
+
 print("min = %.3f | max = %.3f"%(a, b))
 m = len(breaks)
 k = len(coeffA[0])
@@ -44,10 +35,17 @@ k = len(coeffA[0])
 N = 100
 x = Array.create_from([sfix(i) for i in range(N)])
 
-start_timer(1)
-for i in range(N):
-    mn.general_non_linear(x[i], coeffA, breaks, scaler)
-break_point()
-stop_timer(1)
-
+if (str(program.args[2]) == "ring"):
+    start_timer(1)
+    for i in range(N):
+        mn.general_non_linear(x[i], coeffA, breaks, scaler)
+    break_point()
+    stop_timer(1)
+elif (str(program.args[2]) == "field"):
+    start_timer(1)
+    @for_range_opt(N)
+    def _(i):
+        mn.general_non_linear(x[i], coeffA, breaks, scaler)
+    break_point()
+    stop_timer(1)
 
