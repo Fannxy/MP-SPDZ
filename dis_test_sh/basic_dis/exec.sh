@@ -13,13 +13,14 @@ fi
 wait;
 
 if [ ${party} == 0 ]; then
-    echo "\n\nTest $3 using protocol $2 \n" >> ${logFile}
+    echo -e "\n\nTest $3 using protocol $2 \n" >> ${logFile}
 fi
 
 if [ ${party} == 0 ]; then
-    ${protocol} -p ${party} ${sourceFile} >> ${logFile};
+    echo "here --- " 
+    ${protocol} -p ${party} ${sourceFile} --ip-file-name HOST >> ${logFile} &
     else
-    ${protocol} -p ${party} ${sourceFile} >> ${logTmp};
+    ${protocol} -p ${party} ${sourceFile} --ip-file-name HOST >> ${logTmp};
 fi
 wait;
 
