@@ -23,8 +23,6 @@ fi
 wait;
 
 if [ ${mode} == "exec"]; then
-    compile_command="cd ./MP-SPDZ; ./dis_test_sh/exec.sh 0 ${protocol} ${sourceFile}-ring ${logFolder}"
-    # ${compile_command};
     cd ./MP-SPDZ; ./dis_test_sh/exec.sh 0 ${protocol} ${sourceFile}-ring ${logFolder} & 
     ssh mp-spdz131 "cd ./MP-SPDZ; ./dis_test_sh/exec.sh 1 ${protocol} ${sourceFile}-ring ${logFolder}" &
     ssh mp-spdz132 "cd ./MP-SPDZ; ./dis_test_sh/exec.sh 2 ${protocol} ${sourceFile}-ring ${logFolder}"
