@@ -17,8 +17,7 @@ if [ ${party} == 0 ]; then
 fi
 
 if [ ${party} == 0 ]; then
-    echo "here --- " 
-    ${protocol} -p ${party} ${sourceFile} --ip-file-name HOST >> ${logFile} &
+    ${protocol} -p ${party} ${sourceFile} --ip-file-name HOST >> ${logFile}
     else
     ${protocol} -p ${party} ${sourceFile} --ip-file-name HOST >> ${logTmp};
 fi

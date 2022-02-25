@@ -31,7 +31,6 @@ wait;
 if [ ${mode} == "exec" ]; then
     cd ./MP-SPDZ 
     ./dis_test_sh/basic_dis/exec.sh 0 ${protocol} ${sourceFile}-ring ${logFolder} & 
-    cd ..
     ssh mp-spdz131 "cd ./MP-SPDZ/; ./dis_test_sh/basic_dis/exec.sh 1 ${protocol} ${sourceFile}-ring ${logFolder}" &
     ssh mp-spdz132 "cd ./MP-SPDZ/; ./dis_test_sh/basic_dis/exec.sh 2 ${protocol} ${sourceFile}-ring ${logFolder}"
 fi
