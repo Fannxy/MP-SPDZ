@@ -7,6 +7,11 @@ echo "Test $3 using protocol $2"
 logFile=${logFolder}log-$3.txt
 logTmp=${logFolder}tmp.txt
 
+if [ ! -d ${logFolder} ]; then
+    mkdir ${logFolder};
+fi
+wait;
+
 if [ ${party} == 0]; then
     echo "\n\nTest $3 using protocol $2 \n" >> ${logFile}
 fi
