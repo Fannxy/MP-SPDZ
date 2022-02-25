@@ -232,9 +232,10 @@ if str(program.args[1]) == "ring":
     program.use_trunc_pr = True
     program.use_split(3)
     print("compiled for ring")
-elif str(program.args[1]) == "field":
+elif str(program.args[1]) == "others" or str(program.args[1]) == "field" :
     program.use_edabit(True)
     print("compiled for field")
+
 
 # TEST_STEP = 2 # TEST FOR [1, 2, 3, 4]
 # test_len = [0, 50, 100, 150, 200]

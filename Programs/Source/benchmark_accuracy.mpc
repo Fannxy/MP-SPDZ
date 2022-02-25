@@ -24,9 +24,9 @@ if str(program.args[2]) == "ring":
 elif str(program.args[2]) == "field":
     program.use_edabit(True)
 
-sfix.set_precision(48)
+sfix.set_precision(48, 128)
 # generate test data
-N = 1000
+N = 10000
 step = (b - a) / N
 x_list = Array.create_from([sfix(a+step*i) for i in range(N)])
 
@@ -48,13 +48,13 @@ if func_name == "func_log":
 if func_name == "func_exp":
     func_name = "exp"
 
-benchmark_res = Array.create_from([sfix(0) for _ in range(N)])
-# print_ln("Check x_list: %s", x_list.reveal())
-@for_range_opt(N)
-def _(i):
-    global func_name
-    benchmark_res[i] = eval("mn."+"mpc_"+func_name)(x_list[i])
+# benchmark_res = Array.create_from([sfix(0) for _ in range(N)])
+# # print_ln("Check x_list: %s", x_list.reveal())
+# @for_range_opt(N)
+# def _(i):
+#     global func_name
+#     benchmark_res[i] = eval("mn."+"mpc_"+func_name)(x_list[i])
 
-print_ln("Benchmark res:")
-print_float_prec(14)
-print_ln("benchmark = %s", benchmark_res.reveal())
+# print_ln("Benchmark res:")
+# print_float_prec(14)
+# print_ln("benchmark = %s", benchmark_res.reveal())

@@ -1,0 +1,21 @@
+"""Accuracy test.
+"""
+from Compiler.library import for_range_opt
+import mpc_nonlinear as mn
+
+sfix.set_precision(48)
+N = 10000
+
+# basic building blocks accuracy test
+a, b = -50, 50
+step = (b-a)/N
+x = Array.create_from([sfix(a+i*step) for i in range(N)])
+res = Array.create_from([sfix(0) for i in range(N)])
+
+@for_range_opt(N)
+def _(i):
+    res[i] = mn.mpc_exp(x[i])
+print_float_prec(14)
+print_ln("exp(-50, 50) = %s", res.reveal())
+
+
