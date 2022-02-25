@@ -12,18 +12,18 @@ if [ ! -d ${logFolder} ]; then
 fi
 wait;
 
-if [ ${party} == 0]; then
+if [ ${party} == 0 ]; then
     echo "\n\nTest $3 using protocol $2 \n" >> ${logFile}
 fi
 
-if [ ${party} == 0]; then
+if [ ${party} == 0 ]; then
     ${protocol} -p ${party} ${sourceFile} >> ${logFile};
     else
     ${protocol} -p ${party} ${sourceFile} >> ${logTmp};
 fi
 wait;
 
-if [ ${party} == 0]; then
+if [ ${party} == 0 ]; then
     echo "Success" >> ${logFile}
 fi
 
