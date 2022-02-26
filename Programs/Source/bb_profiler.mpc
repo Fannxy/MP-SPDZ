@@ -250,4 +250,20 @@ else:
 # repeats.extend([30]*100)
 
 func_list = ['mul', 'gt']
-test_basic_ops(1000, repeats=10, func_list=func_list)
+# test_basic_ops(1000, repeats=10, func_list=func_list)
+
+a = create_random_array(1000, 'sfix')
+b = create_random_array(1000, 'sfix')
+
+start_timer(1)
+@for_range(10)
+def _(i):
+    c = a * b
+stop_timer(1)
+
+start_timer(1)
+@for_range(10)
+def _(i):
+    for j in range(1000):
+        a[j] > b[j]
+stop_timer(1)
