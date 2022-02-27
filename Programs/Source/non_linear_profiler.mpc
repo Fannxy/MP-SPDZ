@@ -18,7 +18,7 @@ m = int(program.args[3])
 config_dict = eval('func_'+str(k)+"_"+str(m)+"_config")[0]
 breaks, coeffA, scalerA = config_dict['breaks'], config_dict['coeffA'], config_dict['scaler']
 
-n = 50
+n = 100
 x = Array.create_from([sfix(i) for i in range(n)])
 
 if (len(program.args) <= 4):
