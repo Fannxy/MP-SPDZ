@@ -4,12 +4,14 @@ from random_config import *
 
 
 sfix.set_precision(48, 128)
-if int(program.args[1]):
+if int(program.args[1]) == 1:
     program.use_trunc_pr = True
     program.use_split(3)
     print("compiled acceleration")
-else:
+elif int(program.args[1]) == 2:
     program.use_edabit(True)
+else:
+    print("ps compile.")
 
 
 k = int(program.args[2])
