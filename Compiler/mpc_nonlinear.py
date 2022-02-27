@@ -157,7 +157,7 @@ def mpc_scauchy_dis(x):
     return 1 / (PAI * (1 + x*x))
 
 def mpc_gamma_dis(x):
-    return x * mpc_exp(x) / TAU_2
+    return x * mpc_exp(-x) / TAU_2
 
 def mpc_chi_square(x):
     return (mpc_exp(-x/2)*x) / (4*TAU_2)
