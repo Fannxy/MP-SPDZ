@@ -3,8 +3,8 @@ protocol=$2
 sourceFile=$3
 logFolder=$4
 
-echo "Test $3 using protocol $2"
-logFile=${logFolder}log-$3.txt
+# echo -e "\n\nTest $3 using protocol $2" >> 
+logFile=${logFolder}profile.txt
 logTmp=${logFolder}tmp.txt
 
 if [ ! -d ${logFolder} ]; then
