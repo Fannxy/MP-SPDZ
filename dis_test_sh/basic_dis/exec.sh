@@ -2,9 +2,10 @@ party=$1
 protocol=$2
 sourceFile=$3
 logFolder=$4
+logFile=$5
 
 # echo -e "\n\nTest $3 using protocol $2" >> 
-logFile=${logFolder}profile.txt
+logFile=${logFolder}${5}.txt
 logTmp=${logFolder}tmp.txt
 
 if [ ! -d ${logFolder} ]; then

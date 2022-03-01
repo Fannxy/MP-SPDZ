@@ -1,7 +1,13 @@
 """Test non-linear functions performance.
 """
 import mpc_nonlinear as mn
-from nonlinear_config_rep3 import *
+
+import PsRepPrime_config as psrepprime
+import PsRepRing_config as psrepring
+import Rep3_config as repring
+import RepPrime_config as repprime
+import Shamir3_config as shamir
+
 
 # Set the sfixed settings.
 func_name = program.args[1]
@@ -15,10 +21,11 @@ elif (str(program.args[2]) == "field"):
     program.use_edabit(True)
     print("compiled for field")
 
+protocol = str(program.args[3])
 # Print the test target in compile and execution stage.
 print_ln("Test function %s", func_name)
 print("Test functions ", func_name)
-func_config = eval(func_name + '_config')[0]
+func_config = eval(protocol+'.'+func_name + '_config')[0]
 
 # Fetch the corresponding config information.
 coeffA = func_config['coeffA']

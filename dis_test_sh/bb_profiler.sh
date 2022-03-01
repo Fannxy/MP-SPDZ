@@ -78,11 +78,13 @@ fi
 
 echo "compile here" ;
 cd ./MP-SPDZ/
-./compile.py ${sourceFile} field >> ${compileLog} & 
+./compile.py ${sourceFile} field >> ${compileLog}
 cd ..
-compile_command="cd ./MP-SPDZ/; ./compile.py ${sourceFile} field;"
-ssh mp-spdz131 ${compile_command} & 
-ssh mp-spdz132 ${compile_command}
+# compile_command="cd ./MP-SPDZ/; ./compile.py ${sourceFile} field;"
+# ssh mp-spdz131 ${compile_command} & 
+# ssh mp-spdz132 ${compile_command}
+scp -r ./MP-SPDZ/Programs mp-spdz131:~/MP-SPDZ/ & 
+scp -r ./MP-SPDZ/Programs mp-spdz132:~/MP-SPDZ/
 wait;
 
 
