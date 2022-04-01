@@ -94,3 +94,5 @@ ifeq ($(USE_NTL),1)
 CFLAGS += -Wno-error=unused-parameter -Wno-error=deprecated-copy
 endif
 endif
+
+MOD = -DRING_SIZE=256

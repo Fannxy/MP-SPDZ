@@ -1,0 +1,248 @@
+from Compiler.oram import *
+import Compiler.mpc_math 
+import warnings
+from Compiler.program import Program
+
+def print_list(x):
+    ans=[]
+    for i in x:
+        ans.append(i)
+    print_ln('%s',x)
+
+def check(a,b):
+    size=len(a)
+    err=[]
+    ans=[]
+    for i in range(size):
+        for j in range(size):
+            delta=a[i][j].reveal()-b[i][j].reveal()
+            ans.append(delta)
+            err.append(if_else(delta>1e-5,delta,0))
+    
+    print_ln('diff:%s',ans)
+
+
+def np_eye(n):
+    ans = CONST_VALUE_TYPE.Matrix(n,n)
+    for i in range(n):
+        ans[i][i]=1
+    return ans
+
+
+def matrix_T(C):
+    n = len(C)
+    result = CONST_VALUE_TYPE.Matrix(n,n)
+    for i in range(n):
+        for j in range(n):
+            result[i][j]=C[j][i]
+    return result
+
+
+def copy_matrix(C,n):
+    C_copied=CONST_VALUE_TYPE.Matrix(n,n)
+    for i in range(n):
+        for j in range(n):
+            C_copied[i][j]=C[i][j]
+    return C_copied
+
+
+def np_sqrt_list(A):
+    return [Compiler.mpc_math.sqrt(A[i]) for i in range(len(A))]
+
+
+def np_sum(A):
+    n = len(A[0])
+    m = len(A)
+    result = 0
+    for i in range(m):
+        for j in range(n):
+            result+=A[i][j]
+    return result
+
+
+def np_diagonal(C):
+    return [C[i][i] for i in range(len(C))]
+    n = len(C)
+    result = []
+    for i in range(n):
+        result.append(C[i][i])
+    return result
+
+
+def np_dot(A,B):
+    return A.direct_mul_to_matrix(other=B)
+
+
+def max_item(list):
+    result = list[0]
+    for x in list:
+        result=max(x,result)
+    return result
+
+
+def fetch_item_of_A_by_B_C(A,B,C):
+    return [A[B[i]][C[i]] for i in range(len(B))]
+
+
+def list_reciprocal(list):
+    return [1/list[i] for i in range(len(list))]
+
+
+def list_addition(A,B):
+    return [A[i]+B[i] for i in range(len(A))]
+
+
+def list_minus(A,B):
+    return [A[i]-B[i] for i in range(len(A))]
+
+
+def list_multiplication(A,B):
+    return [A[i]*B[i] for i in range(len(A))]
+
+
+def check_list_equal_to(list,val):
+    return [list[i]==val for i in range(len(list))]
+
+
+def check_list_greater_than(list,val):
+    return [list[i]>val for i in range(len(list))]
+
+
+def list_addition_by_num(list,val):
+    return [val+list[i] for i in range(len(list))]
+
+
+def list_multiplication_by_num(list,val):
+    return [val*list[i] for i in range(len(list))]
+
+
+def _jacobi_set_selection(i, n, m):
+    """Using to calculate the index for target independent elements.
+    Refering to paper: https://www.ams.org/journals/mcom/1971-25-115/S0025-5718-1971-0297131-6/
+    """
+    l_list = []
+    # calculate the rotation list
+    if i <= m - 1:
+        k_list = [m - i + j for j in range(0, n - m)]
+        for k in k_list:
+            # without -1
+            if (k <= 2 * (m - i) - 1):
+                l_list.append(2 * (m - i) - k - 1)
+            else:
+                if (k <= 2 * m - i - 2):
+                    l_list.append(2 * (2 * m - i - 1) - k)
+                else:
+                    l_list.append(n - 1)
+    else:
+        k_list = [4 * m - n - i + j - 1 for j in range(0, n - m)]
+        for k in k_list:
+            # without -1
+            if (k < 2 * m - i):
+                l_list.append(n - 1)
+            else:
+                if (k <= 2 * (2 * m - i - 1)):
+                    l_list.append(2 * (2 * m - i - 1) - k)
+                else:
+                    l_list.append(2 * (3 * m - i) - 3 - k)
+
+    return k_list, l_list
+
+dg_flag=True
+def _rotate(ak_list, al_list, akl_list, k_list, l_list, n):
+    """Calculate the givens rotation value for target elements 
+    """
+    a_diff = list_minus(ak_list,al_list)
+
+    flag_zero = check_list_equal_to(akl_list,0)
+    diff_pos = check_list_greater_than(a_diff,0)
+    kl_pos = check_list_greater_than(akl_list,0)
+    diff_sigh = list_addition_by_num(list_multiplication_by_num(diff_pos,2),-1)
+    kl_diff_sigh = list_addition_by_num(list_multiplication_by_num(list_multiplication(kl_pos,diff_pos),2),-1)
+
+    sqr_akl=list_multiplication_by_num(list_multiplication(akl_list,akl_list),4)
+    sqr_a_diff=list_multiplication(a_diff,a_diff)
+    sqrt_temp = np_sqrt_list(list_addition(sqr_akl,sqr_a_diff))
+    cos2theta = list_multiplication_by_num(list_reciprocal(sqrt_temp),0.5)    # non-linear functions can be replaced.
+
+    cos2theta = list_multiplication(list_multiplication(a_diff,diff_sigh),cos2theta)
+
+    cos_theta_square = list_addition_by_num(cos2theta,0.5)
+    sin_theta_square = list_addition_by_num(list_multiplication_by_num(cos2theta,-1),0.5)
+
+    cos_theta = list_addition(list_multiplication(np_sqrt_list(cos_theta_square),list_addition_by_num(list_multiplication_by_num(flag_zero,-1),1)),flag_zero)
+    sin_theta = list_multiplication(np_sqrt_list(sin_theta_square),kl_diff_sigh)
+    sin_theta = list_multiplication(sin_theta,list_addition_by_num(list_multiplication_by_num(flag_zero,-1),1))
+        
+    Q = np_eye(n)
+    for i in range(len(k_list)):
+        Q[k_list[i]][k_list[i]] = cos_theta[i]
+        Q[l_list[i]][l_list[i]] = cos_theta[i]
+        Q[l_list[i]][k_list[i]] = sin_theta[i]
+        Q[k_list[i]][l_list[i]] = list_multiplication_by_num(sin_theta[i],-1)
+    Q_T = matrix_T(Q)# Q.T
+
+    return Q, Q_T
+
+def print_list_of_secret_item(name,lis):
+    lis_output=[]
+    for x in lis:
+        lis_output.append(x.reveal())
+    print_ln('%s:%s',name,lis_output)
+
+
+# def eigen_vector(C, check_iters=20, tol=1e-6):
+# UNABLE to make this main function nested in function due to unknown complier limit
+CONST_VALUE_TYPE = sfix
+print_float_prec(14)
+sfix.set_precision(30)
+
+
+input=[0.27440179,0.94989346,0.13437256,0.68475026,0.70061407]
+n = len(input)
+A = CONST_VALUE_TYPE.Matrix(n,1)
+B = CONST_VALUE_TYPE.Matrix(1,n)
+for i in range(n):
+    A[i][0]=B[0][i]=input[i]
+CC=A.direct_mul_to_matrix(other=B)
+
+#eig, eigv, con_flag= eigen_vector(C, tol=1e-3)
+n = len(C[0])
+m = (n+1) // 2
+iters=0
+C=copy_matrix(CC,n)
+# MAX_ROT = 10 * n ** 2
+MAX_ROT = n # change iterations here
+CHECK_BAR = n
+eigen_vecs = np_eye(n)
+eigen_vals = np_eye(n)
+debug_flag=False
+for _ in range(MAX_ROT):
+    for j in range(1, 2*m):
+        k_list, l_list = _jacobi_set_selection(j, n, m)
+        Ck_list = fetch_item_of_A_by_B_C(C,k_list,k_list)
+        Cl_list = fetch_item_of_A_by_B_C(C,l_list,l_list)
+        Ckl_list = fetch_item_of_A_by_B_C(C,k_list,l_list) 
+
+        # calculat the rotation matrix Q.
+        Q, Q_T = _rotate(Ck_list, Cl_list, Ckl_list, k_list, l_list, n)
+        # update the matrix using Q_TCQ.
+        C = np_dot(np_dot(Q_T, C), Q)
+        eigen_vecs = np_dot(eigen_vecs, Q)
+        eigen_vals = np_diagonal(C)
+        
+        eigen_vals_reveal=[]
+        for it in eigen_vals:
+            eigen_vals_reveal.append(it.reveal())
+# for not convergent cases, return the rough approximation.
+# warnings.warn("Not convergent for maximum iters.")
+
+# return eigen_vals, eigen_vecs,con_flag
+
+
+
+
+eigen_vals_reveal=[]
+for it in eigen_vals:
+    eigen_vals_reveal.append(it.reveal())
+print_ln('eigv:%s',eigen_vals_reveal)
+print_list(eigen_vecs.reveal_nested())
