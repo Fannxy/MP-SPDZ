@@ -1,0 +1,60 @@
+from random import random
+from re import X
+import mpc_nonlinear as mn
+from random_config import *
+
+
+sfix.set_precision(48, 96)
+if int(program.args[1]) == 1:
+    program.use_trunc_pr = True
+    program.use_split(3)
+    print("compiled acceleration")
+elif int(program.args[1]) == 2:
+    program.use_edabit(True)
+else:
+    print("ps compile.")
+
+def mpc_mul(x):
+    return x * x
+
+def mpc_comp(x):
+    return x > sfix(1)
+
+n = 100
+x = Array.create_from([sfix(i) for i in range(n)])
+func = str(program.args[2])
+if func == "mpc_mul" or func == "mpc_comp":
+    func = func
+else:
+    func = "mn."+func
+# func_list = [mn.mpc_reciprocal, mn.mpc_sqrt, mn.mpc_log, mn.exp]
+
+
+if int(program.args[1]) == 1:
+    start_timer(1)
+    @for_range(10)
+    def _(i):
+        for j in range(n):
+            eval(func)(x[j])
+            # func(x[j])
+    stop_timer(1)
+    print_ln("Time for func - %s"%(str(func)))
+    
+else:
+    start_timer(1)
+    @for_range(10)
+    def _(i):
+        @for_range_opt(n)
+        def _(j):
+            # func(x[j])
+            eval(func)(x[j])
+    stop_timer(1)
+    print_ln("Time for func - %s"%(str(func)))
+    
+
+                
+
+            
+            
+            
+        

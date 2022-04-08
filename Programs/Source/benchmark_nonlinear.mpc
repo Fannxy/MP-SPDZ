@@ -9,6 +9,8 @@ if (str(program.args[2]) == "ring"):
 elif (str(program.args[2]) == "field"):
     program.use_edabit(True)
     print("compiled for field")
+else:
+    print("compiled for others")
 
 
 func_name = str(program.args[1])
@@ -20,7 +22,7 @@ if func_name == "func_exp":
     func_name = "exp"
 
 # Set the sfixed settings.
-sfix.set_precision(48, 100)
+sfix.set_precision(48)
 N = 100
 x = Array.create_from([sfix(i) for i in range(N)])
 
@@ -33,9 +35,13 @@ if (str(program.args[2]) == "ring"):
         eval(func_name)(x[i])
     stop_timer(1)
 
-elif (str(program.args[2]) == "field"):
+else:
     start_timer(1)
     @for_range_opt(N)
     def _(i):
         eval(func_name)(x[i])
     stop_timer(1)
+    # start_timer(1)
+    # for i in range(N):
+    #     eval(func_name)(x[i])
+    # stop_timer(1)

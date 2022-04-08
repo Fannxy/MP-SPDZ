@@ -1,12 +1,7 @@
 """Test non-linear functions performance.
 """
 import mpc_nonlinear as mn
-
-import RepPrime_code as repprime
-import PsRepRing_code as psrepring
-import Rep3_code as repring
-import PsRepPrime_code as psrepprime
-import Shamir3_code as shamir
+import candidate_code as cc
 
 min_max_dict = {
     "tanh": (-50, 50),
@@ -40,14 +35,13 @@ elif (str(program.args[2]) == "field"):
 else:
     print("compile for other cases.")
 
-protocol = str(program.args[3])
-print(">>>", protocol)
+# protocol = str(program.args[3])
+# print(">>>", protocol)
 # Print the test target in compile and execution stage.
 print_ln("Test function %s", func_name)
 print("Test functions ", func_name)
-function = eval(protocol+'.'+func_name)
-
-a, b = min_max_dict[func_name]
+function = eval('cc.'+func_name)
+a, b = min_max_dict[func_name[:-1]]
 print("min = %.3f | max = %.3f"%(a, b))
 
 # Test performance.

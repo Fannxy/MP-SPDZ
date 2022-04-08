@@ -136,8 +136,10 @@ def mpc_gelu(x):
 
 
 def mpc_soft_sign(x):
-    pos_flag = sfix(x > 0)
-    return (x / (1 + x)) * pos_flag + (1 - pos_flag) * (x / (1 - x))
+    pos_flag = x > 0
+    x = (pos_flag * x) + (1 - pos_flag) * (-x)
+    return x * mpc_reciprocal(1 + x)
+
 
 
 def mpc_isru(x):
@@ -168,75 +170,3 @@ def mpc_sexp_dis(x):
 def mpc_slog_dis(x):
     return mpc_exp(-(mpc_log(x)*mpc_log(x))/2) / (x * (2*PAI)**0.5)
 
-
-
-# benchmark plain-text function.
-def snormal_dis(x):
-    """https://www.itl.nist.gov/div898/handbook/eda/section3/eda3661.htm
-    """
-    x = round(x, 14)
-    res = round(math.exp((-x**2)/2) / math.sqrt(2*PAI), 14)
-    return res
-
-
-def scauchy_dis(x):
-    """https://www.itl.nist.gov/div898/handbook/eda/section3/eda3663.htm
-    """
-    x = round(x, 14)
-    res = round(1 / (PAI * (1 + x**2)), 14)
-    return res
-
-
-def gamma_dis(x):
-    """fix gamma = 2
-    https://www.itl.nist.gov/div898/handbook/eda/section3/eda366b.htm
-    """
-    x = round(x, 14)
-    res = round(x*math.exp(-x) / TAU_2, 14)
-    return res
-
-
-def chi_square(x):
-    """fix v = 4.
-    """
-    x = round(x, 14)
-    res = round((math.exp(-x/2)*x) / (4*TAU_2), 14)
-    return res
-
-
-def sexp_dis(x):
-    """https://www.itl.nist.gov/div898/handbook/eda/section3/eda3667.htm
-    """
-    x = round(x, 14)
-    res = round(2.718281**(-x), 14)
-    return res
-
-
-def slog_dis(x):
-    x = round(x, 14)
-    res = round((math.exp(-(math.ln(x)**2)/2)) / (x*math.sqrt(2*PAI)), 14)
-    return res
-
-
-def sigmoid(x):
-    x = round(14)
-    res = round(1 / (1 + math.exp(-x)), 14)
-    return res
-
-# basic functions.
-def reciprocal(x):
-    x = round(14)
-    res = round(1/x, 14)
-    return res
-
-def func_exp(x):
-    x = round(x, 14)
-    return round(math.exp(x), 14)
-
-def func_sqrt(x):
-    x = round(x, 14)
-    return round(math.sqrt(x), 14) 
-
-def func_log(x):
-    x = round(x, 14)
-    return round(math.log(x), 14)
