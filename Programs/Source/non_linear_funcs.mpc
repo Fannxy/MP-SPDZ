@@ -2,11 +2,11 @@
 """
 import mpc_nonlinear as mn
 
-import RepPrime_code as repprime
-import PsRepRing_code as psrepring
-import Rep3_code as repring
-import PsRepPrime_code as psrepprime
-import Shamir3_code as shamir
+import Compiler.code.RepPrime_code as repprime
+import Compiler.code.PsRepRing_code as psrepring
+import Compiler.code.Rep3_code as repring
+import Compiler.code.PsRepPrime_code as psrepprime
+import Compiler.code.Shamir3_code as shamir
 
 min_max_dict = {
     "tanh": (-50, 50),
@@ -19,16 +19,18 @@ min_max_dict = {
     "isru": (-50, 50),
     "snormal_dis": (-10, 10),
     "scauchy_dis": (-40, 40),
-    "gamma_dis": (0.0, 50.0),
+    "gamma_dis": (1e-6, 50.0),
     "chi_square": (0.0, 50),
-    "sexp_dis": (1e-5, 10),
+    "sexp_dis": (0, 10),
     "slog_dis": (0.0001, 50),
+    "bs_dis": (1e-6, 30)
 }
 
 
 # Set the sfixed settings.
 func_name = program.args[1]
 sfix.set_precision(48, 96)
+REPEATS=1
 
 if (str(program.args[2]) == "ring"):
     program.use_trunc_pr = True
@@ -38,6 +40,7 @@ elif (str(program.args[2]) == "field"):
     program.use_edabit(True)
     print("compiled for field")
 else:
+    REPEATS = 1
     print("compile for other cases.")
 
 protocol = str(program.args[3])
@@ -56,15 +59,19 @@ x = Array.create_from([sfix(i) for i in range(N)])
 
 if (str(program.args[2]) == "ring"):
     start_timer(1)
-    for i in range(N):
-        function(x[i])
+    @for_range(REPEATS)
+    def _(j):
+        for i in range(N):
+            function(x[i])
     break_point()
     stop_timer(1)
 else:
     start_timer(1)
-    @for_range_opt(N)
-    def _(i):
-        function(x[i])
+    @for_range(REPEATS)
+    def _(j):
+        @for_range_opt(N)
+        def _(i):
+            function(x[i])
     break_point()
     stop_timer(1)
 

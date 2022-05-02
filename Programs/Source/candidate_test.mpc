@@ -18,6 +18,7 @@ min_max_dict = {
     "chi_square": (0.0, 50),
     "sexp_dis": (1e-5, 10),
     "slog_dis": (0.0001, 50),
+    "bs_dis": (1e-6, 30),
 }
 
 
@@ -29,10 +30,13 @@ if (str(program.args[2]) == "ring"):
     program.use_trunc_pr = True
     program.use_split(3)
     print("compiled for ring")
+    REPEATS=50
 elif (str(program.args[2]) == "field"):
     program.use_edabit(True)
     print("compiled for field")
+    REPEATS=20
 else:
+    REPEATS=2
     print("compile for other cases.")
 
 # protocol = str(program.args[3])
@@ -41,7 +45,7 @@ else:
 print_ln("Test function %s", func_name)
 print("Test functions ", func_name)
 function = eval('cc.'+func_name)
-a, b = min_max_dict[func_name[:-1]]
+a, b = min_max_dict[func_name[:-2]]
 print("min = %.3f | max = %.3f"%(a, b))
 
 # Test performance.
@@ -50,15 +54,19 @@ x = Array.create_from([sfix(i) for i in range(N)])
 
 if (str(program.args[2]) == "ring"):
     start_timer(1)
-    for i in range(N):
-        function(x[i])
+    @for_range(REPEATS)
+    def _(j):
+        for i in range(N):
+            function(x[i])
     break_point()
     stop_timer(1)
 else:
     start_timer(1)
-    @for_range_opt(N)
-    def _(i):
-        function(x[i])
+    @for_range(REPEATS)
+    def _(j):
+        @for_range_opt(N)
+        def _(i):
+            function(x[i])
     break_point()
     stop_timer(1)
 

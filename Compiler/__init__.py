@@ -3,6 +3,7 @@ from .GC import types as GC_types
 import inspect
 from .config import *
 from .compilerLib import run
+import code
 
 
 # add all instructions to the program VARS dictionary

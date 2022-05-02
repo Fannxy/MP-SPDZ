@@ -170,3 +170,9 @@ def mpc_sexp_dis(x):
 def mpc_slog_dis(x):
     return mpc_exp(-(mpc_log(x)*mpc_log(x))/2) / (x * (2*PAI)**0.5)
 
+def mpc_bs_dis(x):
+    x1 = (mpc_sqrt(x) - mpc_sqrt(1/x)) / 0.5
+    x2 = mpc_snormal_dis(x1)
+    x2 = (mpc_sqrt(x) + mpc_sqrt(1/x)) / 2*0.5*x
+    
+    return x2

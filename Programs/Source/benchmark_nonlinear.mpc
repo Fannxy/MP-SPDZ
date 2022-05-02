@@ -1,7 +1,7 @@
 """Benchmark of basic non-linear functions, implemented in origional MP-SPDZ.
 """
 import mpc_nonlinear as mn
-
+REPEAT = 1
 if (str(program.args[2]) == "ring"):
     program.use_trunc_pr = True
     program.use_split(3)
@@ -10,6 +10,7 @@ elif (str(program.args[2]) == "field"):
     program.use_edabit(True)
     print("compiled for field")
 else:
+    REPEAT=1
     print("compiled for others")
 
 
@@ -31,15 +32,21 @@ print("func_name: ", func_name)
 
 if (str(program.args[2]) == "ring"):
     start_timer(1)
-    for i in range(N):
-        eval(func_name)(x[i])
+    @for_range(REPEAT)
+    def _(j):
+        for i in range(N):
+            eval(func_name)(x[i])
+    break_point()
     stop_timer(1)
 
 else:
     start_timer(1)
-    @for_range_opt(N)
-    def _(i):
-        eval(func_name)(x[i])
+    @for_range(REPEAT)
+    def _(j):
+        @for_range_opt(N)
+        def _(i):
+            eval(func_name)(x[i])
+    break_point()
     stop_timer(1)
     # start_timer(1)
     # for i in range(N):

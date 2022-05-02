@@ -1,65 +1,78 @@
-"""Test non-linear functions accuracy.
+"""Test the accuracy for each MP-SPDZ origional non-linear functions.
 """
-
-from Compiler.instructions import print_float_prec
+# from nonlinear_config_rep3 import *
 import mpc_nonlinear as mn
-from nonlinear_config import *
+import Compiler.code.Rep3_code as rc
 
-program.use_trunc_pr = True
-program.use_split(3)
-func_name = program.args[1]
+# different function config.
+func_name = str(program.args[1])
+func_approx = eval('rc.'+func_name)
 
-# Set the sfixed settings.
-sfix.set_precision(48, 128)
-
-# Test accuracy mse
 min_max_dict = {
-    'sigmoid': (-50, 50),
-    'tanh': (-50, 50), 
-    'soft_plus': (-20, 50),
-    'snormal_dis': (-5, 5),
-    'scauchy_dis': (-50, 50),
-    'gamma_dis': (0, 10),
-    'sexp_dis': (10**-5, 10),
-    'chi_square': (0, 50), 
-    'slog_dis': (10**-3, 20),
-    'reciprocal': (10**(-5), 10**5),
-    'func_sqrt': (10**(-5), 10**5),
-    'func_log': (10**(-5), 10**5),
-    'func_exp': (-10, 10),
+    "tanh": (-50, 50),
+    "soft_plus": (-20, 50),
+    "sigmoid": (-50, 50),
+    "elu": (-50, 20),
+    "gelu": (-20, 20),
+    "selu": (-50, 20),
+    "soft_sign": (-50, 50),
+    "isru": (-50, 50),
+    "snormal_dis": (-10, 10),
+    "scauchy_dis": (-40, 40),
+    "gamma_dis": (10**(-6), 50.0),
+    "chi_square": (0.0, 30),
+    "sexp_dis": (0, 10),
+    "slog_dis": (0.0001, 40),
+    "bs_dis": (1e-6, 30),
 }
 
-# Print the test target in compile and execution stage.
-print_ln("Test function %s", func_name)
-print("Test functions ", func_name)
-func_config = eval(func_name + '_config')[0]
-
-# Fetch the corresponding config information.
-coeffA = func_config['coeffA']
-scaler = func_config['scaler']
-breaks = func_config['breaks'][:-1]
 a, b = min_max_dict[func_name]
-print("min = %.3f | max = %.3f"%(a, b))
-m = len(breaks)
-k = len(coeffA[0])
+  
+# system settings.  
+if str(program.args[2]) == "ring": 
+    program.use_trunc_pr = True
+    program.use_split(3)
+elif str(program.args[2]) == "field":
+    program.use_edabit(True)
 
-# Test accuracy
-n = 1000 # sample n samples and calculate the result.
-step = (b-a) / n 
-x_list = Array.create_from([sfix(round(a+step*i, 14)) for i in range(n)])
-test_list = Array.create_from([sfix(0) for i in range(n)])
+sfix.set_precision(48, 96)
+# generate test data
+N = 10000
+step = (b - a) / N
+x_list = Array.create_from([sfix(a+step*i) for i in range(N)])
 
-plain_func = 'mn.'+func_name
-
-@for_range_opt(n)
+# Test approximation, 1e-3 relative accuracy
+general_res = Array.create_from([sfix(0) for _ in range(N)])
+@for_range_opt(N)
 def _(i):
-    global plain_func
-    global coeffA
-    global scaler
-    global breaks
-    
-    test_res = mn.general_non_linear(x_list[i], coeffA, breaks, scaler)
-    test_list[i] = test_res
-    
+    general_res[i] = func_approx(x_list[i])
+
+print_ln("General res:")
 print_float_prec(14)
-print_ln("Pred value = %s", test_list.reveal())
+print_ln("approximation = %s", general_res.reveal())
+
+
+# Test benchmark accuracy.
+if func_name == "func_sqrt":
+    func_name = "sqrt"
+if func_name == "func_log":
+    func_name = "log"
+if func_name == "func_exp":
+    func_name = "exp"
+    
+sfix.set_precision(48)
+# generate test data
+N = 10000
+step = (b - a) / N
+x_list = Array.create_from([sfix(a+step*i) for i in range(N)])
+
+benchmark_res = Array.create_from([sfix(0) for _ in range(N)])
+# print_ln("Check x_list: %s", x_list.reveal())
+@for_range_opt(N)
+def _(i):
+    global func_name
+    benchmark_res[i] = eval("mn."+"mpc_"+func_name)(x_list[i])
+
+print_ln("Benchmark res:")
+print_float_prec(14)
+print_ln("benchmark = %s", benchmark_res.reveal())

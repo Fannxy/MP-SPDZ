@@ -9,6 +9,8 @@ if [ ! -d ${logFolder} ]; then
     mkdir ${logFolder};
 fi
 
+rm -r ${logFolder}*
+
 building_list=(mpc_reciprocal mpc_sqrt mpc_log mpc_exp mpc_comp mpc_mul)
 
 # Exp 1:  repring
@@ -173,118 +175,3 @@ for bb in ${building_list[*]}
 wait;
 
 
-# if [ ${mode} == "compile" ]; then
-#     echo "compile here" ;
-
-#     cd ./MP-SPDZ/
-#     ./compile.py -R 256 ${sourceFile} others >> ${compileLog} & 
-#     cd ..
-
-#     compile_command="cd ./MP-SPDZ/; ./compile.py -R 256 ${sourceFile} others;"
-#     ssh mp-spdz131 ${compile_command} & 
-#     ssh mp-spdz132 ${compile_command}
-# fi
-# wait;
-
-# if [ ${mode} == "exec" ]; then
-#     cd ./MP-SPDZ 
-#     ./dis_test_sh/basic_dis/exec.sh 0 ${protocol} ${sourceFile}-others ${logFolder} & 
-#     ssh mp-spdz131 "cd ./MP-SPDZ/; ./dis_test_sh/basic_dis/exec.sh 1 ${protocol} ${sourceFile}-others ${logFolder}" &
-#     ssh mp-spdz132 "cd ./MP-SPDZ/; ./dis_test_sh/basic_dis/exec.sh 2 ${protocol} ${sourceFile}-others ${logFolder}"
-# fi
-# wait;
-
-# echo "compile here" ;
-# cd ./MP-SPDZ/
-# ./compile.py -R 256 ${sourceFile} others >> ${compileLog} & 
-# cd ..
-# compile_command="cd ./MP-SPDZ/; ./compile.py -R 256 ${sourceFile} others;"
-# ssh mp-spdz131 ${compile_command} & 
-# ssh mp-spdz132 ${compile_command}
-# wait;
-
-
-# cd ./MP-SPDZ 
-# ./dis_test_sh/basic_dis/exec.sh 0 ${protocol} ${sourceFile}-others ${logFolder} & 
-# ssh mp-spdz131 "cd ./MP-SPDZ/; ./dis_test_sh/basic_dis/exec.sh 1 ${protocol} ${sourceFile}-others ${logFolder}" &
-# ssh mp-spdz132 "cd ./MP-SPDZ/; ./dis_test_sh/basic_dis/exec.sh 2 ${protocol} ${sourceFile}-others ${logFolder}"
-# wait;
-
-
-# protocol=./rep-field-party.x
-# echo -e "Protocol - ${protocol}" >> ${logFile};
-
-# echo "compile here" ;
-# cd ./MP-SPDZ/
-# ./compile.py ${sourceFile} field >> ${compileLog} & 
-# cd ..
-# compile_command="cd ./MP-SPDZ/; ./compile.py ${sourceFile} field;"
-# ssh mp-spdz131 ${compile_command} & 
-# ssh mp-spdz132 ${compile_command}
-# wait;
-
-
-# protocol=./replicated-field-party.x
-# echo -e "Protocol - ${protocol}" >> ${logFile};
-
-# cd ./MP-SPDZ 
-# ./dis_test_sh/basic_dis/exec.sh 0 ${protocol} ${sourceFile}-field ${logFolder} & 
-# ssh mp-spdz131 "cd ./MP-SPDZ/; ./dis_test_sh/basic_dis/exec.sh 1 ${protocol} ${sourceFile}-field ${logFolder}" &
-# ssh mp-spdz132 "cd ./MP-SPDZ/; ./dis_test_sh/basic_dis/exec.sh 2 ${protocol} ${sourceFile}-field ${logFolder}"
-# wait;
-
-
-# echo "compile here" ;
-# cd ./MP-SPDZ/
-# ./compile.py ${sourceFile} others >> ${compileLog}
-# cd ..
-# compile_command="cd ./MP-SPDZ/; ./compile.py ${sourceFile} field;"
-# ssh mp-spdz131 ${compile_command} & 
-# ssh mp-spdz132 ${compile_command}
-# scp -r ./MP-SPDZ/Programs mp-spdz131:~/MP-SPDZ/ & 
-# scp -r ./MP-SPDZ/Programs mp-spdz132:~/MP-SPDZ/
-# wait;
-
-
-# protocol=./ps-rep-field-party.x
-# echo -e "Protocol - ${protocol}" >> ${logFile};
-
-# cd ./MP-SPDZ/ 
-# ./dis_test_sh/basic_dis/exec.sh 0 ${protocol} ${sourceFile}-others ${logFolder} ${logFile} & 
-# ssh mp-spdz131 "cd ./MP-SPDZ/; ./dis_test_sh/basic_dis/exec.sh 1 ${protocol} ${sourceFile}-others ${logFolder}" &
-# ssh mp-spdz132 "cd ./MP-SPDZ/; ./dis_test_sh/basic_dis/exec.sh 2 ${protocol} ${sourceFile}-others ${logFolder}" &
-# cd ../;
-# wait;
-
-
-# echo "compile here" ;
-# cd ./MP-SPDZ/
-# ./compile.py -R 256 ${sourceFile} others >> ${compileLog}
-# cd ..
-# # compile_command="cd ./MP-SPDZ/; ./compile.py ${sourceFile} field;"
-# # ssh mp-spdz131 ${compile_command} & 
-# # ssh mp-spdz132 ${compile_command}
-# scp -r ./MP-SPDZ/Programs mp-spdz131:~/MP-SPDZ/ & 
-# scp -r ./MP-SPDZ/Programs mp-spdz132:~/MP-SPDZ/
-# wait;
-
-
-# protocol=./ps-rep-ring-party.x
-# echo -e "Protocol - ${protocol}" >> ${logFile};
-
-# cd ./MP-SPDZ 
-# ./dis_test_sh/basic_dis/exec.sh 0 ${protocol} ${sourceFile}-others ${logFolder} ${logFile} & 
-# ssh mp-spdz131 "cd ./MP-SPDZ/; ./dis_test_sh/basic_dis/exec.sh 1 ${protocol} ${sourceFile}-others ${logFolder}" &
-# ssh mp-spdz132 "cd ./MP-SPDZ/; ./dis_test_sh/basic_dis/exec.sh 2 ${protocol} ${sourceFile}-others ${logFolder}" &
-# cd ../;
-# wait;
-
-
-# protocol=./shamir-party.x
-# echo -e "Protocol - ${protocol}" >> ${logFile};
-
-# cd ./MP-SPDZ 
-# ./dis_test_sh/basic_dis/exec.sh 0 ${protocol} ${sourceFile}-field ${logFolder} & 
-# ssh mp-spdz131 "cd ./MP-SPDZ/; ./dis_test_sh/basic_dis/exec.sh 1 ${protocol} ${sourceFile}-field ${logFolder}" &
-# ssh mp-spdz132 "cd ./MP-SPDZ/; ./dis_test_sh/basic_dis/exec.sh 2 ${protocol} ${sourceFile}-field ${logFolder}"
-# wait;
