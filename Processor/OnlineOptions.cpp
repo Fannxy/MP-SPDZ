@@ -8,6 +8,7 @@
 #include "Math/gfp.h"
 #include "Math/gfpvar.h"
 #include "Protocols/HemiOptions.h"
+#include "Protocols/config.h"
 
 #include "Math/gfp.hpp"
 
@@ -26,9 +27,14 @@ OnlineOptions::OnlineOptions() : playerno(-1)
     bits_from_squares = false;
     direct = false;
     bucket_size = 4;
+    security_parameter = DEFAULT_SECURITY;
     cmd_private_input_file = "Player-Data/Input";
     cmd_private_output_file = "";
     file_prep_per_thread = false;
+    trunc_error = DEFAULT_SECURITY;
+    opening_sum = 0;
+    max_broadcast = 0;
+    receive_threads = false;
 #ifdef VERBOSE
     verbose = true;
 #else
@@ -37,7 +43,7 @@ OnlineOptions::OnlineOptions() : playerno(-1)
 }
 
 OnlineOptions::OnlineOptions(ez::ezOptionParser& opt, int argc,
-        const char** argv, false_type) :
+        const char** argv, bool security) :
         OnlineOptions()
 {
     opt.syntax = std::string(argv[0]) + " [OPTIONS] [<playerno>] <progname>";
@@ -56,8 +62,9 @@ OnlineOptions::OnlineOptions(ez::ezOptionParser& opt, int argc,
           0, // Required?
           1, // Number of args expected.
           0, // Delimiter if expecting multiple args.
-          "Prefix for input file path (default: Player-Data/Private-Input). "
-          "Input will be read from {prefix}-P{id}-{thread_id}.", // Help description.
+          "Prefix for input file path (default: Player-Data/Input). "
+          "Text input will be read from {prefix}-P{id}-{thread_id} and "
+          "binary input from {prefix}-Binary-P{id}-{thread_id}", // Help description.
           "-IF", // Flag token.
           "--input-file" // Flag token.
     );
@@ -89,7 +96,7 @@ OnlineOptions::OnlineOptions(ez::ezOptionParser& opt, int argc,
             0, // Required?
             0, // Number of args expected.
             0, // Delimiter if expecting multiple args.
-            "Verbose output", // Help description.
+            "Verbose output, in particular more data on communication", // Help description.
             "-v", // Flag token.
             "--verbose" // Flag token.
     );
@@ -102,6 +109,18 @@ OnlineOptions::OnlineOptions(ez::ezOptionParser& opt, int argc,
             "-B", // Flag token.
             "--bucket-size" // Flag token.
     );
+
+    if (security)
+        opt.add(
+            to_string(security_parameter).c_str(), // Default.
+            0, // Required?
+            1, // Number of args expected.
+            0, // Delimiter if expecting multiple args.
+            ("Security parameter (default: " + to_string(security_parameter)
+                    + ")").c_str(), // Help description.
+            "-S", // Flag token.
+            "--security" // Flag token.
+        );
 
     opt.parse(argc, argv);
 
@@ -116,13 +135,24 @@ OnlineOptions::OnlineOptions(ez::ezOptionParser& opt, int argc,
     verbose = opt.isSet("--verbose");
 #endif
 
+    if (security)
+    {
+        opt.get("-S")->getInt(security_parameter);
+        cerr << "Using security parameter " << security_parameter << endl;
+        if (security_parameter <= 0)
+        {
+            cerr << "Invalid security parameter: " << security_parameter << endl;
+            exit(1);
+        }
+    }
+
     opt.resetArgs();
 }
 
 OnlineOptions::OnlineOptions(ez::ezOptionParser& opt, int argc,
         const char** argv, int default_batch_size, bool default_live_prep,
-        bool variable_prime_length) :
-        OnlineOptions(opt, argc, argv, false_type())
+        bool variable_prime_length, bool security) :
+        OnlineOptions(opt, argc, argv, security)
 {
     if (default_batch_size <= 0)
         default_batch_size = batch_size;
@@ -262,6 +292,9 @@ void OnlineOptions::finalize(ez::ezOptionParser& opt, int argc,
     vector<string> badOptions;
     unsigned int i;
 
+    opt.footer += "\nSee also https://mp-spdz.readthedocs.io/en/latest/networking.html "
+            "for documentation on the networking setup.\n";
+
     if (allArgs.size() != 3u - opt.isSet("-p"))
     {
         cerr << "ERROR: incorrect number of arguments to " << argv[0] << endl;
@@ -314,17 +347,37 @@ void OnlineOptions::finalize(ez::ezOptionParser& opt, int argc,
             prime = schedule_prime;
     }
 
+    // ignore program if length explicitly set from command line
     if (opt.get("-lgp") and not opt.isSet("-lgp"))
     {
         int prog_lgp = BaseMachine::prime_length_from_schedule(progname);
         prog_lgp = DIV_CEIL(prog_lgp, 64) * 64;
-        if (prog_lgp != 0)
+        // only increase to be consistent with program not demanding any length
+        if (prog_lgp > lgp)
             lgp = prog_lgp;
+    }
 
-#ifndef FEWER_PRIMES
-        if (prime_limbs() > 4)
+    set_trunc_error(opt);
+
+    auto o = opt.get("--opening-sum");
+    if (o)
+        o->getInt(opening_sum);
+
+    o = opt.get("--max-broadcast");
+    if (o)
+        o->getInt(max_broadcast);
+
+    receive_threads = opt.isSet("--threads");
+}
+
+void OnlineOptions::set_trunc_error(ez::ezOptionParser& opt)
+{
+    if (opt.get("-E"))
+    {
+        opt.get("-E")->getInt(trunc_error);
+#ifdef VERBOSE
+        cerr << "Truncation error probability 2^-" << trunc_error << endl;
 #endif
-            lgp = max(lgp, gfp0::MAX_N_BITS);
     }
 }
 

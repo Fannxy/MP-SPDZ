@@ -20,7 +20,7 @@ Client::Client(const vector<string>& hostnames, int port_base,
     {
         set_up_client_socket(plain_sockets[i], hostnames[i].c_str(), port_base + i);
         octetStream(to_string(my_client_id)).Send(plain_sockets[i]);
-        sockets[i] = new ssl_socket(io_service, ctx, plain_sockets[i],
+        sockets[i] = new client_socket(io_service, ctx, plain_sockets[i],
                 "P" + to_string(i), "C" + to_string(my_client_id), true);
         if (i == 0)
             specification.Receive(sockets[0]);
@@ -50,11 +50,15 @@ void Client::send_private_inputs(const vector<T>& values)
     // Receive num_inputs triples from SPDZ
     for (size_t j = 0; j < sockets.size(); j++)
     {
+#ifdef VERBOSE_COMM
+        cerr << "receiving from " << j << endl << flush;
+#endif
+
         os.reset_write_head();
         os.Receive(sockets[j]);
 
 #ifdef VERBOSE_COMM
-        cerr << "received " << os.get_length() << " from " << j << endl;
+        cerr << "received " << os.get_length() << " from " << j << endl << flush;
 #endif
 
         for (int j = 0; j < num_inputs; j++)
@@ -91,8 +95,8 @@ void Client::send_private_inputs(const vector<T>& values)
 
 // Receive shares of the result and sum together.
 // Also receive authenticating values.
-template<class T>
-vector<T> Client::receive_outputs(int n)
+template<class T, class U>
+vector<U> Client::receive_outputs(int n)
 {
     vector<T> triples(3 * n);
     octetStream os;
@@ -101,7 +105,7 @@ vector<T> Client::receive_outputs(int n)
         os.reset_write_head();
         os.Receive(socket);
 #ifdef VERBOSE_COMM
-        cout << "received " << os.get_length() << endl;
+        cout << "received " << os.get_length() << endl << flush;
 #endif
         for (int j = 0; j < 3 * n; j++)
         {
@@ -111,7 +115,7 @@ vector<T> Client::receive_outputs(int n)
         }
     }
 
-    vector<T> output_values;
+    vector<U> output_values;
     for (int i = 0; i < 3 * n; i += 3)
     {
         if (T(triples[i] * triples[i + 1]) != triples[i + 2])

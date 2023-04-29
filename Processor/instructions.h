@@ -62,6 +62,9 @@
     X(SUBCFI, auto dest = &Procp.get_C()[r[0]]; auto op1 = &Procp.get_C()[r[1]]; \
             typename sint::clear op2 = int(n), \
             *dest++ = op2 - *op1++) \
+    X(PREFIXSUMS, auto dest = &Procp.get_S()[r[0]]; auto op1 = &Procp.get_S()[r[1]]; \
+            sint s, \
+            s += *op1++; *dest++ = s) \
     X(MULM, auto dest = &Procp.get_S()[r[0]]; auto op1 = &Procp.get_S()[r[1]]; \
             auto op2 = &Procp.get_C()[r[2]], \
             *dest++ = *op1++ * *op2++) \
@@ -203,7 +206,7 @@
             *dest++ = *op1++ == *op2++) \
     X(PRINTINT, Proc.out << Proc.read_Ci(r[0]) << flush,) \
     X(PRINTFLOATPREC, Proc.out << setprecision(n),) \
-    X(PRINTSTR, Proc.out << string((char*)&n,sizeof(n)) << flush,) \
+    X(PRINTSTR, Proc.out << string((char*)&n,4) << flush,) \
     X(PRINTCHR, Proc.out << string((char*)&n,1) << flush,) \
     X(SHUFFLE, shuffle(Proc),) \
     X(BITDECINT, bitdecint(Proc),) \
@@ -270,7 +273,7 @@
             *dest++ = *op1++ >> n) \
     X(GPRINTREG, auto source = &C2[r[0]], \
             Proc.out << "Reg[" << r[0] << "] = " << *source++ \
-            << " # " << string((char*)&n,sizeof(n)) << endl) \
+            << " # " << string((char*)&n, 4) << endl) \
     X(GPRINTREGPLAIN, auto source = &C2[r[0]], \
             Proc.out << *source++ << flush) \
     X(GBITDEC, gbitdec(C2),) \
@@ -278,7 +281,7 @@
     X(GCONVGF2N, auto dest = &Proc.get_Ci()[r[0]]; auto source = &C2[r[1]], \
             *dest++ = source->get_word(); source++) \
     X(GRAWOUTPUT, auto source = &C2[r[0]], \
-            (*source++).output(Proc.public_output, false)) \
+            (*source++).output(Proc.get_public_output(), false)) \
 
 #define REMAINING_INSTRUCTIONS \
     X(CONVMODP, throw not_implemented(),) \
@@ -380,6 +383,10 @@
     X(PREP, throw not_implemented(),) \
     X(GPREP, throw not_implemented(),) \
     X(CISC, throw not_implemented(),) \
+    X(SECSHUFFLE, throw not_implemented(),) \
+    X(GENSECSHUFFLE, throw not_implemented(),) \
+    X(APPLYSHUFFLE, throw not_implemented(),) \
+    X(DELSHUFFLE, throw not_implemented(),) \
 
 #define ALL_INSTRUCTIONS ARITHMETIC_INSTRUCTIONS REGINT_INSTRUCTIONS \
     CLEAR_GF2N_INSTRUCTIONS REMAINING_INSTRUCTIONS

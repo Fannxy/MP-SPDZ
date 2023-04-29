@@ -12,6 +12,7 @@ using namespace std;
 #include "Tools/random.h"
 #include "Tools/octetStream.h"
 #include "Tools/avx_memcpy.h"
+#include "Protocols/config.h"
 
 enum ReportType
 {
@@ -36,6 +37,13 @@ namespace GC
   class Clear;
 }
 
+/**
+ * Type for arbitrarily large integers.
+ * This is a sub-class of ``mpz_class`` from MPIR. As such, it implements
+ * all integers operations and input/output via C++ streams. In addition,
+ * the ``get_ui()`` member function allows retrieving the least significant
+ * 64 bits.
+ */
 class bigint : public mpz_class
 {
 public:
@@ -50,15 +58,20 @@ public:
   template<class U, class T>
   static void output_float(U& o, const mpf_class& x, T nan);
 
+  /// Initialize to zero.
   bigint() : mpz_class() {}
   template <class T>
   bigint(const T& x) : mpz_class(x) {}
+  /// Convert to canonical representation as non-negative number.
   template<int X, int L>
   bigint(const gfp_<X, L>& x);
+  /// Convert to canonical representation as non-negative number.
   template<int X, int L>
   bigint(const gfpvar_<X, L>& x);
+  /// Convert to canonical representation as non-negative number.
   template <int K>
   bigint(const Z2<K>& x);
+  /// Convert to canonical representation as non-negative number.
   template <int K>
   bigint(const SignedZ2<K>& x);
   template <int L>
@@ -114,7 +127,7 @@ public:
   { return mpz_sizeinbase(get_mpz_t(), 2); }
 
   void generateUniform(PRNG& G, int n_bits, bool positive = false)
-  { G.get_bigint(*this, n_bits, positive); }
+  { G.get(*this, n_bits, positive); }
 
   void pack(octetStream& os) const { os.store(*this); }
   void unpack(octetStream& os)     { os.get(*this); };
@@ -270,7 +283,8 @@ inline int probPrime(const bigint& x)
 {
   gmp_randstate_t rand_state;
   gmp_randinit_default(rand_state);
-  int ans=mpz_probable_prime_p(x.get_mpz_t(),rand_state,40,0);
+  int ans = mpz_probable_prime_p(x.get_mpz_t(), rand_state,
+      max(40, DEFAULT_SECURITY), 0);
   gmp_randclear(rand_state);
   return ans;
 }

@@ -21,13 +21,14 @@ Hemi<T>::~Hemi()
 }
 
 template<class T>
-HemiMatrixPrep<T>& Hemi<T>::get_matrix_prep(const array<int, 3>& dims,
+typename T::MatrixPrep& Hemi<T>::get_matrix_prep(const array<int, 3>& dims,
         SubProcessor<T>& processor)
 {
     if (matrix_preps.find(dims) == matrix_preps.end())
-        matrix_preps.insert({dims,
-            new HemiMatrixPrep<T>(dims[0], dims[1], dims[2],
-                    dynamic_cast<HemiPrep<T>&>(processor.DataF))});
+        matrix_preps.insert(pair<array<int, 3>, typename T::MatrixPrep*>(dims,
+            new typename T::MatrixPrep(dims[0], dims[1], dims[2],
+                    dynamic_cast<typename T::LivePrep&>(processor.DataF),
+                    matrix_usage)));
     return *matrix_preps.at(dims);
 }
 
@@ -51,21 +52,27 @@ void Hemi<T>::matmulsm(SubProcessor<T>& processor, CheckVector<T>& source,
 
     ShareMatrix<T> A(dim[0], dim[1]), B(dim[1], dim[2]);
 
-    for (int i = 0; i < dim[0]; i++)
+    if (not T::real_shares(processor.P))
     {
-        auto ii = Proc->get_Ci().at(dim[3] + i);
+        matrix_multiply(A, B, processor);
+        return;
+    }
+
+    for (int i = 0; i < dim[0]; i++)
+        for (int k = 0; k < dim[1]; k++)
+        {
+            auto kk = Proc->get_Ci().at(dim[4] + k);
+            auto ii = Proc->get_Ci().at(dim[3] + i);
+            A.entries.v.push_back(source.at(a + ii * dim[7] + kk));
+        }
+
+    for (int k = 0; k < dim[1]; k++)
         for (int j = 0; j < dim[2]; j++)
         {
             auto jj = Proc->get_Ci().at(dim[6] + j);
-            for (int k = 0; k < dim[1]; k++)
-            {
-                auto kk = Proc->get_Ci().at(dim[4] + k);
-                auto ll = Proc->get_Ci().at(dim[5] + k);
-                A[{i, k}] = source.at(a + ii * dim[7] + kk);
-                B[{k, j}] = source.at(b + ll * dim[8] + jj);
-            }
+            auto ll = Proc->get_Ci().at(dim[5] + k);
+            B.entries.v.push_back(source.at(b + ll * dim[8] + jj));
         }
-    }
 
     auto res = matrix_multiply(A, B, processor);
 
@@ -92,12 +99,16 @@ ShareMatrix<T> Hemi<T>::matrix_multiply(const ShareMatrix<T>& A,
             subdim[1] = min(max_inner, A.n_cols - i);
             subdim[2] = min(max_cols, B.n_cols - j);
             auto& prep = get_matrix_prep(subdim, processor);
-            MatrixMC<T> mc;
-            beaver.init_mul(prep, mc);
-            beaver.prepare_mul(A.from(0, i, subdim.data()),
-                    B.from(i, j, subdim.data() + 1));
-            beaver.exchange();
-            C.add_from_col(j, beaver.finalize_mul());
+            beaver.init(prep, mc);
+            beaver.init_mul();
+            bool for_real = T::real_shares(processor.P);
+            beaver.prepare_mul(A.from(0, i, subdim.data(), for_real),
+                    B.from(i, j, subdim.data() + 1, for_real));
+            if (for_real)
+            {
+                beaver.exchange();
+                C.add_from_col(j, beaver.finalize_mul());
+            }
         }
     }
 
@@ -146,6 +157,15 @@ void Hemi<T>::conv2ds(SubProcessor<T>& processor,
     auto& S = processor.get_S();
     array<int, 3> dim({{1, weights_h * weights_w * n_channels_in, batch_size * output_h * output_w}});
     ShareMatrix<T> A(dim[0], dim[1]), B(dim[1], dim[2]);
+
+    if (not T::real_shares(processor.P))
+    {
+        matrix_multiply(A, B, processor);
+        return;
+    }
+
+    A.entries.init();
+    B.entries.init();
 
     for (int i_batch = 0; i_batch < batch_size; i_batch ++)
     {

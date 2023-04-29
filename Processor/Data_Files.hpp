@@ -3,11 +3,11 @@
 
 #include "Processor/Data_Files.h"
 #include "Processor/Processor.h"
+#include "Processor/NoFilePrep.h"
 #include "Protocols/dabit.h"
 #include "Math/Setup.h"
 #include "GC/BitPrepFiles.h"
-
-#include "Protocols/MascotPrep.hpp"
+#include "Tools/benchmarking.h"
 
 template<class T>
 Preprocessing<T>* Preprocessing<T>::get_live_prep(SubProcessor<T>* proc,
@@ -30,6 +30,7 @@ Preprocessing<T>* Preprocessing<T>::get_new(
 }
 
 template<class T>
+template<int>
 Preprocessing<T>* Preprocessing<T>::get_new(
     bool live_prep, const Names& N,
     DataPositions& usage)
@@ -40,6 +41,20 @@ Preprocessing<T>* Preprocessing<T>::get_new(
     return new GC::BitPrepFiles<T>(N,
         get_prep_sub_dir<T>(PREP_DIR, N.num_players()), usage,
         BaseMachine::thread_num);
+}
+
+template<class T>
+T Preprocessing<T>::get_random_from_inputs(int nplayers)
+{
+  T res;
+  for (int j = 0; j < nplayers; j++)
+    {
+      T tmp;
+      typename T::open_type _;
+      this->get_input_no_count(tmp, _, j);
+      res += tmp;
+    }
+  return res;
 }
 
 template<class T>
@@ -156,17 +171,7 @@ Data_Files<sint, sgf2n>::Data_Files(const Names& N) :
 template<class sint, class sgf2n>
 Data_Files<sint, sgf2n>::~Data_Files()
 {
-#ifdef VERBOSE
-  if (DataFp.data_sent())
-    cerr << "Sent for " << sint::type_string() << " preprocessing threads: " <<
-        DataFp.data_sent() * 1e-6 << " MB" << endl;
-#endif
   delete &DataFp;
-#ifdef VERBOSE
-  if (DataF2.data_sent())
-    cerr << "Sent for " << sgf2n::type_string() << " preprocessing threads: " <<
-        DataF2.data_sent() * 1e-6 << " MB" << endl;
-#endif
   delete &DataF2;
   delete &DataFb;
 }
@@ -180,6 +185,16 @@ Sub_Data_Files<T>::~Sub_Data_Files()
     }
   if (part != 0)
     delete part;
+}
+
+template<class T>
+long Sub_Data_Files<T>::additional_inputs(const DataPositions& usage)
+{
+  auto& domain_usage = usage.files[T::clear::field_type()];
+  long add_to_inputs = domain_usage[DATA_RANDOM];
+  if (T::randoms_for_opens)
+    add_to_inputs += domain_usage[DATA_OPEN];
+  return add_to_inputs;
 }
 
 template<class T>
@@ -198,11 +213,15 @@ void Sub_Data_Files<T>::seekg(DataPositions& pos)
   for (int dtype = 0; dtype < N_DTYPE; dtype++)
     if (T::clear::allows(Dtype(dtype)))
       buffers[dtype].seekg(pos.files[field_type][dtype]);
+
+  long add_to_inputs = additional_inputs(pos);
+
   for (int j = 0; j < num_players; j++)
     if (j == my_num)
-      my_input_buffers.seekg(pos.inputs[j][field_type]);
+      my_input_buffers.seekg(pos.inputs[j][field_type] + add_to_inputs);
     else
-      input_buffers[j].seekg(pos.inputs[j][field_type]);
+      input_buffers[j].seekg(pos.inputs[j][field_type] + add_to_inputs);
+
   for (map<DataTag, long long>::const_iterator it = pos.extended[field_type].begin();
       it != pos.extended[field_type].end(); it++)
     {
@@ -238,7 +257,7 @@ void Sub_Data_Files<T>::prune()
   my_input_buffers.prune();
   for (int j = 0; j < num_players; j++)
     input_buffers[j].prune();
-  for (auto it : extended)
+  for (auto& it : extended)
     it.second.prune();
   dabit_buffer.prune();
   if (part != 0)
@@ -264,6 +283,8 @@ void Sub_Data_Files<T>::purge()
   for (auto it : extended)
     it.second.purge();
   dabit_buffer.purge();
+  if (part != 0)
+    part->purge();
 }
 
 template<class T>
@@ -305,9 +326,9 @@ template<int>
 void Sub_Data_Files<T>::buffer_edabits_with_queues(bool strict, int n_bits,
         false_type)
 {
-#ifndef INSECURE
-  throw runtime_error("no secure implementation of reading edaBits from files");
-#endif
+  if (edabit_buffers.empty())
+    insecure("reading edaBits from files");
+
   if (edabit_buffers.find(n_bits) == edabit_buffers.end())
     {
       string filename = PrepBase::get_edabit_filename(prep_data_dir,
@@ -320,7 +341,10 @@ void Sub_Data_Files<T>::buffer_edabits_with_queues(bool strict, int n_bits,
     }
   auto& buffer = *edabit_buffers[n_bits];
   if (buffer.peek() == EOF)
-    buffer.seekg(file_signature<T>().get_length());
+    {
+      buffer.seekg(0);
+      check_file_signature<T>(buffer, "");
+    }
   edabitvec<T> eb;
   eb.input(n_bits, buffer);
   this->edabits[{strict, n_bits}].push_back(eb);
@@ -329,10 +353,10 @@ void Sub_Data_Files<T>::buffer_edabits_with_queues(bool strict, int n_bits,
 }
 
 template<class T>
-Preprocessing<typename T::part_type>& Sub_Data_Files<T>::get_part()
+typename Sub_Data_Files<T>::part_type& Sub_Data_Files<T>::get_part()
 {
   if (part == 0)
-    part = new Sub_Data_Files<typename T::part_type>(my_num, num_players,
+    part = new part_type(my_num, num_players,
         get_prep_sub_dir<typename T::part_type>(num_players), this->usage,
         thread_num);
   return *part;

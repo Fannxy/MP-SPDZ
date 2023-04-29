@@ -72,7 +72,7 @@ void ShamirMC<T>::prepare(const vector<T>& S, const Player& P)
 }
 
 template<class T>
-void ShamirMC<T>::prepare_open(const T& share)
+void ShamirMC<T>::prepare_open(const T& share, int)
 {
     share.pack(os->mine);
 }
@@ -112,11 +112,11 @@ void ShamirMC<T>::finalize(vector<typename T::open_type>& values,
 {
     values.clear();
     for (size_t i = 0; i < S.size(); i++)
-        values.push_back(finalize_open());
+        values.push_back(finalize_raw());
 }
 
 template<class T>
-typename T::open_type ShamirMC<T>::finalize_open()
+typename T::open_type ShamirMC<T>::finalize_raw()
 {
     assert(reconstruction.size());
     typename T::open_type res;
@@ -125,6 +125,19 @@ typename T::open_type ShamirMC<T>::finalize_open()
         res +=
                 (*os)[player->get_player(j)].template get<typename T::open_type>()
                         * reconstruction[j];
+    }
+
+    return res;
+}
+
+template<class T>
+typename T::open_type ShamirMC<T>::reconstruct(const vector<open_type>& shares)
+{
+    assert(reconstruction.size());
+    typename T::open_type res;
+    for (size_t j = 0; j < reconstruction.size(); j++)
+    {
+        res += shares[j] * reconstruction[j];
     }
 
     return res;

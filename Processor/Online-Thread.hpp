@@ -100,6 +100,9 @@ void thread_info<sint, sgf2n>::Sub_Main_Func()
   processor = new Processor<sint, sgf2n>(tinfo->thread_num,P,*MC2,*MCp,machine,progs.at(thread_num > 0));
   auto& Proc = *processor;
 
+  // don't count communication for initialization
+  P.reset_stats();
+
   bool flag=true;
   int program=-3; 
   // int exec=0;
@@ -123,7 +126,8 @@ void thread_info<sint, sgf2n>::Sub_Main_Func()
       program = job.prognum;
       wait_timer.stop();
 #ifdef DEBUG_THREADS
-      printf("\tRunning program %d\n",program);
+      printf("\tRunning program %d/job %d in thread %d\n", program, job.type,
+          num);
 #endif
 
       if (program==-1)
@@ -205,6 +209,10 @@ void thread_info<sint, sgf2n>::Sub_Main_Func()
               *(vector<edabit<sint>>*) job.output, job.length, job.prognum,
               job.arg, Proc.Procp,
               job.begin, job.end, job.supply);
+#ifdef DEBUG_THREADS
+          printf("\tSignalling I have finished with job %d in thread %d\n",
+              job.type, num);
+#endif
           queues->finished(job);
         }
       else if (job.type == PERSONAL_TRIPLE_JOB)
@@ -265,6 +273,9 @@ void thread_info<sint, sgf2n>::Sub_Main_Func()
           // Execute the program
           progs[program].execute(Proc);
 
+          // make sure values used in other threads are safe
+          Proc.check();
+
           // prevent mangled output
           cout.flush();
 
@@ -276,16 +287,20 @@ void thread_info<sint, sgf2n>::Sub_Main_Func()
            }
 
 #ifdef DEBUG_THREADS
-          printf("\tSignalling I have finished\n");
+          printf("\tSignalling I have finished with program %d"
+              "in thread %d\n", program, num);
 #endif
           wait_timer.start();
-          queues->finished(job);
+          queues->finished(job, P.total_comm());
 	 wait_timer.stop();
        }  
     }
 
   // final check
   Proc.check();
+
+  if (machine.opts.file_prep_per_thread)
+    Proc.DataF.prune();
 
   wait_timer.start();
   queues->next();
@@ -314,16 +329,12 @@ void thread_info<sint, sgf2n>::Sub_Main_Func()
 #endif
 
   // wind down thread by thread
-  auto prep_stats = Proc.DataF.comm_stats();
-  prep_stats += Proc.share_thread.DataF.comm_stats();
-  prep_stats += Proc.Procp.bit_prep.comm_stats();
-  for (auto& x : Proc.Procp.personal_bit_preps)
-    prep_stats += x->comm_stats();
   machine.stats += Proc.stats;
+  // prevent faulty usage message
+  Proc.DataF.set_usage(actual_usage);
   delete processor;
 
-  machine.comm_stats += P.comm_stats + prep_stats;
-  queues->finished(actual_usage);
+  queues->finished(actual_usage, P.total_comm());
 
   delete MC2;
   delete MCp;
