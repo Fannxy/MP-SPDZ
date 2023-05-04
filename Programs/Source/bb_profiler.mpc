@@ -40,157 +40,56 @@ def create_arrays_get_last_one(n, type, version='quick'):
 
     return arr
         
-
-
+        
 def vector_test(a, b, func='add', debug=True):
     """Test the vector function.
     """
     c = Array(a.length, type(a[0]))
 
     if func == 'add':
-        try:
+        if(False):
             c = a + b
-        except:
+        else:
             if debug:
                 print_ln("vector addition failed")
-            @for_range_opt(a.length)
+            @for_range_parallel(a.length, a.length)
             def _(i):
                 c[i] = a[i] + b[i]
         return c
 
     if func == 'mul':
-        try:
+        if(False):
             c = a * b
-        except:
+        else:
             if debug:
                 print_ln("vector multiplication failed")
-            @for_range_opt(a.length)
+            @for_range_parallel(a.length, a.length)
             def _(i):
                 c[i] = a[i] * b[i]
         return c
 
     if func == 'gt':
-        try:
-            #    c = a > b
-            @for_range_opt(a.length)
-            def _(i):
-                c[i] = a[i] > b[i]
-        except:
-            if debug:
-                print_ln("vector greater-than failed")
-            @for_range_opt(a.length)
-            def _(i):
-                c[i] = a[i] > b[i]
+        @for_range_parallel(a.length, a.length)
+        def _(i):
+            c[i] = a[i] > b[i]
         return c
 
     if func == 'eq':
-        try:
-            @for_range_opt(a.length)
-            def _(i):
-                c[i] = a[i] == b[i]
-        except:
-            if debug:
-                print_ln("vector equal not vectored...")
-            @for_range_opt(a.length)
-            def _(i):
-                c[i] = a[i] == b[i]
-        return c
-    
-    if func == 'dot_product':
-        try:
-            c[0] = sfix.dot_product(a, b)
-        except:
-            if debug:
-                print_ln("sfix dot_product failed.")
-            print_ln("Error dot_product")
-        return c
-    
-    if func == 'normed_bits':
-        try:
-            @for_range_opt(a.length)
-            def _(i):
-                bb.normed_bits(a[i].v, a[i].k)
-        except:
-            if debug:
-                print_ln("sfix normed_bits failed.")
-            print_ln("Error normed_bits")
-        return c
-    
-    # if func == 'trunc':
-    #     try:
-    #         @for_range_opt(a.length)
-    #         def _(i):
-    #             a[i].round(a[i].k, a[i].f, a[i].kappa, sfix.round_nearest, signed=True)
-    #     except:
-    #         if debug:
-    #             print_ln("sfix trunc with f bits failed.")
-    #         print_ln("Error trunc")
-    #     return c
 
-    if func == 'trunc':
-        try:
-            @for_range_opt(a.length)
-            def _(i):
-                a[i].v.round(a[i].k, a[i].f, a[i].kappa, sfix.round_nearest, signed=True)
-        except:
-            if debug:
-                print_ln("trunc failed.")
-        
-        return c
-    
-    if func == 'extend':
-        try:
-            @for_range_opt(a.length)
-            def _(i):
-                a[i].v.extend(2*a[i].k)
-        except:
-            if debug:
-                print_ln("sfix extend to 2*k bits failed.")
-            print_ln("Error extend")
-        return c
-    
-    if func == 'bit_decompose':
-        try:
-            @for_range_opt(a.length)
-            def _(i):
-                v = a[i].v.bit_decompose(a[i].k)
-        except:
-            if debug:
-                print_ln("bit decompose error")
-        return c
-
-    if func == 'bit_compose':
-        # firstly decompose then compose, substract the time for decompose...
-        try:
-            @for_range_opt(a.length)
-            def _(i):
-                v = a[i].v.bit_decompose(a[i].k)
-                scaler = sint.bit_compose(v)
-        except:
-            if debug:
-                print_ln("sfix bit compose failed. REMEBER TO SUBSTRACT TIME FOR DECOMPOSE!!!")
-            print_ln("Error bit_compose")
-        return c
-    
-    if func == 'get_last_one':
-        try:
-            c = bb.get_last_one(a)
-        except:
-            if debug:
-                print_ln("sfix get_last_one failed.")
-            print_ln("Error get_last_one")
+        @for_range_parallel(a.length, a.length)
+        def _(i):
+            c[i] = a[i] == b[i]
         return c
     
     return c
-        
-
+    
 
 def test_basic_ops(n, repeats=1, func_list=None):
     """basic function test
     """
     # func_list = ['add', 'mul', 'gt', 'eq', 'dot_product', 'normed_bits', 'trunc', 'extend']
     if func_list is None:
-        func_list = ['add', 'mul', 'gt', 'eq', 'dot_product', 'normed_bits', 'trunc', 'extend', 'bit_decompose', 'bit_compose']
+        func_list = ['add', 'mul', 'gt', 'eq']
         
     type_list = ['sfix']
 
@@ -210,60 +109,36 @@ def test_basic_ops(n, repeats=1, func_list=None):
                     vector_test(a, b, func, debug=False)
                 stop_timer(1)
                 print_ln(">>> finish %s", func)
-    
-    # type get_last_one
-    # a = create_arrays_get_last_one(n, 'sfix')
-    # if repeats == 1:
-    #     vector_test(a, None, 'get_last_one')
-    #     print_ln("test get_last_one")
-    # else:
-    #     print_ln("data size: %s\nrepeats: %s", n, repeats)
-
-    #     start_timer(1)
-    #     @for_range(repeats)
-    #     def _(i):
-    #         vector_test(a, None, 'get_last_one', debug=False)
-    #     stop_timer(1)
-    #     print_ln(">>> finish %s", "get_last_one")
 
 
-sfix.set_precision(48, 128)
-if str(program.args[1]) == "ring":
+data_field=str(program.args[1])
+func = str(program.args[2])
+n = int(program.args[3])
+repeats = int(program.args[4])
+data_type = str(program.args[5])
+
+# optimization settings
+sfix.set_precision(32, 74)
+if data_field == "ring" and func == "mul":
     program.use_trunc_pr = True
     program.use_split(3)
     print("compiled for ring")
-elif  str(program.args[1]) == "field" :
+elif data_field == "field":
     program.use_edabit(True)
     print("compiled for field")
 else:
     print("other cases.")
+    
+print("n >>> ", n)
 
-
-# TEST_STEP = 2 # TEST FOR [1, 2, 3, 4]
-# test_len = [0, 50, 100, 150, 200]
-# p = test_len[TEST_STEP - 1]
-# q = test_len[TEST_STEP]
-# sfix.set_precision(16, 64)
-# n_list = [10*i for i in range(1, 200)]
-# repeats = [200]*50
-# repeats.extend([50]*50)
-# repeats.extend([30]*100)
-
-func_list = ['mul', 'gt']
-# test_basic_ops(1000, repeats=10, func_list=func_list)
-
-a = create_random_array(1000, 'sfix')
-b = create_random_array(1000, 'sfix')
+print_ln("n = %s", str(n))
+a = create_random_array(n, data_type)
+b = create_random_array(n, data_type)
 
 start_timer(1)
-@for_range(10)
+@for_range(repeats)
 def _(i):
-    c = a * b
+    vector_test(a, b, func, debug=False)
 stop_timer(1)
+print_ln(">>> finish %s", func)
 
-start_timer(1)
-@for_range(10)
-def _(i):
-    for j in range(1000):
-        a[j] > b[j]
-stop_timer(1)
