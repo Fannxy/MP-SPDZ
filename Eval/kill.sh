@@ -11,5 +11,11 @@ pids=$(ps aux | grep "$keyword" | awk '{print $2}')
   
 # 杀死所有找到的进程  
 for pid in $pids; do  
-    kill -9 $pid  
+    kill -9 $pid
 done 
+
+if [ -n "$2" ]; then
+    echo "kill for spdz1 and spdz2";
+    ssh spdz1 "sh ./MP-SPDZ/Eval/kill.sh "${keyword};
+    ssh spdz2 "sh ./MP-SPDZ/Eval/kill.sh "${keyword};
+fi

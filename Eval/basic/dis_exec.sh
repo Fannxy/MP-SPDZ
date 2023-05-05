@@ -4,6 +4,16 @@ logFolder=$3
 logFile=$4
 party=$5
 
+if [ -z "$6" ]; then
+    batch_size=-1;
+else
+    # echo ">>>>>>>>>>> batch-size: "$6 >> ${logFile}
+    batch_size=$6;
+    # batch_size=$(( $6 * $6 ));
+    # batch_size=100000;
+    echo ">>>>>>>>>>> batch-size: "$batch_size >> ${logFile}
+fi
+
 logTmp=${logFolder}tmp.txt
 
 if [ ! -d ${logFolder} ]; then
@@ -12,13 +22,13 @@ fi
 wait;
 
 if [ ${party} == 0 ]; then
-    echo -e "\n\nTest $3 using protocol $2 \n" >> ${logFile}
+    echo -e "\n\nTest $1 using protocol $2 \n" >> ${logFile}
 fi
 
 if [ ${party} == 0 ]; then
-    ${protocol} -p ${party} ${sourceFile} --ip-file-name HOST >> ${logFile}
-    else
-    ${protocol} -p ${party} ${sourceFile} --ip-file-name HOST >> ${logTmp};
+    ./${protocol} -p ${party} ${task} --ip-file-name HOST --batch-size ${batch_size} >> ${logFile} 2>&1;
+else
+    ./${protocol} -p ${party} ${task} --ip-file-name HOST --batch-size ${batch_size} >> ${logTmp};
 fi
 wait;
 

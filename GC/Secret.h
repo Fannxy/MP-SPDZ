@@ -181,7 +181,7 @@ public:
 };
 
 template <class T>
-int Secret<T>::default_length = 64;
+int Secret<T>::default_length = 128;
 
 template <class T>
 inline ostream& operator<<(ostream& o, Secret<T>& secret)
