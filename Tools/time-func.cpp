@@ -37,7 +37,7 @@ long long timespec_diff(const struct timespec *start_time, const struct timespec
 
 double convert_ns_to_seconds(long long x)
 {
-  return double(x) / 1e6;
+  return double(x) / 1e9;
 }
 
 
