@@ -149,7 +149,7 @@ void BaseMachine::print_timers()
   cerr << "Time = " << timer[0].elapsed() << " seconds " << endl;
   timer.erase(0);
   for (auto it = timer.begin(); it != timer.end(); it++)
-    cerr << "Time" << it->first << " = " << it->second.elapsed() << " ms ("
+    cerr << "Time" << it->first << " = " << it->second.elapsed()*1000 << " ms ("
         << it->second.mb_sent() << " MB)" << endl;
 }
 
