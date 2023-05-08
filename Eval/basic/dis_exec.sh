@@ -9,6 +9,7 @@ if [ -z "$6" ]; then
 else
     # echo ">>>>>>>>>>> batch-size: "$6 >> ${logFile}
     batch_size=$6;
+    batch_size=$((batch_size*100))
     # batch_size=$(( $6 * $6 ));
     # batch_size=100000;
     echo ">>>>>>>>>>> batch-size: "$batch_size >> ${logFile}
@@ -22,7 +23,7 @@ fi
 wait;
 
 if [ ${party} == 0 ]; then
-    echo -e "\n\nTest $1 using protocol $2 \n" >> ${logFile}
+    echo -e "Test $1 using protocol $2" >> ${logFile}
 fi
 
 if [ ${party} == 0 ]; then

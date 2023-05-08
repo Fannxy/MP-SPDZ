@@ -128,17 +128,12 @@ elif data_field == "field":
     print("compiled for field")
 else:
     print("other cases.")
-    
-print("n >>> ", n)
 
 print_ln("n = %s", str(n))
 a = create_random_array(n, data_type)
 b = create_random_array(n, data_type)
-
 start_timer(1)
-@for_range(repeats)
-def _(i):
-    vector_test(a, b, func, debug=False)
+vector_test(a, b, func, debug=False)
 stop_timer(1)
 print_ln(">>> finish %s", func)
 
