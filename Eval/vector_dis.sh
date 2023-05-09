@@ -84,7 +84,7 @@ for data_type in ${data_type_list[*]}; do
         for (( i=0; i<${#n_list[@]}; i++ )); do
             n=${n_list[$i]}
             repeat=${repeats_list[$i]}
-            ./Eval/basic/dis_exec.sh ${sourceFile}-ring-${task}-${n}-${repeat}-${data_type} replicated-ring-party.x ${logFolder} ${logFile}-${task}-${data_type} 0 ${n} &
+            ssh spdz00 "cd ./MP-SPDZ/; ./Eval/basic/dis_exec.sh ${sourceFile}-ring-${task}-${n}-${repeat}-${data_type} replicated-ring-party.x ${logFolder} ${logFile}-${task}-${data_type} 0 ${n}" &
             ssh spdz1 "cd ./MP-SPDZ/; ./Eval/basic/dis_exec.sh ${sourceFile}-ring-${task}-${n}-${repeat}-${data_type} replicated-ring-party.x ${logFolder} ${logFile}-${task}-${data_type} 1 ${n}" &
             ssh spdz2 "cd ./MP-SPDZ/; ./Eval/basic/dis_exec.sh ${sourceFile}-ring-${task}-${n}-${repeat}-${data_type} replicated-ring-party.x ${logFolder} ${logFile}-${task}-${data_type} 2 ${n}" &
             wait;
