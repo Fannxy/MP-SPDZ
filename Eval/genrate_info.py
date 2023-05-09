@@ -2,9 +2,14 @@ import numpy as np
 
 if __name__ == '__main__':
     num = 50
+    # start = 2**2
     n_list = (10**np.linspace(1, 7, num)).astype("int").tolist()
+    # n_list = [start]
+    # for i in range(num-1):
+    #     start *= 2
+    #     n_list.append(start)
+        
     repeats = []
-    
     for n in n_list:
         repeats.append(int(np.ceil(1000 / n)))
     

@@ -41,42 +41,31 @@ def create_arrays_get_last_one(n, type, version='quick'):
     return arr
         
         
-def vector_test(a, b, func='add', debug=True):
+def vector_test(a, b, c, func='add', debug=True):
     """Test the vector function.
     """
-    c = Array(a.length, type(a[0]))
 
     if func == 'add':
-        if(False):
-            c = a + b
-        else:
-            if debug:
-                print_ln("vector addition failed")
-            @for_range_parallel(a.length, a.length)
-            def _(i):
-                c[i] = a[i] + b[i]
+        @for_range_parallel(int(10**5), a.length)
+        def _(i):
+            c[i] = a[i] + b[i]
         return c
 
     if func == 'mul':
-        if(False):
-            c = a * b
-        else:
-            if debug:
-                print_ln("vector multiplication failed")
-            @for_range_parallel(a.length, a.length)
-            def _(i):
-                c[i] = a[i] * b[i]
+        @for_range_parallel(int(10**5), a.length)
+        def _(i):
+            c[i] = a[i] * b[i]
         return c
 
     if func == 'gt':
-        @for_range_parallel(a.length, a.length)
+        @for_range_parallel(int(10**5), a.length)
         def _(i):
             c[i] = a[i] > b[i]
         return c
 
     if func == 'eq':
 
-        @for_range_parallel(a.length, a.length)
+        @for_range_parallel(int(10**5), a.length)
         def _(i):
             c[i] = a[i] == b[i]
         return c
@@ -117,6 +106,9 @@ n = int(program.args[3])
 repeats = int(program.args[4])
 data_type = str(program.args[5])
 
+print("parameters: data_field - %s | func - %s | n - %s | repeats - %s | data_type - %s"%(str(program.args[1]), str(program.args[2]), str(program.args[3]), str(program.args[4]), str(program.args[5])))
+
+
 # optimization settings
 sfix.set_precision(32, 74)
 if data_field == "ring" and func == "mul":
@@ -129,11 +121,17 @@ elif data_field == "field":
 else:
     print("other cases.")
 
-print_ln("n = %s", str(n))
+print_ln("n = %s | repeats = %s", str(n), str(repeats))
 a = create_random_array(n, data_type)
 b = create_random_array(n, data_type)
+c = Array(n, eval(data_type))
+
 start_timer(1)
-vector_test(a, b, func, debug=False)
+
+@for_range(repeats)
+def _(i):
+    vector_test(a, b, c, func, debug=False)
+
 stop_timer(1)
 print_ln(">>> finish %s", func)
 

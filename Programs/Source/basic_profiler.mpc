@@ -1,0 +1,23 @@
+import random
+
+def vector_gt(a, b, c):
+    @for_range_parallel(a.length, a.length)
+    def _(i):
+        c[i] = a[i] > b[i]
+    return c
+    
+
+n = int(program.args[1])
+list_a = [sfix(random.randint(0, 5)) for _ in range(n)]
+list_b = [sfix(random.randint(0, 5)) for _ in range(n)]
+# test gt
+a = Array.create_from(list_a)
+b = Array.create_from(list_b)
+c = Array(n, sfix)
+
+start_timer(1)
+@for_range(100)
+def _(i):
+    vector_gt(a, b, c)
+stop_timer(1)
+
