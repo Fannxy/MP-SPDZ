@@ -37,11 +37,15 @@ void SemiPrep::set_protocol(SemiSecret::Protocol& protocol)
             protocol.P.N, -1, OnlineOptions::singleton.batch_size,
             1, params, {}, &protocol.P);
     triple_generator->multi_threaded = false;
+    this->P = &protocol.P;
 }
 
 void SemiPrep::buffer_triples()
 {
     assert(this->triple_generator);
+    this->triple_generator->set_batch_size(
+            DIV_CEIL(BaseMachine::batch_size<SemiSecret>(DATA_TRIPLE,
+                        this->buffer_size), 64));
     this->triple_generator->generatePlainTriples();
     for (auto& x : this->triple_generator->plainTriples)
     {

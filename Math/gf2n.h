@@ -17,6 +17,7 @@ class gf2n_short;
 class P2Data;
 class Bit;
 class int128;
+template<class T> class IntBase;
 template<class T> class Square;
 typedef Square<gf2n_short> gf2n_short_square;
 
@@ -88,6 +89,8 @@ protected:
 
   static string options();
 
+  static string fake_opts() { return " -lg2 " + to_string(length()); }
+
   static const true_type invertible;
   static const true_type characteristic_two;
 
@@ -135,7 +138,7 @@ protected:
     { a=x.a^y.a; }  
   void add(octet* x)
     { a^=*(U*)(x); }
-  void add(octetStream& os)
+  void add(octetStream& os, int = -1)
     { add(os.consume(size())); }
   void sub(const gf2n_& x,const gf2n_& y)
     { a=x.a^y.a; }

@@ -78,7 +78,7 @@ void BufferBase::try_rewind()
     if (file->peek() == ifstream::traits_type::eof())
         throw runtime_error("empty file: " + filename);
     if (!rewind)
-        cerr << "REWINDING - ONLY FOR BENCHMARKING" << endl;
+        cerr << "REUSING DATA - ONLY FOR BENCHMARKING" << endl;
     rewind = true;
     eof = true;
 }
@@ -103,6 +103,7 @@ void BufferBase::prune()
         string tmp_name = filename + ".new";
         ofstream tmp(tmp_name.c_str());
         size_t start = file->tellg();
+        start -= element_length() * (BUFFER_SIZE - next);
         char buf[header_length];
         file->seekg(0);
         file->read(buf, header_length);

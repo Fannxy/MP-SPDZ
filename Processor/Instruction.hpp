@@ -208,6 +208,10 @@ void BaseInstruction::parse_operands(istream& s, int pos, int file_pos)
         get_ints(r, s, 2);
         n = get_int(s);
         break;
+      case PICKS:
+        get_ints(r, s, 3);
+        n = get_int(s);
+        break;
       case USE:
       case USE_INP:
       case USE_EDABIT:
@@ -311,6 +315,7 @@ void BaseInstruction::parse_operands(istream& s, int pos, int file_pos)
       case PRIVATEOUTPUT:
       case TRUNC_PR:
       case RUN_TAPE:
+      case CONV2DS:
         num_var_args = get_int(s);
         get_vector(num_var_args, start, s);
         break;
@@ -321,10 +326,6 @@ void BaseInstruction::parse_operands(istream& s, int pos, int file_pos)
       case MATMULSM:
         get_ints(r, s, 3);
         get_vector(9, start, s);
-        break;
-      case CONV2DS:
-        get_ints(r, s, 3);
-        get_vector(12, start, s);
         break;
 
       // read from file, input is opcode num_args, 
@@ -395,6 +396,7 @@ void BaseInstruction::parse_operands(istream& s, int pos, int file_pos)
       case EDABIT:
       case SEDABIT:
       case WRITEFILESHARE:
+      case CONCATS:
           num_var_args = get_int(s) - 1;
           r[0] = get_int(s);
           get_vector(num_var_args, start, s);
@@ -424,6 +426,10 @@ void BaseInstruction::parse_operands(istream& s, int pos, int file_pos)
             ss << "Tape requires prime of bit length " << n << endl;
             throw Processor_Error(ss.str());
           }
+        break;
+      case ACTIVE:
+        n = get_int(s);
+        BaseMachine::s().active(n);
         break;
       case XORM:
       case ANDM:
@@ -720,7 +726,16 @@ unsigned BaseInstruction::get_max_reg(int reg_type) const
   case MATMULSM:
       return r[0] + start[0] * start[2];
   case CONV2DS:
-      return r[0] + start[0] * start[1] * start[11];
+  {
+      unsigned res = 0;
+      for (size_t i = 0; i < start.size(); i += 15)
+      {
+          unsigned tmp = start[i]
+                               + start[i + 3] * start[i + 4] * start.at(i + 14);
+          res = max(res, tmp);
+      }
+      return res;
+  }
   case OPEN:
       skip = 2;
       break;
@@ -920,6 +935,20 @@ inline void Instruction::execute(Processor<sint, sgf2n>& Proc) const
       case MOVC:
         Proc.write_Cp(r[0],Proc.read_Cp(r[1]));
         break;
+      case CONCATS:
+        {
+          auto& S = Proc.Procp.get_S();
+          auto dest = S.begin() + r[0];
+          for (auto j = start.begin(); j < start.end(); j += 2)
+            {
+              auto source = S.begin() + *(j + 1);
+              assert(dest + *j <= S.end());
+              assert(source + *j <= S.end());
+              for (int k = 0; k < *j; k++)
+                *dest++ = *source++;
+            }
+          return;
+        }
       case DIVC:
         Proc.write_Cp(r[0], Proc.read_Cp(r[1]) / sanitize(Proc.Procp, r[2]));
         break;
@@ -1164,6 +1193,7 @@ inline void Instruction::execute(Processor<sint, sgf2n>& Proc) const
         break;
       case REQBL:
       case GREQBL:
+      case ACTIVE:
       case USE:
       case USE_INP:
       case USE_EDABIT:

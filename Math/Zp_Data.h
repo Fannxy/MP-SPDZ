@@ -38,6 +38,8 @@ class Zp_Data
   int         t;           // More Montgomery data
   mp_limb_t   overhang;
   Lock        lock;
+  mutable bigint shanks_y, shanks_q_half;
+  mutable int    shanks_r;
 
   template <int T>
   void Mont_Mult_(mp_limb_t* z,const mp_limb_t* x,const mp_limb_t* y) const;
@@ -45,7 +47,7 @@ class Zp_Data
   void Mont_Mult_switch(mp_limb_t* z,const mp_limb_t* x,const mp_limb_t* y) const;
   void Mont_Mult(mp_limb_t* z,const mp_limb_t* x,const mp_limb_t* y, int t) const;
   void Mont_Mult_variable(mp_limb_t* z,const mp_limb_t* x,const mp_limb_t* y) const
-  { Mont_Mult(z, x, y, t); }
+  { Mont_Mult(z, x, y, get_t()); }
   void Mont_Mult_max(mp_limb_t* z, const mp_limb_t* x, const mp_limb_t* y,
       int max_t) const;
 
@@ -59,7 +61,7 @@ class Zp_Data
 
   void assign(const Zp_Data& Zp);
   void init(const bigint& p,bool mont=true);
-  int get_t() const { return t; }
+  int get_t() const { assert(t > 0); return t; }
   const mp_limb_t* get_prA() const { return prA; }
   bool get_mont() const { return montgomery; }
   mp_limb_t overhang_mask() const;
@@ -71,8 +73,9 @@ class Zp_Data
   Zp_Data() :
       montgomery(0), pi(0), mask(0), pr_byte_length(0), pr_bit_length(0)
   {
-    t = MAX_MOD_SZ;
+    t = -1;
     overhang = 0;
+    shanks_r = 0;
   }
 
   // The main init funciton
@@ -88,6 +91,8 @@ class Zp_Data
 
   bool operator!=(const Zp_Data& other) const;
   bool operator==(const Zp_Data& other) const;
+
+  void get_shanks_parameters(bigint& y, bigint& q_half, int& r) const;
 
    template<int L> friend void to_modp(modp_<L>& ans,int x,const Zp_Data& ZpD);
    template<int L> friend void to_modp(modp_<L>& ans,const mpz_class& x,const Zp_Data& ZpD);

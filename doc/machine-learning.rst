@@ -237,7 +237,8 @@ of linear regression.
 PyTorch interface
 =================
 
-MP-SPDZ supports importing sequential models from PyTorch as shown in
+MP-SPDZ supports importing sequential models from PyTorch using
+:py:func:`~Compiler.ml.layers_from_torch` as shown in
 this code snippet in ``torch_mnist_dense.mpc``::
 
   import torch.nn as nn
@@ -309,6 +310,9 @@ and then trains it::
     batch_size=128,
     validation_data=(test_samples, test_labels)
   )
+
+See ``Programs/Source/keras_*.mpc`` for further examples using the
+Keras interface.
 
 
 Decision trees
@@ -436,7 +440,11 @@ and used in MP-SPDZ::
   n_correct, loss = optimizer.reveal_correctness(test_samples, test_labels, 128, running=True)
   print_ln('Secure accuracy: %s/%s', n_correct, len(test_samples))
 
-This outputs the accuracy of the network.
+This outputs the accuracy of the network. You can use
+:py:func:`~Compiler.ml.Optimizer.eval` instead of
+:py:func:`~Compiler.ml.Optimizer.reveal_correctness` to retrieve
+probability distributions or top guessess (the latter with ``top=True``)
+for any sample data.
 
 
 Storing and loading models

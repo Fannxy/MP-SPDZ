@@ -6,8 +6,8 @@ Troubleshooting
 This section shows how to solve some common issues.
 
 
-Crash without error message or ``bad_alloc``
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Crash without error message, ``Killed``, or ``bad_alloc``
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Some protocols require several gigabytes of memory, and the virtual
 machine will crash if there is not enough RAM. You can reduce the
@@ -45,6 +45,45 @@ resulting in potentially too much virtual machine code. Consider using
 version.
 
 
+Cannot derive truth value from register
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+This message appears when you try to use branching on run-time data
+types, for example::
+
+  x = cint(0)
+  y = 0
+  if x == 0:
+    y = 1
+    print_ln('x is zero')
+
+There a number of ways to solve this:
+
+1. Use the ``--flow-optimization`` argument during compilation.
+2. Use run-time branching::
+
+     x = cint(0)
+     y = cint(0)
+     @if_(x == 0)
+     def _():
+       y.update(1)
+       print_ln('x is zero')
+
+   See :py:func:`~Compiler.library.if_e` for the equivalent to
+   if/else.
+3. Use conditional statements::
+
+     check = x == 0
+     y = check.if_else(1, y)
+     print_ln_if(check, 'x is zero')
+
+If the condition is secret, for example, :py:obj:`x` is an
+:py:class:`~Compiler.types.sint` and thus ``x == 0`` is secret too,
+:py:func:`~Compiler.types.sint.if_else` is the only option because
+branching would reveal the secret. For the same reason,
+:py:func:`~Compiler.library.print_ln_if` doesn't work on secret values.
+
+
 Incorrect results when using :py:class:`~Compiler.types.sfix`
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -55,14 +94,26 @@ introduction and :py:func:`~Compiler.types.sfix.set_precision` for how
 to change the precision.
 
 
+Variable results when using :py:class:`~Compiler.types.sfix`
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+This is caused the usage of probablistic rounding, which is used to
+restore the representation after a multiplication. See `Catrina and Saxena
+<https://www.ifca.ai/pub/fc10/31_47.pdf>`_ for details. You can switch
+to deterministic rounding by calling ``sfix.round_nearest = True``.
+
+
 Order of memory instructions not preserved
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 By default, the compiler runs optimizations that in some corner case
 can introduce errors with memory accesses such as accessing an
-:py:class:`~Compiler.types.Array`. If you encounter such errors, you
-can fix this either  with ``-M`` when compiling or placing
-`break_point()` around memory accesses.
+:py:class:`~Compiler.types.Array`. The error message does not
+necessarily mean there will be errors, but the compiler cannot
+guarantee that there will not. If you encounter such errors, you
+can fix this either with ``-M`` when compiling or enable memory
+protection (:py:func:`~Compiler.program.Program.protect_memory`)
+around specific memory accesses.
 
 
 Odd timings
@@ -164,7 +215,8 @@ Required prime bit length is not the same as ``-F`` parameter during compilation
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 This is related to statistical masking that requires the prime to be a
-fair bit larger than the actual "payload". The technique goes to back
+fair bit larger than the actual "payload" (40 by default).
+The technique goes to back
 to `Catrina and de Hoogh
 <https://www.researchgate.net/profile/Sebastiaan-Hoogh/publication/225092133_Improved_Primitives_for_Secure_Multiparty_Integer_Computation/links/0c960533585ad99868000000/Improved-Primitives-for-Secure-Multiparty-Integer-Computation.pdf>`_.
 See also the paragraph on unknown prime moduli in :ref:`nonlinear`.

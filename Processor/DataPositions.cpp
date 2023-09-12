@@ -222,9 +222,16 @@ bool DataPositions::any_more(const DataPositions& other) const
   for (auto it = edabits.begin(); it != edabits.end(); it++)
     {
       auto x = other.edabits.find(it->first);
-      if (x == other.edabits.end() or it->second > x->second)
+      if ((x == other.edabits.end() or it->second > x->second)
+          and it->second > 0)
         return true;
     }
 
   return false;
+}
+
+long long DataPositions::total_edabits(int n_bits) const
+{
+  auto usage = edabits;
+  return usage[{false, n_bits}] + usage[{true, n_bits}];
 }

@@ -43,7 +43,9 @@ void thread_info<sint, sgf2n>::Sub_Main_Func()
   BaseMachine::s().thread_num = num;
 
   auto& queues = machine.queues[num];
+  auto& opts = machine.opts;
   queues->next();
+  ThreadQueue::thread_queue = queues;
 
 #ifdef DEBUG_THREADS
   fprintf(stderr, "\tI am in thread %d\n",num);
@@ -57,7 +59,7 @@ void thread_info<sint, sgf2n>::Sub_Main_Func()
 #endif
       player = new CryptoPlayer(*(tinfo->Nms), id);
     }
-  else if (!machine.receive_threads or machine.direct)
+  else if (!opts.receive_threads or opts.direct)
     {
 #ifdef VERBOSE_OPTIONS
       cerr << "Using single-threaded receiving" << endl;
@@ -79,7 +81,7 @@ void thread_info<sint, sgf2n>::Sub_Main_Func()
   typename sgf2n::MAC_Check* MC2;
   typename sint::MAC_Check*  MCp;
 
-  if (machine.direct)
+  if (opts.direct)
     {
 #ifdef VERBOSE_OPTIONS
       cerr << "Using direct communication." << endl;
@@ -92,8 +94,8 @@ void thread_info<sint, sgf2n>::Sub_Main_Func()
 #ifdef VERBOSE_OPTIONS
       cerr << "Using indirect communication." << endl;
 #endif
-      MC2 = new typename sgf2n::MAC_Check(*(tinfo->alpha2i), machine.opening_sum, machine.max_broadcast);
-      MCp = new typename sint::MAC_Check(*(tinfo->alphapi), machine.opening_sum, machine.max_broadcast);
+      MC2 = new typename sgf2n::MAC_Check(*(tinfo->alpha2i), opts.opening_sum, opts.max_broadcast);
+      MCp = new typename sint::MAC_Check(*(tinfo->alphapi), opts.opening_sum, opts.max_broadcast);
     }
 
   // Allocate memory for first program before starting the clock
@@ -118,6 +120,8 @@ void thread_info<sint, sgf2n>::Sub_Main_Func()
   DataPositions actual_usage(P.num_players());
   Timer thread_timer(CLOCK_THREAD_CPUTIME_ID), wait_timer;
   thread_timer.start();
+  TimerWithComm timer, online_timer, online_prep_timer;
+  timer.start();
 
   while (flag)
     { // Wait until I have a program to run
@@ -262,6 +266,8 @@ void thread_info<sint, sgf2n>::Sub_Main_Func()
 #ifdef DEBUG_THREADS
           printf("\tClient %d about to run %d\n",num,program);
 #endif
+          online_timer.start(P.total_comm());
+          online_prep_timer -= Proc.DataF.total_time();
           Proc.reset(progs[program], job.arg);
 
           // Bits, Triples, Squares, and Inverses skipping
@@ -290,6 +296,8 @@ void thread_info<sint, sgf2n>::Sub_Main_Func()
           printf("\tSignalling I have finished with program %d"
               "in thread %d\n", program, num);
 #endif
+          online_timer.stop(P.total_comm());
+          online_prep_timer += Proc.DataF.total_time();
           wait_timer.start();
           queues->finished(job, P.total_comm());
 	 wait_timer.stop();
@@ -297,7 +305,11 @@ void thread_info<sint, sgf2n>::Sub_Main_Func()
     }
 
   // final check
+  online_timer.start(P.total_comm());
+  online_prep_timer -= Proc.DataF.total_time();
   Proc.check();
+  online_timer.stop(P.total_comm());
+  online_prep_timer += Proc.DataF.total_time();
 
   if (machine.opts.file_prep_per_thread)
     Proc.DataF.prune();
@@ -330,6 +342,11 @@ void thread_info<sint, sgf2n>::Sub_Main_Func()
 
   // wind down thread by thread
   machine.stats += Proc.stats;
+  queues->timers["wait"] = wait_timer + queues->wait_timer;
+  timer.stop(P.total_comm());
+  queues->timers["online"] = online_timer - online_prep_timer - queues->wait_timer;
+  queues->timers["prep"] = timer - queues->timers["wait"] - queues->timers["online"];
+
   // prevent faulty usage message
   Proc.DataF.set_usage(actual_usage);
   delete processor;
@@ -360,6 +377,10 @@ void* thread_info<sint, sgf2n>::Main_Func(void* ptr)
     {
       ti.Sub_Main_Func();
     }
+    catch (setup_error&)
+    {
+      throw;
+    }
     catch (...)
     {
       thread_info<sint, sgf2n>* ti = (thread_info<sint, sgf2n>*)ptr;
@@ -377,16 +398,20 @@ void thread_info<sint, sgf2n>::purge_preprocessing(const Names& N, int thread_nu
   cerr << "Purging preprocessed data because something is wrong" << endl;
   try
   {
-      Data_Files<sint, sgf2n> df(N);
+      Data_Files<sint, sgf2n> df(N, thread_num);
       df.purge();
       DataPositions pos;
       Sub_Data_Files<typename sint::bit_type> bit_df(N, pos, thread_num);
       bit_df.get_part();
       bit_df.purge();
   }
-  catch(...)
+  catch(setup_error&)
+  {
+  }
+  catch(exception& e)
   {
       cerr << "Purging failed. This might be because preprocessed data is incomplete." << endl
           << "SECURITY FAILURE; YOU ARE ON YOUR OWN NOW!" << endl;
+      cerr << "Reason: " << e.what() << endl;
   }
 }

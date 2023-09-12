@@ -55,8 +55,6 @@ template<class sint, class sgf2n>
 Machine<sint, sgf2n>::Machine(Names& playerNames, bool use_encryption,
     const OnlineOptions opts, int lg2)
   : my_number(playerNames.my_num()), N(playerNames),
-    direct(opts.direct), opening_sum(opts.opening_sum),
-    receive_threads(opts.receive_threads), max_broadcast(opts.max_broadcast),
     use_encryption(use_encryption), live_prep(opts.live_prep), opts(opts),
     external_clients(my_number)
 {
@@ -69,13 +67,9 @@ Machine<sint, sgf2n>::Machine(Names& playerNames, bool use_encryption,
       exit(1);
     }
 
-  if (opening_sum < 2)
-    this->opening_sum = N.num_players();
-  if (max_broadcast < 2)
-    this->max_broadcast = N.num_players();
-
-  // Set up the fields
-  sint::clear::read_or_generate_setup(prep_dir_prefix<sint>(), opts);
+  // Set the prime modulus from command line or program if applicable
+  if (opts.prime)
+    sint::clear::init_field(opts.prime);
 
   init_binary_domains(opts.security_parameter, lg2);
 
@@ -93,11 +87,25 @@ Machine<sint, sgf2n>::Machine(Names& playerNames, bool use_encryption,
       sint::LivePrep::basic_setup(*P);
     }
 
+  // Set the prime modulus if not done earlier
+  if (not sint::clear::length())
+    sint::clear::read_or_generate_setup(prep_dir_prefix<sint>(), opts);
+
   sint::MAC_Check::setup(*P);
   sint::bit_type::MAC_Check::setup(*P);
   sgf2n::MAC_Check::setup(*P);
 
-  alphapi = read_generate_write_mac_key<sint>(*P);
+  if (opts.live_prep)
+    alphapi = read_generate_write_mac_key<sint>(*P);
+  else
+    {
+      // check for directory
+      Sub_Data_Files<sint>::check_setup(N);
+      // require existing MAC key
+      if (sint::has_mac)
+        read_mac_key<sint>(N, alphapi);
+    }
+
   alpha2i = read_generate_write_mac_key<sgf2n>(*P);
   alphabi = read_generate_write_mac_key<typename
       sint::bit_type::part_type>(*P);
@@ -415,6 +423,9 @@ pair<DataPositions, NamedCommStats> Machine<sint, sgf2n>::stop_threads()
 
   auto comm_stats = total_comm();
 
+  if (OnlineOptions::singleton.verbose)
+    queues.print_breakdown();
+
   for (auto& queue : queues)
     delete queue;
 
@@ -443,6 +454,7 @@ void Machine<sint, sgf2n>::run(const string& progname)
   finish_timer.start();
 
   // actual usage
+  bool multithread = nthreads > 1;
   auto res = stop_threads();
   DataPositions& pos = res.first;
 
@@ -477,26 +489,16 @@ void Machine<sint, sgf2n>::run(const string& progname)
       cerr << "Communication details "
           "(rounds in parallel threads counted double):" << endl;
       comm_stats.print();
-      cerr << "CPU time = " <<  proc_timer.elapsed() << endl;
+      cerr << "CPU time = " <<  proc_timer.elapsed();
+      if (multithread)
+        cerr << " (overall core time)";
+      cerr << endl;
     }
 
   print_timers();
 
   if (sint::is_real)
-  {
-      size_t rounds = 0;
-      for (auto& x : comm_stats)
-          rounds += x.second.rounds;
-      cerr << "Data sent = " << comm_stats.sent / 1e6 << " MB in ~" << rounds
-              << " rounds (party " << my_number;
-      if (threads.size() > 1)
-          cerr << "; rounds counted double due to multi-threading";
-      cerr << "; use '-v' for more details";
-      cerr << ")" << endl;
-
-      auto& P = *this->P;
-      this->print_global_comm(P, comm_stats);
-  }
+    this->print_comm(*this->P, comm_stats);
 
 #ifdef VERBOSE_OPTIONS
   if (opening_sum < N.num_players() && !direct)
@@ -526,23 +528,6 @@ void Machine<sint, sgf2n>::run(const string& progname)
   outf.close();
 
   bit_memories.write_memory(N.my_num());
-
-#ifdef OLD_USAGE
-  for (int dtype = 0; dtype < N_DTYPE; dtype++)
-    {
-      cerr << "Num " << DataPositions::dtype_names[dtype] << "\t=";
-      for (int field_type = 0; field_type < N_DATA_FIELD_TYPE; field_type++)
-        cerr << " " << pos.files[field_type][dtype];
-      cerr << endl;
-   }
-  for (int field_type = 0; field_type < N_DATA_FIELD_TYPE; field_type++)
-    {
-      cerr << "Num " << DataPositions::field_names[field_type] << " Inputs\t=";
-      for (int i = 0; i < N.num_players(); i++)
-        cerr << " " << pos.inputs[i][field_type];
-      cerr << endl;
-    }
-#endif
 
   if (opts.verbose)
     {
@@ -593,6 +578,17 @@ void Machine<sint, sgf2n>::reqbl(int n)
 }
 
 template<class sint, class sgf2n>
+void Machine<sint, sgf2n>::active(int n)
+{
+
+  if (sint::malicious and n == 0)
+    {
+      cerr << "Program requires a semi-honest protocol" << endl;
+      exit(1);
+    }
+}
+
+template<class sint, class sgf2n>
 void Machine<sint, sgf2n>::suggest_optimizations()
 {
   string optimizations;
@@ -605,8 +601,8 @@ void Machine<sint, sgf2n>::suggest_optimizations()
     optimizations.append("\tprogram.use_edabit(True)\n");
   if (not optimizations.empty())
     cerr << "This program might benefit from some protocol options." << endl
-        << "Consider adding the following at the beginning of '" << progname
-        << ".mpc':" << endl << optimizations;
+        << "Consider adding the following at the beginning of your code:"
+        << endl << optimizations;
 #ifndef __clang__
   cerr << "This virtual machine was compiled with GCC. Recompile with "
       "'CXX = clang++' in 'CONFIG.mine' for optimal performance." << endl;

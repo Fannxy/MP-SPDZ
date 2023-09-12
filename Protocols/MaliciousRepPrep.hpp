@@ -76,7 +76,8 @@ void MaliciousRepPrep<T>::buffer_triples()
 {
     check_field_size<typename T::open_type>();
     auto& triples = this->triples;
-    auto buffer_size = this->buffer_size;
+    auto buffer_size = BaseMachine::batch_size<T>(DATA_TRIPLE,
+            this->buffer_size);
     auto& honest_proc = this->honest_proc;
     assert(honest_proc != 0);
     Player& P = honest_proc->P;
@@ -140,7 +141,7 @@ void MaliciousRepPrep<T>::buffer_squares()
     vector<typename T::open_type> opened;
     vector<array<T, 2>> check_squares;
     auto& squares = this->squares;
-    auto buffer_size = this->buffer_size;
+    auto buffer_size = BaseMachine::batch_size<T>(DATA_SQUARE, this->buffer_size);
     auto& honest_prep = this->honest_prep;
     auto& honest_proc = this->honest_proc;
     auto& MC = this->MC;
@@ -186,7 +187,8 @@ void MaliciousBitOnlyRepPrep<T>::buffer_bits()
     vector<typename T::open_type> opened;
     vector<array<T, 2>> check_squares;
     auto& bits = this->bits;
-    auto buffer_size = this->buffer_size;
+    auto buffer_size = BaseMachine::batch_size<T>(DATA_BIT,
+            this->buffer_size);
     assert(honest_proc);
     Player& P = honest_proc->P;
     honest_prep.buffer_size = buffer_size;
@@ -208,7 +210,7 @@ void MaliciousBitOnlyRepPrep<T>::buffer_bits()
         assert(MC.open(f, P) * MC.open(f, P) == MC.open(h, P));
 #endif
     }
-    auto t = Create_Random<typename T::clear>(P);
+    auto t = Create_Random<typename T::open_type>(P);
     for (int i = 0; i < buffer_size; i++)
     {
         T& a = bits[i];
@@ -216,7 +218,7 @@ void MaliciousBitOnlyRepPrep<T>::buffer_bits()
         masked.push_back(t * a - f);
     }
     MC.POpen(opened, masked, P);
-    typename T::clear t2 = t * t;
+    typename T::open_type t2 = t * t;
     for (int i = 0; i < buffer_size; i++)
     {
         T& a = bits[i];

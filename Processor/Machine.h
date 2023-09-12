@@ -53,8 +53,6 @@ class Machine : public BaseMachine
 
   public:
 
-  vector<Program>  progs;
-
   Memory<sgf2n> M2;
   Memory<sint> Mp;
   Memory<Integer> Mi;
@@ -63,10 +61,6 @@ class Machine : public BaseMachine
   vector<Timer> join_timer;
   Timer finish_timer;
 
-  bool direct;
-  int opening_sum;
-  bool receive_threads;
-  int max_broadcast;
   bool use_encryption;
   bool live_prep;
 
@@ -109,6 +103,7 @@ class Machine : public BaseMachine
   string prep_dir_prefix();
 
   void reqbl(int n);
+  void active(int n);
 
   typename sint::bit_type::mac_key_type get_bit_mac_key() { return alphabi; }
   typename sint::mac_key_type get_sint_mac_key() { return alphapi; }

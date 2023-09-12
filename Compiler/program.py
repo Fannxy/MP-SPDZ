@@ -112,8 +112,8 @@ class Program(object):
                 self.non_linear = Prime(self.security)
                 if not self.bit_length:
                     self.bit_length = 64
-        print("Default bit length:", self.bit_length)
-        print("Default security parameter:", self.security)
+        print("Default bit length for compilation:", self.bit_length)
+        print("Default security parameter for compilation:", self.security)
         self.galois_length = int(options.galois)
         if self.verbose:
             print("Galois length:", self.galois_length)
@@ -122,6 +122,7 @@ class Program(object):
         self.DEBUG = options.debug
         self.allocated_mem = RegType.create_dict(lambda: USER_MEM)
         self.free_mem_blocks = defaultdict(al.BlockAllocator)
+        self.later_mem_blocks = defaultdict(list)
         self.allocated_mem_blocks = {}
         self.saved = 0
         self.req_num = None
@@ -186,6 +187,8 @@ class Program(object):
         self.input_files = {}
         self.base_addresses = {}
         self._protect_memory = False
+        self._always_active = True
+        self.active = True
         if not self.options.cisc:
             self.options.cisc = not self.options.optimize_hard
 
@@ -207,15 +210,13 @@ class Program(object):
         return self.n_threads
 
     def init_names(self, args):
-        # ignore path to file - source must be in Programs/Source
-        if "Programs" in os.listdir(os.getcwd()):
-            # compile prog in ./Programs/Source directory
-            self.programs_dir = "Programs"
-        else:
-            # assume source is in main SPDZ directory
-            self.programs_dir = sys.path[0] + "/Programs"
+        self.programs_dir = "Programs"
         if self.verbose:
             print("Compiling program in", self.programs_dir)
+
+        for dirname in (self.programs_dir, "Player-Data"):
+            if not os.path.exists(dirname):
+                os.mkdir(dirname)
 
         # create extra directories if needed
         for dirname in ["Public-Input", "Bytecode", "Schedules"]:
@@ -224,13 +225,31 @@ class Program(object):
 
         if self.name is None:
             self.name = args[0].split("/")[-1]
-            if self.name.endswith(".mpc"):
-                self.name = self.name[:-4]
+            exts = ".mpc", ".py"
+            for ext in exts:
+                if self.name.endswith(ext):
+                    self.name = self.name[:-len(ext)]
 
-            if os.path.exists(args[0]):
-                self.infile = args[0]
+            infiles = [args[0]]
+            for x in (self.programs_dir, sys.path[0] + "/Programs"):
+                for ext in exts:
+                    filename = args[0]
+                    if not filename.endswith(ext):
+                        filename += ext
+                    filename = x + "/Source/" + filename
+                    if os.path.abspath(filename) not in \
+                       [os.path.abspath(f) for f in infiles]:
+                        infiles += [filename]
+            existing = [f for f in infiles if os.path.exists(f)]
+            if len(existing) == 1:
+                self.infile = existing[0]
+            elif len(existing) > 1:
+                raise CompilerError("ambiguous input files: " +
+                                    ", ".join(existing))
             else:
-                self.infile = self.programs_dir + "/Source/" + self.name + ".mpc"
+                raise CompilerError(
+                    "found none of the potential input files: " +
+                    ", ".join("'%s'" % x for x in [args[0]] + infiles))
         """
         self.name is input file name (minus extension) + any optional arguments.
         Used to generate output filenames
@@ -447,7 +466,7 @@ class Program(object):
                 print("Memory of type '%s' now of size %d" % (mem_type, addr + size))
             if addr + size >= 2**64:
                 raise CompilerError("allocation exceeded for type '%s'" % mem_type)
-        self.allocated_mem_blocks[addr, mem_type] = size
+        self.allocated_mem_blocks[addr, mem_type] = size, self.curr_block.alloc_pool
         if single_size:
             from .library import get_thread_number, runtime_error_if
 
@@ -461,12 +480,24 @@ class Program(object):
 
     def free(self, addr, mem_type):
         """Free memory"""
-        if self.curr_block.alloc_pool is not self.curr_tape.basicblocks[0].alloc_pool:
-            raise CompilerError("Cannot free memory within function block")
+        now = True
         if not util.is_constant(addr):
             addr = self.base_addresses[str(addr)]
-        size = self.allocated_mem_blocks.pop((addr, mem_type))
-        self.free_mem_blocks[mem_type].push(addr, size)
+            now = self.curr_tape == self.tapes[0]
+        size, pool = self.allocated_mem_blocks[addr, mem_type]
+        if self.curr_block.alloc_pool is not pool:
+            raise CompilerError("Cannot free memory across function blocks")
+        self.allocated_mem_blocks.pop((addr, mem_type))
+        if now:
+            self.free_mem_blocks[mem_type].push(addr, size)
+        else:
+            self.later_mem_blocks[mem_type].append((addr, size))
+
+    def free_later(self):
+        for mem_type in self.later_mem_blocks:
+            for block in self.later_mem_blocks[mem_type]:
+                self.free_mem_blocks[mem_type].push(*block)
+        self.later_mem_blocks.clear()
 
     def finalize(self):
         # optimize the tapes
@@ -479,11 +510,18 @@ class Program(object):
         # finalize the memory
         self.finalize_memory()
 
+        # communicate protocol compability
+        Compiler.instructions.active(self._always_active)
+
         self.write_bytes()
 
         if self.options.asmoutfile:
             for tape in self.tapes:
                 tape.write_str(self.options.asmoutfile + "-" + tape.name)
+
+        # Making sure that the public_input_file has been properly closed
+        if self.public_input_file is not None:
+            self.public_input_file.close()
 
     def finalize_memory(self):
         self.curr_tape.start_new_basicblock(None, "memory-usage")
@@ -672,6 +710,19 @@ class Program(object):
         logp = int(round(math.log(p, 2)))
         return abs(p - 2 ** logp) / p < 2 ** -self.security
 
+    @property
+    def active(self):
+        """ Whether to use actively secure protocols. """
+        return self._active
+
+    @active.setter
+    def active(self, change):
+        self._always_active &= change
+        self._active = change
+
+    def semi_honest(self):
+        self._always_active = False
+
     @staticmethod
     def read_tapes(schedule):
         m = re.search(r"([^/]*)\.mpc", schedule)
@@ -708,6 +759,7 @@ class Tape:
         self.purged = False
         self.block_counter = 0
         self.active_basicblock = None
+        self.old_allocated_mem = program.allocated_mem.copy()
         self.start_new_basicblock()
         self._is_empty = False
         self.merge_opens = True
@@ -735,7 +787,7 @@ class Tape:
                 scope.children.append(self)
                 self.alloc_pool = scope.alloc_pool
             else:
-                self.alloc_pool = defaultdict(list)
+                self.alloc_pool = al.AllocPool()
             self.purged = False
             self.n_rounds = 0
             self.n_to_merge = 0
@@ -833,6 +885,15 @@ class Tape:
         return self._is_empty
 
     def start_new_basicblock(self, scope=False, name=""):
+        if self.program.verbose and self.active_basicblock and \
+           self.program.allocated_mem != self.old_allocated_mem:
+            print("New allocated memory in %s " % self.active_basicblock.name,
+                  end="")
+            for t, n in self.program.allocated_mem.items():
+                if n != self.old_allocated_mem[t]:
+                    print("%s:%d " % (t, n - self.old_allocated_mem[t]), end="")
+            print()
+            self.old_allocated_mem = self.program.allocated_mem.copy()
         # use False because None means no scope
         if scope is False:
             scope = self.active_basicblock
@@ -993,6 +1054,7 @@ class Tape:
             allocator = al.StraightlineAllocator(REG_MAX, self.program)
 
             def alloc(block):
+                allocator.update_usage(block.alloc_pool)
                 for reg in sorted(
                     block.used_from_scope, key=lambda x: (x.reg_type, x.i)
                 ):
@@ -1006,6 +1068,7 @@ class Tape:
                     for child in block.children:
                         left.append(child)
 
+            allocator.old_pool = None
             for i, block in enumerate(reversed(self.basicblocks)):
                 if len(block.instructions) > 1000000:
                     print(
@@ -1019,10 +1082,20 @@ class Tape:
                         and block.exit_block.scope is not None
                     ):
                         alloc_loop(block.exit_block.scope)
+                usage = allocator.max_usage.copy()
                 allocator.process(block.instructions, block.alloc_pool)
+                if self.program.verbose and usage != allocator.max_usage:
+                    print("Allocated registers in %s " % block.name, end="")
+                    for t, n in allocator.max_usage.items():
+                        if n > usage[t]:
+                            print("%s:%d " % (t, n - usage[t]), end="")
+                    print()
             allocator.finalize(options)
             if self.program.verbose:
-                print("Tape register usage:", dict(allocator.usage))
+                print("Tape register usage:", dict(allocator.max_usage))
+                scopes = set(block.alloc_pool for block in self.basicblocks)
+                n_fragments = sum(scope.n_fragments() for scope in scopes)
+                print("%d register fragments in %d scopes" % (n_fragments, len(scopes)))
 
         # offline data requirements
         if self.program.verbose:
@@ -1208,12 +1281,18 @@ class Tape:
             def t(x):
                 return "integer" if x == "modp" else x
 
+            def f(num):
+                try:
+                    return "%12.0f" % num
+                except:
+                    return str(num)
+
             res = []
             for req, num in self.items():
                 domain = t(req[0])
                 if num < 0:
                     num = float('inf')
-                n = "%12.0f" % num
+                n = f(num)
                 if req[1] == "input":
                     res += ["%s %s inputs from player %d" % (n, domain, req[2])]
                 elif domain.endswith("edabit"):
@@ -1230,7 +1309,7 @@ class Tape:
                 elif req[0] != "all":
                     res += ["%s %s %ss" % (n, domain, req[1])]
             if self["all", "round"]:
-                res += ["% 12.0f virtual machine rounds" % self["all", "round"]]
+                res += ["%s virtual machine rounds" % f(self["all", "round"])]
             return res
 
         def __str__(self):
@@ -1454,6 +1533,10 @@ class Tape:
             return Tape.Register(self.reg_type, Program.prog.curr_tape)
 
         def link(self, other):
+            if Program.prog.options.noreallocate:
+                raise CompilerError("reallocation necessary for linking, "
+                                    "remove option -u")
+            assert self.reg_type == other.reg_type
             self.duplicates |= other.duplicates
             for dup in self.duplicates:
                 dup.duplicates = self.duplicates
@@ -1466,12 +1549,13 @@ class Tape:
             :param other: any convertible type
 
             """
+            diff_block = isinstance(other, Tape.Register) and self.block != other.block
             other = type(self)(other)
+            if not diff_block:
+                self.program.start_new_basicblock()
             if self.program != other.program:
                 raise CompilerError(
                     'cannot update register with one from another thread')
-            if other.block in [x.block for x in self.duplicates]:
-                self.program.start_new_basicblock()
             self.link(other)
 
         @property

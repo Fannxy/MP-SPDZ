@@ -68,6 +68,7 @@ public:
     {
         init_field(T::pr(), montgomery);
     }
+    static void reset();
 
     static const Zp_Data& get_ZpD();
     static const bigint& pr();
@@ -81,6 +82,7 @@ public:
     {
         write_setup(get_prep_sub_dir<T>(nplayers));
     }
+    static string fake_opts() { return " -lgp " + to_string(length()); }
 
     gfpvar_();
     gfpvar_(int other);
@@ -147,7 +149,7 @@ public:
     bool operator==(const gfpvar_& other) const;
     bool operator!=(const gfpvar_& other) const;
 
-    void add(octetStream& other);
+    void add(octetStream& other, int = -1);
 
     void negate();
 

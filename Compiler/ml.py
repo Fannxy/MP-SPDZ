@@ -336,8 +336,7 @@ class Output(NoVariableLayer):
         if self.approx:
             return approx_sigmoid(self.X.get_vector(base, size), self.approx)
         else:
-            return sigmoid_from_e_x(self.X.get_vector(base, size),
-                                    self.e_x.get_vector(base, size))
+            return sigmoid(self.X.get_vector(base, size))
 
     def backward(self, batch):
         N = len(batch)
@@ -372,6 +371,7 @@ class Output(NoVariableLayer):
             n = self.X.sizes[0]
         if Y is None:
             Y = self.Y
+        assert isinstance(Y, Array)
         n_correct = MemValue(0)
         n_printed = MemValue(0)
         @for_range_opt(n)
@@ -393,13 +393,19 @@ class Output(NoVariableLayer):
 class LinearOutput(NoVariableLayer):
     n_outputs = -1
 
-    def __init__(self, N):
-        self.X = sfix.Array(N)
-        self.Y = sfix.Array(N)
-        self.nabla_X = sfix.Array(N)
+    def __init__(self, N, n_targets=1):
+        if n_targets == 1:
+            shape = N,
+        else:
+            shape = N, n_targets
+        self.X = sfix.Tensor(shape)
+        self.Y = sfix.Tensor(shape)
+        self.nabla_X = sfix.Tensor(shape)
         self.l = MemValue(sfix(0))
+        self.d_out = n_targets
 
     def _forward(self, batch):
+        assert len(self.X.shape) == 1
         N = len(batch)
         guess = self.X.get_vector(0, N)
         truth = self.Y.get(batch.get_vector(0, N))
@@ -418,7 +424,7 @@ class LinearOutput(NoVariableLayer):
         return self.l.reveal()
 
     def eval(self, size, base=0, top=False):
-        return self.X.get_vector(base, size)
+        return self.X.get_part(base, size)
 
 class MultiOutputBase(NoVariableLayer):
     def __init__(self, N, d_out, approx=False, debug=False):
@@ -816,10 +822,10 @@ class Dense(DenseBase):
         self.W.randomize(-r, r, n_threads=self.n_threads)
         self.b.assign_all(0)
 
-    def input_from(self, player, raw=False):
-        self.W.input_from(player, raw=raw)
+    def input_from(self, player, **kwargs):
+        self.W.input_from(player, **kwargs)
         if self.input_bias:
-            self.b.input_from(player, raw=raw)
+            self.b.input_from(player, **kwargs)
 
     def compute_f_input(self, batch):
         N = len(batch)
@@ -1082,10 +1088,7 @@ class Relu(ElementWiseLayer):
 
     :param shape: input/output shape (tuple/list of int)
     """
-    f = staticmethod(relu)
-    f_prime = staticmethod(relu_prime)
     prime_type = sint
-    comparisons = None
 
     def __init__(self, shape, inputs=None):
         super(Relu, self).__init__(shape)
@@ -1109,14 +1112,7 @@ class Square(ElementWiseLayer):
     f_prime = staticmethod(lambda x: cfix(2, size=x.size) * x)
     prime_type = sfix
 
-class MaxPool(NoVariableLayer):
-    """ Fixed-point MaxPool layer.
-
-    :param shape: input shape (tuple/list of four int)
-    :param strides: strides (tuple/list of four int, first and last must be 1)
-    :param ksize: kernel size (tuple/list of four int, first and last must be 1)
-    :param padding: :py:obj:`'VALID'` (default) or :py:obj:`'SAME'`
-    """
+class PoolBase(NoVariableLayer):
     def __init__(self, shape, strides=(1, 2, 2, 1), ksize=(1, 2, 2, 1),
                  padding='VALID'):
         assert len(shape) == 4
@@ -1151,38 +1147,6 @@ class MaxPool(NoVariableLayer):
         return '%s(%s, strides=%s, ksize=%s, padding=%s)' % \
             (type(self).__name__, self.X.sizes, self.strides,
              self.ksize, self.padding)
-
-    def forward(self, batch=None, training=False):
-        if batch is None:
-            batch = Array.create_from(regint(0))
-        def process(pool, bi, k, i, j):
-            def m(a, b):
-                c = a[0] > b[0]
-                l = [c * x for x in a[1]]
-                l += [(1 - c) * x for x in b[1]]
-                return c.if_else(a[0], b[0]), l
-            red = util.tree_reduce(m, [(x[0], [1] if training else [])
-                                       for x in pool])
-            self.Y[bi][i][j][k] = red[0]
-            for ii, x in enumerate(red[1]):
-                self.comparisons[bi][k][i][j][ii] = x
-        self.traverse(batch, process)
-
-    def backward(self, compute_nabla_X=True, batch=None):
-        if compute_nabla_X:
-            self.nabla_X.alloc()
-            self.nabla_X.assign_all(0)
-            break_point()
-            def process(pool, bi, k, i, j):
-                for (x, h_in, w_in, h, w), c \
-                    in zip(pool, self.comparisons[bi][k][i][j]):
-                    hh = h * h_in
-                    ww = w * w_in
-                    res = h_in * w_in * c * self.nabla_Y[bi][i][j][k]
-                    get_program().protect_memory(True)
-                    self.nabla_X[bi][hh][ww][k] += res
-                    get_program().protect_memory(False)
-        self.traverse(batch, process)
 
     def traverse(self, batch, process):
         need_padding = [self.strides[i] * (self.Y.sizes[i] - 1) + self.ksize[i] >
@@ -1221,6 +1185,47 @@ class MaxPool(NoVariableLayer):
                                              h_in, w_in, h, w])
                     process(pool, bi, k, i, j)
 
+class MaxPool(PoolBase):
+    """ Fixed-point MaxPool layer.
+
+    :param shape: input shape (tuple/list of four int)
+    :param strides: strides (tuple/list of four int, first and last must be 1)
+    :param ksize: kernel size (tuple/list of four int, first and last must be 1)
+    :param padding: :py:obj:`'VALID'` (default), :py:obj:`'SAME'`, integer, or
+      list/tuple of integers
+
+    """
+    def forward(self, batch=None, training=False):
+        if batch is None:
+            batch = Array.create_from(regint(0))
+        def process(pool, bi, k, i, j):
+            def m(a, b):
+                c = a[0] > b[0]
+                l = [c * x for x in a[1]]
+                l += [(1 - c) * x for x in b[1]]
+                return c.if_else(a[0], b[0]), l
+            red = util.tree_reduce(m, [(x[0], [1] if training else [])
+                                       for x in pool])
+            self.Y[bi][i][j][k] = red[0]
+            for ii, x in enumerate(red[1]):
+                self.comparisons[bi][k][i][j][ii] = x
+        self.traverse(batch, process)
+
+    def backward(self, compute_nabla_X=True, batch=None):
+        if compute_nabla_X:
+            self.nabla_X.alloc()
+            self.nabla_X.assign_all(0)
+            break_point()
+            def process(pool, bi, k, i, j):
+                for (x, h_in, w_in, h, w), c \
+                    in zip(pool, self.comparisons[bi][k][i][j]):
+                    hh = h * h_in
+                    ww = w * w_in
+                    res = h_in * w_in * c * self.nabla_Y[bi][i][j][k]
+                    get_program().protect_memory(True)
+                    self.nabla_X[bi][hh][ww][k] += res
+                    get_program().protect_memory(False)
+        self.traverse(batch, process)
 
 class Argmax(NoVariableLayer):
     """ Fixed-point Argmax layer.
@@ -1302,12 +1307,12 @@ class FusedBatchNorm(Layer):
         self.bias = sfix.Array(shape[3])
         self.inputs = inputs
 
-    def input_from(self, player, raw=False):
-        self.weights.input_from(player, raw=raw)
-        self.bias.input_from(player, raw=raw)
+    def input_from(self, player, **kwargs):
+        self.weights.input_from(player, **kwargs)
+        self.bias.input_from(player, **kwargs)
         tmp = sfix.Array(len(self.bias))
-        tmp.input_from(player, raw=raw)
-        tmp.input_from(player, raw=raw)
+        tmp.input_from(player, **kwargs)
+        tmp.input_from(player, **kwargs)
 
     def _forward(self, batch=[0]):
         assert len(batch) == 1
@@ -1603,11 +1608,11 @@ class ConvBase(BaseLayer):
              self.bias_shape, self.Y.sizes, self.stride, repr(self.padding),
              self.tf_weight_format)
 
-    def input_from(self, player, raw=False):
+    def input_from(self, player, **kwargs):
         self.input_params_from(player)
-        self.weights.input_from(player, budget=100000, raw=raw)
+        self.weights.input_from(player, budget=100000, **kwargs)
         if self.input_bias:
-            self.bias.input_from(player, raw=raw)
+            self.bias.input_from(player, **kwargs)
 
     def output_weights(self):
         self.weights.print_reveal_nested()
@@ -2058,6 +2063,12 @@ def easyMaxPool(input_shape, kernel_size, stride=None, padding=0):
       or tuple/list of two int
 
     """
+    kernel_size, stride, padding = \
+        _standardize_pool_options(kernel_size, stride, padding)
+    return MaxPool(input_shape, [1] + list(stride) + [1],
+                   [1] + list(kernel_size) + [1], padding)
+
+def _standardize_pool_options(kernel_size, stride, padding):
     if isinstance(kernel_size, int):
         kernel_size = (kernel_size, kernel_size)
     if isinstance(stride, int):
@@ -2066,8 +2077,7 @@ def easyMaxPool(input_shape, kernel_size, stride=None, padding=0):
         stride = kernel_size
     padding = padding.upper() if isinstance(padding, str) \
         else padding
-    return MaxPool(input_shape, [1] + list(stride) + [1],
-                   [1] + list(kernel_size) + [1], padding)
+    return kernel_size, stride, padding
 
 class QuantAveragePool2d(QuantBase, AveragePool2d):
     def input_params_from(self, player):
@@ -2075,14 +2085,47 @@ class QuantAveragePool2d(QuantBase, AveragePool2d):
         for s in self.input_squant, self.output_squant:
             s.get_params_from(player)
 
-class FixAveragePool2d(FixBase, AveragePool2d):
+class FixAveragePool2d(PoolBase, FixBase):
     """ Fixed-point 2D AvgPool layer.
 
     :param input_shape: input shape (tuple/list of four int)
     :param output_shape: output shape (tuple/list of four int)
-    :param filter_size: filter size (tuple/list of two int)
-    :param strides: strides (tuple/list of two int)
-    """
+    :param filter_size: filter size (int or tuple/list of two int)
+    :param strides: strides (int or tuple/list of two int)
+    :param padding: :py:obj:`'SAME'`, :py:obj:`'VALID'`, int,
+      or tuple/list of two int
+
+   """
+    def __init__(self, input_shape, output_shape, filter_size, strides=(1, 1),
+                 padding=0):
+        filter_size, strides, padding = \
+            _standardize_pool_options(filter_size, strides, padding)
+        PoolBase.__init__(self, input_shape, [1] + list(strides) + [1],
+                          [1] + list(filter_size) + [1], padding)
+        self.pool_size = reduce(operator.mul, filter_size)
+        if output_shape:
+            assert self.Y.shape == list(output_shape)
+
+    def _forward(self, batch):
+        def process(pool, bi, k, i, j):
+            self.Y[bi][i][j][k] = sum(x[0] for x in pool) * (1 / self.pool_size)
+        self.traverse(batch, process)
+
+    def backward(self, compute_nabla_X=True, batch=None):
+        if compute_nabla_X:
+            self.nabla_X.alloc()
+            self.nabla_X.assign_all(0)
+            break_point()
+            def process(pool, bi, k, i, j):
+                part = self.nabla_Y[bi][i][j][k] * (1 / self.pool_size)
+                for x, h_in, w_in, h, w in pool:
+                    hh = h * h_in
+                    ww = w * w_in
+                    res = h_in * w_in * part
+                    get_program().protect_memory(True)
+                    self.nabla_X[bi][hh][ww][k] += res
+                    get_program().protect_memory(False)
+        self.traverse(batch, process)
 
 class QuantReshape(QuantBase, BaseLayer):
     def __init__(self, input_shape, _, output_shape):
@@ -2265,6 +2308,8 @@ class Optimizer:
 
         :param data: sample data (:py:class:`Compiler.types.Matrix` with one row per sample)
         :param top: return top prediction instead of probability distribution
+        :returns: sfix/sint Array (depening on :py:obj:`top`)
+
         """
         if isinstance(self.layers[-1].Y, Array) or top:
             if top:
@@ -2275,7 +2320,7 @@ class Optimizer:
             res = sfix.Matrix(len(data), self.layers[-1].d_out)
         def f(start, batch_size, batch):
             batch.assign_vector(regint.inc(batch_size, start))
-            self.forward(batch=batch, run_last=not top)
+            self.forward(batch=batch, run_last=False)
             part = self.layers[-1].eval(batch_size, top=top)
             res.assign_part_vector(part.get_vector(), start)
         self.run_in_batches(f, data, batch_size or len(self.layers[1].X))
@@ -2540,6 +2585,8 @@ class Optimizer:
     @_no_mem_warnings
     def run_by_args(self, program, n_runs, batch_size, test_X, test_Y,
                     acc_batch_size=None, reset=True):
+        MultiArray.disable_index_checks()
+        Array.check_indices = False
         if acc_batch_size is None:
             acc_batch_size = batch_size
         depreciation = None
@@ -2943,6 +2990,10 @@ class keras:
             return 'maxpool', {'pool_size': pool_size, 'strides': strides,
                                'padding': padding}
 
+        def AveragePooling2D(pool_size=2, strides=None, padding='valid'):
+            return 'avgpool', {'filter_size': pool_size, 'strides': strides,
+                               'padding': padding}
+
         def Dropout(rate):
             l = math.log(rate, 2)
             if int(l) != l:
@@ -3014,9 +3065,12 @@ class keras:
                             n_units = reduce(operator.mul,
                                              layers[-1].Y.sizes[1:])
                         if i == len(self.layers) - 1:
-                            if layer[2].get('activation', 'softmax') in \
-                               ('softmax', 'sigmoid'):
+                            activation = layer[2].get('activation', None)
+                            if activation in ('softmax', 'sigmoid'):
                                 layer[2].pop('activation', None)
+                            if activation == 'softmax' and layer[1][0] == 1:
+                                raise CompilerError(
+                                    'softmax requires more than one output neuron')
                         layers.append(Dense(N, n_units, layer[1][0],
                                             **layer[2]))
                         input_shape = layers[-1].Y.sizes
@@ -3040,6 +3094,9 @@ class keras:
                         padding = layer[1]['padding']
                         layers.append(easyMaxPool(input_shape, pool_size,
                                                   strides, padding))
+                        input_shape = layers[-1].Y.sizes
+                    elif name == 'avgpool':
+                        layers.append(FixAveragePool2d(input_shape, None, **layer[1]))
                         input_shape = layers[-1].Y.sizes
                     elif name == 'dropout':
                         layers.append(Dropout(batch_size, reduce(
@@ -3124,13 +3181,15 @@ class keras:
                     batch_size = min(batch_size, self.batch_size)
                 return self.opt.eval(x, batch_size=batch_size)
 
-def layers_from_torch(sequence, data_input_shape, batch_size, input_via=None):
+def layers_from_torch(sequence, data_input_shape, batch_size, input_via=None,
+                      regression=False):
     """ Convert a PyTorch Sequential object to MP-SPDZ layers.
 
     :param sequence: PyTorch Sequential object
     :param data_input_shape: input shape (list of four int)
     :param batch_size: batch size (int)
     :param input_via: player to input model data via (default: don't)
+    :param regression: regression (default: classification)
 
     """
     layers = []
@@ -3192,6 +3251,10 @@ def layers_from_torch(sequence, data_input_shape, batch_size, input_via=None):
             layers.append(easyMaxPool(input_shape, item.kernel_size,
                                       item.stride, item.padding))
             input_shape = layers[-1].Y.shape
+        elif name == 'AvgPool2d':
+            layers.append(FixAveragePool2d(input_shape, None, item.kernel_size,
+                                           item.stride, item.padding))
+            input_shape = layers[-1].Y.shape
         elif name == 'ReLU':
             layers.append(Relu(input_shape))
         elif name == 'Flatten':
@@ -3207,7 +3270,9 @@ def layers_from_torch(sequence, data_input_shape, batch_size, input_via=None):
 
     input_shape = data_input_shape + [1] * (4 - len(data_input_shape))
     process(sequence)
-    if layers[-1].d_out == 1:
+    if regression:
+        layers.append(LinearOutput(data_input_shape[0], layers[-1].d_out))
+    elif layers[-1].d_out == 1:
         layers.append(Output(data_input_shape[0]))
     else:
         layers.append(MultiOutput(data_input_shape[0], layers[-1].d_out))
@@ -3295,7 +3360,7 @@ class SGDLogistic(OneLayerSGD):
         return super(SGDLogistic, self).predict(X)
 
 class SGDLinear(OneLayerSGD):
-    """ Logistic regression using SGD.
+    """ Linear regression using SGD.
 
     :param n_epochs: number of epochs
     :param batch_size: batch size
@@ -3415,11 +3480,16 @@ def var(x):
     return res.read()
 
 def cholesky(A, reveal_diagonal=False):
-    """ Cholesky decomposition. """
+    """ Cholesky decomposition.
+
+    :returns: lower triangular matrix
+
+    """
     assert len(A.shape) == 2
     assert A.shape[0] == A.shape[1]
     L = A.same_shape()
     L.assign_all(0)
+    diag_inv = A.value_type.Array(A.shape[0])
     @for_range(A.shape[0])
     def _(i):
         @for_range(i + 1)
@@ -3429,10 +3499,47 @@ def cholesky(A, reveal_diagonal=False):
             @if_e(i == j)
             def _():
                 L[i][j] = mpc_math.sqrt(A[i][i] - sum)
+                diag_inv[i] = 1 / L[i][j]
                 if reveal_diagonal:
                     print_ln('L[%s][%s] = %s = sqrt(%s - %s)', i, j,
                              L[i][j].reveal(), A[i][j].reveal(), sum.reveal())
             @else_
             def _():
-                L[i][j] = (1.0 / L[j][j] * (A[i][j] - sum))
+                L[i][j] = (diag_inv[j] * (A[i][j] - sum))
     return L
+
+def solve_lower(A, b):
+    """ Linear solver where :py:obj:`A` is lower triangular quadratic. """
+    assert len(A.shape) == 2
+    assert A.shape[0] == A.shape[1]
+    assert len(b) == A.shape[0]
+    b = Array.create_from(b)
+    res = sfix.Array(len(b))
+    @for_range(len(b))
+    def _(i):
+        res[i] = b[i] / A[i][i]
+        b[:] -= res[i] * A.get_column(i)
+    return res
+
+def solve_upper(A, b):
+    """ Linear solver where :py:obj:`A` is upper triangular quadratic. """
+    assert len(A.shape) == 2
+    assert A.shape[0] == A.shape[1]
+    assert len(b) == A.shape[0]
+    b = Array.create_from(b)
+    res = sfix.Array(len(b))
+    @for_range(len(b) - 1, -1, -1)
+    def _(i):
+        res[i] = b[i] / A[i][i]
+        b[:] -= res[i] * A.get_column(i)
+    return res
+
+def solve_cholesky(A, b, debug=False):
+    """ Linear solver using Cholesky decomposition. """
+    L = cholesky(A, reveal_diagonal=debug)
+    if debug:
+        Optimizer.stat('L', L)
+    x = solve_lower(L, b)
+    if debug:
+        Optimizer.stat('intermediate', x)
+    return solve_upper(L.transpose(), x)
