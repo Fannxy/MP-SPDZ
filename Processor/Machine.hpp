@@ -444,12 +444,12 @@ void Machine<sint, sgf2n>::run(const string& progname)
   Timer proc_timer(CLOCK_PROCESS_CPUTIME_ID);
   proc_timer.start();
   timer[0].start({});
-  clock_t timeMainStart = clock();
+  // clock_t timeMainStart = clock();
   // run main tape
   run_tape(0, 0, 0, N.num_players());
   join_tape(0);
 
-  clock_t timeMainEnd = clock();
+  // clock_t timeMainEnd = clock();
   print_compiler();
   finish_timer.start();
 
@@ -461,10 +461,10 @@ void Machine<sint, sgf2n>::run(const string& progname)
   finish_timer.stop();
 
   for (unsigned int i = 0; i < join_timer.size(); i++) {
-    cout << "Join timer: " << i << " " << join_timer[i].elapsed() << endl;
+    cout << "Join timer: " << i << " " << join_timer[i].elapsed() * 1000 << endl;
     cout << "Finish timer: " << finish_timer.elapsed() << endl;
   }
-  cout << "Main time: " << ((timeMainEnd - timeMainStart) * 1.0 / CLOCKS_PER_SEC)*1000 << " MS" << endl;
+  // cout << "Main time: " << ((timeMainEnd - timeMainStart) * 1.0 / CLOCKS_PER_SEC)*1000 << " MS" << endl;
   
 #ifdef VERBOSE
   cerr << "Memory usage: ";

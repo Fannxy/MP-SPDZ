@@ -1,0 +1,22 @@
+"""Benchmark for spdz-style parallelization.
+"""
+import pta_funcs as pta
+
+# set parameters: for, opt, parallel
+strategy, N, M, REPEAT, n_parallel = str(program.args[1]), int(program.args[2]), int(program.args[3]), int(program.args[4]), int(program.args[5])
+
+# set task configs.
+sfix.set_precision(16)
+
+# generate test data
+X = Array.create_from([sfix(i % 2**14) for i in range(M)])
+Y = Array.create_from([sint(i % 2**14) for i in range(N)])
+
+TEST_CORRECTNESS = True
+if(TEST_CORRECTNESS):
+    # test correctness
+    index_list = [i % 2**14 for i in range(N)]
+    real_res = Array.create_from([X[i] for i in index_list])
+    test_res = pta.tgl_cipher_index_for_parallel(X, Y, n_parallel)
+    print_ln("real res = %s", real_res.reveal())
+    print_ln("test res = %s", test_res.reveal())

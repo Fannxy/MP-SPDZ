@@ -1,0 +1,37 @@
+"""Benchmark for spdz-style parallelization.
+"""
+import pta_funcs as pta
+
+# set parameters: for, opt, parallel
+strategy, N, M, REPEAT, n_parallel = str(program.args[1]), int(program.args[2]), int(program.args[3]), int(program.args[4]), int(program.args[5])
+
+# set task configs.
+program.use_split(3)
+program.use_trunc_pr = True
+sfix.set_precision(16)
+
+# generate test data
+X = Array.create_from([sfix(i % 2**14) for i in range(M)])
+Y = Array.create_from([sint(i % 2**14) for i in range(N)])
+
+# run the execution strategies of spdz.
+if(strategy == "for"):
+    start_timer(1)
+    @for_range(REPEAT)
+    def _(i):
+        pta.tgl_cipher_index_for(X, Y)
+    break_point()
+    stop_timer(1)
+
+
+if(strategy == "opt"):
+    print("not implemented")
+
+if(strategy == "multithread"):
+    print("n_parallel: ", n_parallel)
+    start_timer(1)
+    @for_range(REPEAT)
+    def _(i):
+        pta.tgl_cipher_index_for_parallel(X, Y, n_parallel)
+    break_point()
+    stop_timer(1)
