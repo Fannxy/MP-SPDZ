@@ -12,11 +12,53 @@ sfix.set_precision(16)
 X = Array.create_from([sfix(i % 2**14) for i in range(M)])
 Y = Array.create_from([sint(i % 2**14) for i in range(N)])
 
-TEST_CORRECTNESS = True
-if(TEST_CORRECTNESS):
-    # test correctness
-    index_list = [i % 2**14 for i in range(N)]
-    real_res = Array.create_from([X[i] for i in index_list])
-    test_res = pta.tgl_cipher_index_for_parallel(X, Y, n_parallel)
-    print_ln("real res = %s", real_res.reveal())
-    print_ln("test res = %s", test_res.reveal())
+print_ln("cipher index")
+index_list = [i % 2**14 for i in range(N)]
+real_res = Array.create_from([X[i] for i in index_list])
+test_res = pta.tgl_cipher_index_for_parallel(X, Y, n_parallel)
+print_ln("real res = %s", real_res.reveal())
+print_ln("test res = %s", test_res.reveal())
+
+
+print_ln("select")
+index_list = [i % 2**14 for i in range(N)]
+real_res = Array.create_from([X[i] for i in index_list])
+cipher_keys = Array.create_from(sfix(i) for i in range(M))
+cipher_tars = Array.create_from(sfix(i) for i in index_list)
+test_res = pta.tgl_select_for_parallel(cipher_tars, cipher_keys, X,n_parallel)
+print_ln("real res = %s", real_res.reveal())
+print_ln("test res = %s", test_res.reveal())
+
+
+print_ln("search")
+index_list = [i % 2**14 for i in range(N)]
+real_res = Array.create_from([X[i] for i in index_list])
+cipher_keys = Array.create_from(sfix(i - 0.5) for i in range(M))
+cipher_tars = Array.create_from(sfix(i) for i in index_list)
+test_res = pta.tgl_search_for_parallel(cipher_tars, cipher_keys, X,n_parallel)
+print_ln("real res = %s", real_res.reveal())
+print_ln("test res = %s", test_res.reveal())
+
+
+print_ln("sum")
+real_res = sfix(sum([i % 2**14 for i in range(M)]))
+test_res = pta.tgl_average_for_parallel(X, n_parallel)
+print_ln("real res = %s", real_res.reveal())
+print_ln("test res = %s", test_res.reveal())
+
+
+def argmin(X):
+    def op(a, b):
+        comp = (a[1] < b[1])
+        return comp.if_else(a[0], b[0]), comp.if_else(a[1], b[1])
+    return tree_reduce(op, enumerate(X))
+
+zeros = Array.create_from([sfix(0) for i in range(1)])
+
+print_ln("bio_metric")
+real_res, real_ind = argmin(X*X)
+test_res, test_ind = pta.tgl_bio_metric(zeros, X, n_parallel)
+print_ln("real res = %s", real_res.reveal())
+print_ln("real ind = %s", real_ind.reveal())
+print_ln("test res = %s", test_res.reveal())
+print_ln("test ind = %s", test_ind.reveal())

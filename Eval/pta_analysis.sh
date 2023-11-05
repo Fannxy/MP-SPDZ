@@ -1,66 +1,191 @@
-logFolder=./Record/pta_analysis/
+logFolder=./Record/pta_analysis_bk/
 clogFolder=./Record/analysis_compile/
 clogFile=${clogFolder}compile_log
 sourceFile=pta_baseline
 protocol=replicated-ring-party.x
-task=cipher_index
 
-recordFolder=${logFolder}Record_${task}
-logFile=${logFolder}Record-baseline
 
 if [ ! -d ${logFolder} ]; then
     mkdir ${logFolder};
-else
-    rm -r ${logFolder}*
 fi
 
 if [ ! -d ${clogFolder} ]; then
     mkdir ${clogFolder};
-else
-    rm -r ${clogFolder}*
 fi
 
-if [ ! -d ${recordFolder} ]; then
-    mkdir ${recordFolder};
-else
-    rm -r ${recordFolder}*
-fi
 
-N=1; REPEAT=10
-M_list=(1048576 4194304 16777216 67108864 268435456 1073741824)
-parallel_list=(128 256)
-
+N=1; REPEAT=1;
+M_list=(1024 16384 32768)
+parallel_list=(16 32 64)
+task_list=(max)
 
 # compile multithreaded version
-for parallel in ${parallel_list[*]}; do
-    for M in ${M_list[*]}; do
-        clog=${clogFile}-multithread-${N}-${M}-${REPEAT}-${parallel};
-        python compile.py -l -R 64 -Z 3 ${sourceFile} multithread $N $M $REPEAT $parallel > ${clog} &
+for M in ${M_list[*]}; do
+    for task in ${task_list[*]}; do
+        for parallel in ${parallel_list[*]}; do
+            clog=${clogFile}-${task}-${M}-${M}-${REPEAT}-${parallel};
+            python compile.py -l -R 64 -Z 3 ${sourceFile} ${task} $M $M $REPEAT $parallel > ${clog} &
+        done;
+        wait;
     done;
-    wait;
 done;
+
+# synchronized with other machines.
+cd ..
+scp -r ./MP-SPDZ/Programs spdz1:~/MP-SPDZ/ &
+scp -r ./MP-SPDZ/Programs spdz2:~/MP-SPDZ
 wait;
+cd ./MP-SPDZ/;
+
+./Eval/control/setup_ssl.sh;
+
+# execute multithreaded
+for task in ${task_list[*]}; do
+    recordFolder=${logFolder}Record_${task}
+    logFile=${recordFolder}/Record-baseline
+    if [ ! -d ${recordFolder} ]; then
+        mkdir ${recordFolder};
+    fi
+    for parallel in ${parallel_list[*]}; do
+        for M in ${M_list[*]}; do
+            elog=${logFile}-multithread-${task}-n=${M}-m=${M}-k=1-R=${REPEAT}-c=${parallel};
+            # ./Eval/basic/local_exec.sh ${sourceFile}-multithread-${N}-${M}-${REPEAT}-${parallel} ${protocol} ${logFolder} ${elog}
+            ./Eval/basic/dis_exec.sh ${sourceFile}-${task}-${M}-${M}-${REPEAT}-${parallel} ${protocol} ${recordFolder} ${elog}
+            wait;
+        done;
+    done;
+done;
+
+
+N=1; REPEAT=1;
+M_list=(1048576 268435456)
+parallel_list=(16 64)
+task_list=(average new_search metric)
+
+# compile multithreaded version
+for M in ${M_list[*]}; do
+    for task in ${task_list[*]}; do
+        for parallel in ${parallel_list[*]}; do
+            clog=${clogFile}-${task}-${N}-${M}-${REPEAT}-${parallel};
+            python compile.py -l -R 64 -Z 3 ${sourceFile} ${task} $N $M $REPEAT $parallel > ${clog} &
+            wait;
+        done;
+    done;
+done;
+
+# synchronized with other machines.
+cd ..
+scp -r ./MP-SPDZ/Programs spdz1:~/MP-SPDZ/ &
+scp -r ./MP-SPDZ/Programs spdz2:~/MP-SPDZ
+wait;
+cd ./MP-SPDZ/;
+
+./Eval/control/setup_ssl.sh;
+
+# execute multithreaded
+for task in ${task_list[*]}; do
+    recordFolder=${logFolder}Record_${task}
+    logFile=${recordFolder}/Record-baseline
+    if [ ! -d ${recordFolder} ]; then
+        mkdir ${recordFolder};
+    # else
+    #     rm -r ${recordFolder}*
+    fi
+    for parallel in ${parallel_list[*]}; do
+        for M in ${M_list[*]}; do
+            elog=${logFile}-multithread-${task}-n=${N}-m=${M}-k=1-R=${REPEAT}-c=${parallel};
+            # ./Eval/basic/local_exec.sh ${sourceFile}-multithread-${N}-${M}-${REPEAT}-${parallel} ${protocol} ${logFolder} ${elog}
+            ./Eval/basic/dis_exec.sh ${sourceFile}-${task}-${N}-${M}-${REPEAT}-${parallel} ${protocol} ${recordFolder} ${elog}
+            wait;
+        done;
+    done;
+done;
+
+
+# N=1; REPEAT=1;
+# M_list=(1073741824)
+# parallel_list=(256)
+# task_list=(average)
+
+# # compile multithreaded version
+# for task in ${task_list[*]}; do
+#     for M in ${M_list[*]}; do
+#         for parallel in ${parallel_list[*]}; do
+#             clog=${clogFile}-${task}-${N}-${M}-${REPEAT}-${parallel};
+#             python compile.py -l -R 64 -Z 3 ${sourceFile} ${task} $N $M $REPEAT $parallel > ${clog} &
+#             wait;
+#         done;
+#     done;
+# done;
+
+# # synchronized with other machines.
+# cd ..
+# scp -r ./MP-SPDZ/Programs spdz1:~/MP-SPDZ/ &
+# scp -r ./MP-SPDZ/Programs spdz2:~/MP-SPDZ
+# wait;
+# cd ./MP-SPDZ/;
+
+# ./Eval/control/setup_ssl.sh;
 
 # # execute multithreaded
-# for parallel in ${parallel_list[*]}; do
-#     for M in ${M_list[*]}; do
-#         elog=${logFile}-multithread-${task}-n=${N}-m=${M}-k=1-R=${REPEAT}-c=${parallel};
-#         ./Eval/basic/local_exec.sh ${sourceFile}-multithread-${N}-${M}-${REPEAT}-${parallel} ${protocol} ${logFolder} ${elog}
-#         wait;
+# for task in ${task_list[*]}; do
+#     recordFolder=${logFolder}Record_${task}
+#     logFile=${recordFolder}/Record-baseline
+#     if [ ! -d ${recordFolder} ]; then
+#         mkdir ${recordFolder};
+#     # else
+#     #     rm -r ${recordFolder}*
+#     fi
+#     for parallel in ${parallel_list[*]}; do
+#         for M in ${M_list[*]}; do
+#             elog=${logFile}-multithread-${task}-n=${N}-m=${M}-k=1-R=${REPEAT}-c=${parallel};
+#             # ./Eval/basic/local_exec.sh ${sourceFile}-multithread-${N}-${M}-${REPEAT}-${parallel} ${protocol} ${logFolder} ${elog}
+#             ./Eval/basic/dis_exec.sh ${sourceFile}-${task}-${N}-${M}-${REPEAT}-${parallel} ${protocol} ${recordFolder} ${elog}
+#             wait;
+#         done;
 #     done;
 # done;
 
 
-# # compile simple for version
-# for M in ${M_list[*]}; do
-#     clog=${clogFile}-for-${N}-${M}-${REPEAT}
-#     python compile.py -l -R 64 -Z 3 ${sourceFile} for $N $M $REPEAT 1 > ${clog} &
-# done;
-# wait;
 
-# # execute for
-# for M in ${M_list[*]}; do
-#     elog=${logFile}-for-${N}-${M}-${REPEAT}
-#     ./Eval/basic/local_exec.sh ${sourceFile}-for-${N}-${M}-${REPEAT} ${protocol} ${logFolder} ${elog}
-#     wait;
+# REPEAT=1;
+# M_list=(1024 16384 32768 65536)
+# parallel_list=(256)
+# task_list=(max)
+# # compile multithreaded version
+# for task in ${task_list[*]}; do
+#     for M in ${M_list[*]}; do
+#         for parallel in ${parallel_list[*]}; do
+#             clog=${clogFile}-${task}-${M}-${M}-${REPEAT}-${parallel};
+#             python compile.py -l -R 64 -Z 3 ${sourceFile} ${task} $M $M $REPEAT $parallel > ${clog} &
+#             wait;
+#         done;
+#     done;
+# done;
+
+# # synchronized with other machines.
+# cd ..
+# scp -r ./MP-SPDZ/Programs spdz1:~/MP-SPDZ/ &
+# scp -r ./MP-SPDZ/Programs spdz2:~/MP-SPDZ
+# wait;
+# cd ./MP-SPDZ/;
+
+# ./Eval/control/setup_ssl.sh;
+
+# # execute multithreaded
+# for task in ${task_list[*]}; do
+#     recordFolder=${logFolder}Record_${task}
+#     logFile=${recordFolder}/Record-baseline
+#     if [ ! -d ${recordFolder} ]; then
+#         mkdir ${recordFolder};
+#     # else
+#     #     rm -r ${recordFolder}*
+#     fi
+#     for parallel in ${parallel_list[*]}; do
+#         for M in ${M_list[*]}; do
+#             elog=${logFile}-multithread-${task}-n=${M}-m=${M}-k=1-R=${REPEAT}-c=${parallel};
+#             ./Eval/basic/dis_exec.sh ${sourceFile}-${task}-${M}-${M}-${REPEAT}-${parallel} ${protocol} ${recordFolder} ${elog}
+#             wait;
+#         done;
+#     done;
 # done;

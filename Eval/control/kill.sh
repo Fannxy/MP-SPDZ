@@ -16,6 +16,6 @@ done
 
 if [ -n "$2" ]; then
     echo "kill for spdz1 and spdz2";
-    ssh spdz1 "sh ./MP-SPDZ/Eval/kill.sh "${keyword};
-    ssh spdz2 "sh ./MP-SPDZ/Eval/kill.sh "${keyword};
+    ssh spdz1 "sh ./MP-SPDZ/Eval/control/kill.sh "${keyword};
+    ssh spdz2 "sh ./MP-SPDZ/Eval/control/kill.sh "${keyword};
 fi

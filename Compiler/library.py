@@ -1173,6 +1173,49 @@ def tree_reduce_multithread(n_threads, function, vector):
         left = (left + 1) // 2
     return inputs[0]
 
+
+def tree_reduce_multithread_type(n_threads, function, vector1, vector2, stype):
+    """ Round-efficient reduction in several threads. The following code
+    computes the maximum of an array in 10 threads::
+
+      tree_reduce_multithread(10, lambda x, y: x.max(y), a)
+
+    :param n_threads: number of threads (int)
+    :param function: reduction function taking exactly two arguments
+    :param vector: register vector or array
+
+    """
+    inputs1 = stype.Array(len(vector1))
+    inputs2 = stype.Array(len(vector1))
+    inputs1.assign_vector(vector1)
+    inputs2.assign_vector(vector2)
+    
+    outputs1 = vector1.Array(len(vector1) // 2)
+    outputs2 = vector2.Array(len(vector2) // 2)
+    left = len(vector1)
+    
+    while left > 1:
+        @multithread(n_threads, left // 2)
+        def _(base, size):
+            print("in")
+            vals, inds = function(inputs1.get_vector(2*base, size), inputs1.get_vector(2*base + size, size), inputs2.get_vector(2*base, size), inputs2.get_vector(2*base + size, size))
+            # outputs.assign_vector(
+            #     function(inputs.get_vector(2 * base, size),
+            #              inputs.get_vector(2 * base + size, size)), base)
+            # print(vals.size)
+            outputs1.assign_vector(vals, base)
+            outputs2.assign_vector(inds, base)
+        inputs1.assign_vector(outputs1.get_vector(0, left // 2))
+        inputs2.assign_vector(outputs2.get_vector(0, left // 2))
+        
+        if left % 2 == 1:
+            inputs1[left // 2] = inputs1[left - 1]
+            inputs2[left // 2] = inputs2[left - 1]
+        left = (left + 1) // 2
+        
+    return inputs1[0], inputs2[0]
+
+
 def tree_reduce(function, sequence):
     """ Round-efficient reduction. The following computes the maximum
     of the list :py:obj:`l`::

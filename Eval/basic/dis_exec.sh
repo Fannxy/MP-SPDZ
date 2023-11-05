@@ -1,35 +1,10 @@
-task=$1
-protocol=$2
-logFolder=$3
-logFile=$4
-party=$5
+task=$1; protocol=$2; logFolder=$3; logFile=$4
 
-if [ -z "$6" ]; then
-    batch_size=-1;
-else
-    batch_size=$6;
-    batch_size=$((batch_size*100))
-    echo ">>>>>>>>>>> batch-size: "$batch_size >> ${logFile}
-fi
-
+echo -e "Test $1 using protocol $2"
 logTmp=${logFolder}tmp.txt
+echo -e "\n\nTest $1 using protocol $2 \n" >> ${logFile}
 
-if [ ! -d ${logFolder} ]; then
-    mkdir ${logFolder};
-fi
+./Eval/basic/dis_exec_unit.sh ${task} ${protocol} ${logFolder} ${logFile} 0 &
+ssh spdz1 "cd ./MP-SPDZ/; ./Eval/basic/dis_exec_unit.sh ${task} ${protocol} ${logFolder} ${logFile} 1" &
+ssh spdz2 "cd ./MP-SPDZ/; ./Eval/basic/dis_exec_unit.sh ${task} ${protocol} ${logFolder} ${logFile} 2" &
 wait;
-
-if [ ${party} == 0 ]; then
-    echo -e "Test $1 using protocol $2" >> ${logFile}
-fi
-
-if [ ${party} == 0 ]; then
-    ./${protocol} -p ${party} ${task} --ip-file-name HOST --batch-size ${batch_size} >> ${logFile} 2>&1;
-else
-    ./${protocol} -p ${party} ${task} --ip-file-name HOST --batch-size ${batch_size} >> ${logTmp};
-fi
-wait;
-
-if [ ${party} == 0 ]; then
-    echo "Success" >> ${logFile}
-fi
