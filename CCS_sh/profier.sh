@@ -52,7 +52,7 @@ for k in ${kArray[@]}
         wait;
     done
 
-synchronize
+# synchronize
 scp -r ./MP-SPDZ/Programs/ mp-spdz131:~/MP-SPDZ/ & 
 scp -r ./MP-SPDZ/Programs/ mp-spdz132:~/MP-SPDZ/
 wait;

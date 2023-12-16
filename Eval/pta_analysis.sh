@@ -14,47 +14,47 @@ if [ ! -d ${clogFolder} ]; then
 fi
 
 
-N=1; REPEAT=1;
-M_list=(1024 16384 32768)
-parallel_list=(16 32 64)
-task_list=(max)
+# N=1; REPEAT=1;
+# M_list=(1024 16384 32768)
+# parallel_list=(16 32 64)
+# task_list=(max)
 
-# compile multithreaded version
-for M in ${M_list[*]}; do
-    for task in ${task_list[*]}; do
-        for parallel in ${parallel_list[*]}; do
-            clog=${clogFile}-${task}-${M}-${M}-${REPEAT}-${parallel};
-            python compile.py -l -R 64 -Z 3 ${sourceFile} ${task} $M $M $REPEAT $parallel > ${clog} &
-        done;
-        wait;
-    done;
-done;
+# # compile multithreaded version
+# for M in ${M_list[*]}; do
+#     for task in ${task_list[*]}; do
+#         for parallel in ${parallel_list[*]}; do
+#             clog=${clogFile}-${task}-${M}-${M}-${REPEAT}-${parallel};
+#             python compile.py -l -R 64 -Z 3 ${sourceFile} ${task} $M $M $REPEAT $parallel > ${clog} &
+#         done;
+#         wait;
+#     done;
+# done;
 
-# synchronized with other machines.
-cd ..
-scp -r ./MP-SPDZ/Programs spdz1:~/MP-SPDZ/ &
-scp -r ./MP-SPDZ/Programs spdz2:~/MP-SPDZ
-wait;
-cd ./MP-SPDZ/;
+# # synchronized with other machines.
+# cd ..
+# scp -r ./MP-SPDZ/Programs spdz1:~/MP-SPDZ/ &
+# scp -r ./MP-SPDZ/Programs spdz2:~/MP-SPDZ
+# wait;
+# cd ./MP-SPDZ/;
 
-./Eval/control/setup_ssl.sh;
+# ./Eval/control/setup_ssl.sh;
 
-# execute multithreaded
-for task in ${task_list[*]}; do
-    recordFolder=${logFolder}Record_${task}
-    logFile=${recordFolder}/Record-baseline
-    if [ ! -d ${recordFolder} ]; then
-        mkdir ${recordFolder};
-    fi
-    for parallel in ${parallel_list[*]}; do
-        for M in ${M_list[*]}; do
-            elog=${logFile}-multithread-${task}-n=${M}-m=${M}-k=1-R=${REPEAT}-c=${parallel};
-            # ./Eval/basic/local_exec.sh ${sourceFile}-multithread-${N}-${M}-${REPEAT}-${parallel} ${protocol} ${logFolder} ${elog}
-            ./Eval/basic/dis_exec.sh ${sourceFile}-${task}-${M}-${M}-${REPEAT}-${parallel} ${protocol} ${recordFolder} ${elog}
-            wait;
-        done;
-    done;
-done;
+# # execute multithreaded
+# for task in ${task_list[*]}; do
+#     recordFolder=${logFolder}Record_${task}
+#     logFile=${recordFolder}/Record-baseline
+#     if [ ! -d ${recordFolder} ]; then
+#         mkdir ${recordFolder};
+#     fi
+#     for parallel in ${parallel_list[*]}; do
+#         for M in ${M_list[*]}; do
+#             elog=${logFile}-multithread-${task}-n=${M}-m=${M}-k=1-R=${REPEAT}-c=${parallel};
+#             # ./Eval/basic/local_exec.sh ${sourceFile}-multithread-${N}-${M}-${REPEAT}-${parallel} ${protocol} ${logFolder} ${elog}
+#             ./Eval/basic/dis_exec.sh ${sourceFile}-${task}-${M}-${M}-${REPEAT}-${parallel} ${protocol} ${recordFolder} ${elog}
+#             wait;
+#         done;
+#     done;
+# done;
 
 
 N=1; REPEAT=1;

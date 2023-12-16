@@ -2,7 +2,7 @@ from Compiler.types import sfix
 from Compiler.library import *
 
 
-MAX_TREE_REDUCE = 2**30
+MAX_TREE_REDUCE = 2**28
 
 def tgl_cipher_index_for(arr, indices):
     m, n = len(arr), len(indices)
@@ -29,9 +29,6 @@ def tgl_cipher_index_for_parallel(arr, indices, parallel=1):
     def _(i, j):
         tbl[i*m+j] = (arr[j] * (indices[i] == j))
     if(n*m > MAX_TREE_REDUCE):
-        # @for_range_opt_multithread(min(parallel, n), [n, m])
-        # def _(i, j):
-        #     res[i] += tbl[i*m+j]
         for i in range(n):
             res[i] = tbl.get_vector(i*m, m).sum()
     else:
@@ -68,8 +65,7 @@ def tgl_select_for_parallel(tars, keys, vals, parallel=1):
 
 def tgl_average_for_parallel(arr, parallel=1):
     
-    m = len(arr)
-    n = 1
+    m, n = len(arr)7, 1
     res = Array(n, sfix)
     res[0] = sfix(0)
         
@@ -168,6 +164,7 @@ def tgl_max(X, parallel=1):
         res[i] = sfix(0)
         
     tbl = Array(n*m, sfix)
+    @print_ln('actual_size: %s', tbl.size())
     @for_range_opt_multithread(parallel, [n, m])
     def _(i, j):
         tbl[i*m+j] = X[i] > X[j]
