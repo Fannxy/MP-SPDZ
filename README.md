@@ -58,6 +58,11 @@ requirements](#requirements). On Ubuntu, the following might suffice:
 ```
 sudo apt-get install automake build-essential clang cmake git libboost-dev libboost-thread-dev libgmp-dev libntl-dev libsodium-dev libssl-dev libtool python3
 ```
+**For spdz2k and mascot protocols, we also need:**
+```
+sudo apt-get install libboost-iostreams-dev libboost-filesystem-dev
+```
+
 On MacOS, this requires [brew](https://brew.sh) to be installed,
 which will be used for all dependencies.
 It will execute [the
