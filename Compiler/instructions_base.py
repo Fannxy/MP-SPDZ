@@ -217,6 +217,7 @@ opcodes = dict(
     FIXINPUT = 0xE8,
     GBITDEC = 0x18A,
     GBITCOM = 0x18B,
+    DUMPLOG=0xFF,
     # Secure socket
     INITSECURESOCKET = 0x1BA,
     RESPSECURESOCKET = 0x1BB

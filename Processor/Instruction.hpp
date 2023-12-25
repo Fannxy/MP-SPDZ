@@ -16,6 +16,7 @@
 
 #include "Processor/Binary_File_IO.hpp"
 #include "Processor/PrivateOutput.hpp"
+#include "Processor/Log.hpp"
 #include "Math/bigint.hpp"
 
 #include <stdlib.h>
@@ -499,6 +500,8 @@ void BaseInstruction::parse_operands(istream& s, int pos, int file_pos)
         n = get_int(s);
         get_ints(r, s, 1);
         get_vector(num_var_args, start, s);
+        break;
+      case DUMPLOG:
         break;
       default:
         ostringstream os;
@@ -1359,6 +1362,9 @@ inline void Instruction::execute(Processor<sint, sgf2n>& Proc) const
         return;
       case CISC:
         Procp.protocol.cisc(Procp, *this);
+        return;
+      case DUMPLOG:
+        Proc.dump_log();
         return;
       default:
         printf("Case of opcode=0x%x not implemented yet\n",opcode);

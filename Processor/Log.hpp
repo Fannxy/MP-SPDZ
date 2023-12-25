@@ -18,8 +18,6 @@
 template <class sint, class sgf2n>
 Log<sint, sgf2n>::Log(Processor<sint, sgf2n> *processor) {
     this -> processor = processor;
-    outf = nullptr;
-    inf = nullptr;
 }
 
 template <class sint, class sgf2n>
@@ -33,8 +31,9 @@ struct tm* Log<sint, sgf2n>::get_time() {
 
 template <class sint, class sgf2n>
 void Log<sint, sgf2n>::dump_machine_log(Machine<sint, sgf2n> *machine) {
-    this -> machine_log = &(MachineLog(machine));
-    machine_log -> dump_machinelog(outf);
+    machine_log = new MachineLog(machine);
+    this -> machine_log = machine_log;
+    (this -> machine_log) -> dump_machinelog(outf);
 }
 
 template <class sint, class sgf2n>
@@ -72,25 +71,25 @@ void Log<sint, sgf2n>::dump_log_title(int &id_Log) {
 }
 
 template <class sint, class sgf2n>
-void Log<sint, sgf2n>::dump_log(Processor<sint, sgf2n> *processor) {
+void Log<sint, sgf2n>::dump_log() {
+    cout << "11111111111111111111111" << ((this -> processor) -> P).my_num() << endl;
     int id_Log = 0;
-    Log<sint, sgf2n>::dump_log_title(&id_Log);
+    Log<sint, sgf2n>::dump_log_title(id_Log);
     dump_log_file(id_Log);
-    outf << "id " << id_Log << endl;
+    outf << "id " << id_Log << " " << ((this -> processor) -> P).my_num() << endl;
     Log<sint, sgf2n>::get_time();
-    struct tm *ptminfo;
-    get_time(ptminfo);
+    struct tm *ptminfo = get_time();;
     outf << ptminfo -> tm_year + 1900 << " " << ptminfo -> tm_mon + 1;
     outf  << " " << ptminfo -> tm_mday << " " << ptminfo -> tm_hour;
     outf << " " << ptminfo -> tm_min <<  " " << ptminfo -> tm_sec << endl;
-    dump_machine_log(&(processor->machine));
-    outf << "nthreads" << endl;
-    outf << (processor->machine) -> nthreads << endl;
-    if ((processor->machine) -> nthreads == 1) {
-        dump_current_processor_log(processor);
-    } else {
-        dump_processor_logs();
-    }
+    // dump_machine_log(&((this -> processor) ->machine));
+    // outf << "nthreads" << endl;
+    // outf << ((this -> processor)->machine).nthreads << endl;
+    // if (((this -> processor)->machine).nthreads == 1) {
+    //    dump_current_processor_log((this -> processor));
+    // } else {
+    //     dump_processor_logs();
+    // }
     // otherTODO?
     outf.close (); // ChatGPT says only need to close file once in final.
     return;
@@ -98,13 +97,11 @@ void Log<sint, sgf2n>::dump_log(Processor<sint, sgf2n> *processor) {
 
 template <class sint, class sgf2n>
 void Log<sint, sgf2n>::dump_log_file(int id_Log) {
-    ofstream outf;
-    outf.open(LOG_ITEM_FILE_PATH(id_Log), ios::out | ios::trunc);
-    if (! outf.good()) {
+    (this->outf).open(LOG_ITEM_FILE_PATH(id_Log), ios::out | ios::trunc);
+    if (! (this->outf).good()) {
         throw runtime_error(
             "^^^^^^^^^^^^^^^^^^^^Err in opening target file.^^^^^^^^^^^^^^^^^^^^");
     }
-    this -> outf = outf;
 }
 
 template <class sint, class sgf2n>

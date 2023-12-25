@@ -40,7 +40,7 @@ public:
 
     void dump_processor_logs();
 
-    void dump_log(Processor<sint, sgf2n> *processor);
+    void dump_log();
 
     void dump_log_title(int &id_Log);
 

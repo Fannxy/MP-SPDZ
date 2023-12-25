@@ -285,6 +285,8 @@ class Processor : public ArithmeticProcessor
   // synchronize in asymmetric protocols
   long sync(long x) const;
 
+  void dump_log();
+
   ofstream& get_public_output();
   ofstream& get_binary_output();
 

@@ -1,0 +1,12 @@
+a = sint(1)
+b = sint(3)
+c = a + b
+# break_point()
+d = a * b
+# break_point()
+e = a + b
+print_ln("%s", a.reveal())
+print_ln("%s", b.reveal())
+print_ln("%s", c.reveal())
+print_ln("%s", d.reveal())
+print_ln("%s", e.reveal())
