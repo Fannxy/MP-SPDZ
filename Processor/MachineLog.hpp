@@ -9,8 +9,7 @@ MachineLog<sint, sgf2n>::MachineLog(Machine<sint, sgf2n> *machine) {
 }
 
 template <class sint, class sgf2n>
-void MachineLog<sint, sgf2n>::dump_machinelog(ofstream outf) {
-    this -> outf = outf;
+void MachineLog<sint, sgf2n>::dump_machinelog() {
     outf << "MachineLog" << endl;
     dump_Memory("M2", machine -> M2);
     dump_Memory("Mp", machine -> Mp);

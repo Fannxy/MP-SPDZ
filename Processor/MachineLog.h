@@ -24,7 +24,7 @@ public:
 
     MachineLog(Machine<sint, sgf2n> *machine);
 
-    void dump_machinelog(ofstream outf);
+    void dump_machinelog();
 
     template <class T>
     void dump_Memory(string memory_type, Memory<T> *target_memory);
