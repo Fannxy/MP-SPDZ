@@ -3,16 +3,19 @@
 
 #include <iostream>
 #include "Processor/Memory.h"
+#include "Processor/LogFileManager.h"
+#include "Processor/Processor.h"
 
 using namespace std;
+
+#define LOGOUT(...) (this -> log_file_manager) -> dump_to_file(__VA_ARGS__)
 
 template<class sint, class sgf2n>
 class MachineLog {
 
 public:
-    // target file && source file
-    ofstream outf;
-    ifstream inf;
+    // file manager in singleton mode
+    LogFileManager<sint, sgf2n> *log_file_manager;
 
     // Mahcine_ptr
     Machine<sint, sgf2n> *machine;
@@ -22,7 +25,7 @@ public:
     // Memory<sint> Mp_log;
     // Memory<Integer> Mi_log;
 
-    MachineLog(Machine<sint, sgf2n> *machine);
+    MachineLog(Processor<sint, sgf2n> *processor);
 
     void dump_machinelog();
 

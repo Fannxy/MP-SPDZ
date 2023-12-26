@@ -1,7 +1,9 @@
 #include "Processor/Log.h"
 #include "Processor/Machine.h"
 #include "Processor/Processor.h"
+#include "Processor/MachineLog.hpp"
 #include "Processor/LogFileManager.hpp"
+
 #include <ctime>
 #include <fstream>
 #include <iostream>
@@ -20,20 +22,20 @@ void Log<sint, sgf2n>::dump_time() {
     struct tm *ptminfo;
     time(&rawtime);
     ptminfo = localtime(&rawtime);
-    (this -> log_file_manager) -> dump_to_file("time\n", ptminfo -> tm_year + 1900, " ", ptminfo -> tm_mon + 1, " ");
-    (this -> log_file_manager) -> dump_to_file(ptminfo -> tm_mday, " ", ptminfo -> tm_hour, " ");
-    (this -> log_file_manager) -> dump_to_file(ptminfo -> tm_min, " ", ptminfo -> tm_sec, "\n");
+    LOGOUT("time\n", ptminfo -> tm_year + 1900, " ", ptminfo -> tm_mon + 1, " ");
+    LOGOUT(ptminfo -> tm_mday, " ", ptminfo -> tm_hour, " ");
+    LOGOUT(ptminfo -> tm_min, " ", ptminfo -> tm_sec, "\n");
 }
 
 template <class sint, class sgf2n>
 void Log<sint, sgf2n>::dump_basic_info(int id_log) {
-    (this -> log_file_manager) -> dump_to_file("id\n", id_log, "\n");
-    (this -> log_file_manager) -> dump_to_file("player_no\n", ((this -> processor) -> P).my_num(), "\n");
+    LOGOUT("id\n", id_log, "\n");
+    LOGOUT("player_no\n", ((this -> processor) -> P).my_num(), "\n");
 }
 
 template <class sint, class sgf2n>
-void Log<sint, sgf2n>::dump_machine_log(Machine<sint, sgf2n> *machine) {
-    machine_log = new MachineLog(machine);
+void Log<sint, sgf2n>::dump_machine_log(Processor<sint, sgf2n> *processor) {
+    machine_log = new MachineLog(processor);
     this -> machine_log = machine_log;
     (this -> machine_log) -> dump_machinelog();
 }
@@ -58,7 +60,7 @@ void Log<sint, sgf2n>::dump_log() {
     (this -> log_file_manager) -> generate_log_file(id_log);
     dump_basic_info(id_log);
     dump_time();
-    // dump_machine_log(&((this -> processor) ->machine));
+    dump_machine_log(processor);
     // outf << "nthreads" << endl;
     // outf << ((this -> processor)->machine).nthreads << endl;
     // if (((this -> processor)->machine).nthreads == 1) {
