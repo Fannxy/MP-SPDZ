@@ -13,6 +13,7 @@ using namespace std;
 #define LOG_TITLE_FILE_PATH  (string(LOG_DIR) + "/" + string(LOG_TITLE_FILE_NAME)).c_str()
 #define LOG_ITEM_FILE_NAME(x)   "CheckPoint" + to_string(x) + ".log"
 #define LOG_ITEM_FILE_PATH(x)   (string(LOG_DIR) + "/" + string(LOG_ITEM_FILE_NAME(x))).c_str()
+#define LOGOUT(...) (this -> log_file_manager) -> dump_to_file(__VA_ARGS__)
 
 template <class sint, class sgf2n>
 class LogFileManager {

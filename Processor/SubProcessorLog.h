@@ -3,16 +3,17 @@
 
 #include "Tools/CheckVector.h"
 #include "Processor/Processor.h"
+#include "Processor/LogFileManager.h"
 #include <iostream>
 
 using namespace std;
 
 
-template <class T>
+template <class sint, class sgf2n, class T>
 class SubProcessorLog {
-    // target file && source file
-    ofstream outf;
-    ifstream inf;
+public:
+    // file manager in singleton mode
+    LogFileManager<sint, sgf2n> *log_file_manager;
 
     // SubProcessor ptr
     SubProcessor<T> *subprocessor; 
@@ -21,9 +22,9 @@ class SubProcessorLog {
     CheckVector<typename T::clear> C_log;
     CheckVector<T> S_log;
     
-    SubProcessorLog(SubProcessor<T> *subprocessor);
+    SubProcessorLog(SubProcessor<T> *subprocessor, Processor<sint, sgf2n> *processor);
 
-    void dump_subprocessorlog(ofstream outf);
+    void dump_subprocessorlog();
 
     void dump_C();
 

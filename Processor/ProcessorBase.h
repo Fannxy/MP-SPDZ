@@ -62,6 +62,11 @@ public:
 
   void setup_redirection(int my_nu, int thread_num, OnlineOptions& opts,
       SwitchableOutput& out);
+
+  stack<Integer> get_stack() {
+    stack<Integer> cp_stacki = stacki;
+    return cp_stacki;
+  }
 };
 
 #endif /* PROCESSOR_PROCESSORBASE_H_ */

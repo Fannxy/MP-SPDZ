@@ -8,8 +8,6 @@
 
 using namespace std;
 
-#define LOGOUT(...) (this -> log_file_manager) -> dump_to_file(__VA_ARGS__)
-
 template<class sint, class sgf2n>
 class MachineLog {
 

@@ -4,8 +4,9 @@
 #include <stack>
 #include <iostream>
 
-#include "Processor/SubProcessorLog.h"
+#include "Processor/SubProcessorLog.hpp"
 #include "Processor/Processor.h"
+#include "Processor/LogFileManager.h"
 
 using namespace std;
 
@@ -13,9 +14,8 @@ template<class sint, class sgf2n>
 class ProcessorLog {
 
 public:
-    // target file && source file
-    ofstream outf;
-    ifstream inf;
+    // file manager in singleton mode
+    LogFileManager<sint, sgf2n> *log_file_manager;
     
     // Processor ptr
     Processor<sint, sgf2n> *processor;
@@ -27,13 +27,13 @@ public:
     // stack<long> stacki_log;
     // CheckVector<long> Ci_log;
 
-    SubProcessorLog<sint>* Procp_log;
-    SubProcessorLog<sgf2n>*  Proc2_log;
+    SubProcessorLog<sint, sgf2n, sint>* Procp_log;
+    SubProcessorLog<sint, sgf2n, sgf2n>*  Proc2_log;
     OnlineOptions opts;
 
     ProcessorLog(Processor<sint, sgf2n> *processor);
 
-    void dump_processorlog(ofstream outf);
+    void dump_processorlog();
 
     void dump_PC();
 
@@ -43,9 +43,9 @@ public:
 
     void dump_online_options();
 
-    template <class T>
-    void dump_subprocessor(int subprocessor_type, SubProcessor<T> *subprocesssor);
+    void dump_procp(SubProcessor<sint> *subprocesssor);
 
+    void dump_proc2(SubProcessor<sgf2n> *subprocesssor);
 
 };
 #endif

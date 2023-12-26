@@ -10,8 +10,6 @@
 
 using namespace std;    // in SPDZ many .h file using std as namespace, is it right?
 
-#define LOGOUT(...) (this -> log_file_manager) -> dump_to_file(__VA_ARGS__)
-
 template <class sint, class sgf2n>
 class Log {
 

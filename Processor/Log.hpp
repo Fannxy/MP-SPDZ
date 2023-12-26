@@ -3,6 +3,7 @@
 #include "Processor/Processor.h"
 #include "Processor/MachineLog.hpp"
 #include "Processor/LogFileManager.hpp"
+#include "Processor/ProcessorLog.hpp"
 
 #include <ctime>
 #include <fstream>
@@ -31,6 +32,8 @@ template <class sint, class sgf2n>
 void Log<sint, sgf2n>::dump_basic_info(int id_log) {
     LOGOUT("id\n", id_log, "\n");
     LOGOUT("player_no\n", ((this -> processor) -> P).my_num(), "\n");
+    LOGOUT("nthreads\n", ((this -> processor)->machine).nthreads, "\n");
+    dump_time();
 }
 
 template <class sint, class sgf2n>
@@ -42,8 +45,9 @@ void Log<sint, sgf2n>::dump_machine_log(Processor<sint, sgf2n> *processor) {
 
 template <class sint, class sgf2n>
 void Log<sint, sgf2n>::dump_current_processor_log(Processor<sint, sgf2n> *processor) {
-    this -> processor_logs.push_back(&(ProcessorLog(processor)));
-    (this -> processor_logs)[processor_logs.size() - 1] -> dump_processorlog();
+    ProcessorLog curr_processorlog(processor);
+    (this -> processor_logs).push_back(&curr_processorlog);
+    curr_processorlog.dump_processorlog();
 }
 
 template <class sint, class sgf2n>
@@ -59,18 +63,14 @@ void Log<sint, sgf2n>::dump_log() {
     (this -> log_file_manager) -> generate_log_title_file(id_log);
     (this -> log_file_manager) -> generate_log_file(id_log);
     dump_basic_info(id_log);
-    dump_time();
     dump_machine_log(processor);
-    // outf << "nthreads" << endl;
-    // outf << ((this -> processor)->machine).nthreads << endl;
-    // if (((this -> processor)->machine).nthreads == 1) {
-    //    dump_current_processor_log((this -> processor));
-    // } else {
-    //     dump_processor_logs();
-    // }
-    // otherTODO?
-    // outf.close (); // ChatGPT says only need to close file once in final.
+    if (((this -> processor)->machine).nthreads == 1) {
+       dump_current_processor_log((this -> processor));
+    } else {
+        dump_processor_logs();
+    }
     (this -> log_file_manager) -> end_generate_log_file();
+    // Any Other TODO?
     return;
 }
 
