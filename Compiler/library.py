@@ -1637,13 +1637,24 @@ def init_client_connection(host, port, my_id, relative_port=True):
         res, regint.conv(port), regint.conv(my_id), host)
     return res
 
-def break_point(name=''):
+def break_point(name='', dump_log=False):
     """
     Insert break point. This makes sure that all following code
     will be executed after preceding code.
 
     :param name: Name for identification (optional)
     """
+    
+    """
+    Before every BasicBlock we can choose whether to add log via boolean parameter dump_log 
+    Baiting Jiang.23.12.22 16:45
+    """
+
+    if (dump_log) :
+        print("试着打Log吧兄弟")
+        instructions.dump_log()
+
+
     get_tape().start_new_basicblock(name=name)
 
 def check_point():

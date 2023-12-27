@@ -14,6 +14,7 @@
 #include "Processor/Online-Thread.h"
 #include "Processor/ThreadJob.h"
 #include "Processor/ExternalClients.h"
+#include "Processor/Log.h"
 
 #include "GC/Machine.h"
 

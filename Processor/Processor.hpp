@@ -981,4 +981,10 @@ long Processor<sint, sgf2n>::sync(long x) const
   return x;
 }
 
+template<class sint, class sgf2n>
+void Processor<sint, sgf2n>::dump_log() {
+  Log log(this);
+  log.dump_log();
+}
+
 #endif

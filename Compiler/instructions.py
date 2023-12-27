@@ -1995,6 +1995,17 @@ class rand(base.Instruction):
     code = base.opcodes['RAND']
     arg_format = ['ciw','ci']
 
+class dump_log(base.Instruction):
+    """
+    dump_log via store all registers, PC and other params to be a log(checkpoint)
+
+    :param: None
+    """
+    __slots__ = []
+    code = base.opcodes['DUMPLOG']
+    arg_format = []
+
+    
 ###
 ### Integer operations
 ### 

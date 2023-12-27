@@ -216,6 +216,7 @@ enum
     INTOUTPUT = 0xE6,
     FLOATOUTPUT = 0xE7,
     FIXINPUT = 0xE8,
+    DUMPLOG = 0XFF,
 
     // GF(2^n) versions
     
