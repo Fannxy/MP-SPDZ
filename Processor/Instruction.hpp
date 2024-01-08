@@ -16,7 +16,6 @@
 
 #include "Processor/Binary_File_IO.hpp"
 #include "Processor/PrivateOutput.hpp"
-#include "Processor/Log.hpp"
 #include "Math/bigint.hpp"
 
 #include <stdlib.h>

@@ -4,19 +4,30 @@
 #include <stack>
 #include <iostream>
 
-#include "Processor/SubProcessorLog.hpp"
+#include "Tools/CheckVector.h"
 #include "Processor/Processor.h"
-#include "Processor/LogFileManager.h"
 
 using namespace std;
+
+template <class sint, class sgf2n, class T>
+class SubProcessorLog {
+public:
+    // SubProcessor ptr
+    SubProcessor<T> *subprocessor; 
+
+    // Target to dump Registers of SubProcessor
+    CheckVector<typename T::clear> C_log;
+    CheckVector<T> S_log;
+    
+    SubProcessorLog(SubProcessor<T> *subprocessor);
+
+    void generate_subprocessorlog();
+};
 
 template<class sint, class sgf2n>
 class ProcessorLog {
 
 public:
-    // file manager in singleton mode
-    LogFileManager<sint, sgf2n> *log_file_manager;
-    
     // Processor ptr
     Processor<sint, sgf2n> *processor;
 
@@ -24,28 +35,24 @@ public:
     unsigned int PC_log;
 
     // Target to dump Rergisters of Processor
-    // stack<long> stacki_log;
-    // CheckVector<long> Ci_log;
+    stack<Integer> stacki_log;
+    CheckVector<Integer> Ci_log;
 
-    SubProcessorLog<sint, sgf2n, sint>* Procp_log;
-    SubProcessorLog<sint, sgf2n, sgf2n>*  Proc2_log;
+    SubProcessorLog<sint, sgf2n, sint>* procp_log;
+    SubProcessorLog<sint, sgf2n, sgf2n>*  proc2_log;
     OnlineOptions opts;
 
     ProcessorLog(Processor<sint, sgf2n> *processor);
 
-    void dump_processorlog();
+    void generate_processorlog();
 
-    void dump_PC();
+    void generate_online_options();
 
-    void dump_stacki();
+    void generate_procp(SubProcessor<sint> *subprocesssor);
 
-    void dump_Ci();
+    void generate_proc2(SubProcessor<sgf2n> *subprocesssor);
 
-    void dump_online_options();
-
-    void dump_procp(SubProcessor<sint> *subprocesssor);
-
-    void dump_proc2(SubProcessor<sgf2n> *subprocesssor);
+    void generate_Ci();
 
 };
 #endif

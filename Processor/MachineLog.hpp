@@ -1,36 +1,39 @@
 #include "MachineLog.h"
 #include "Processor/Machine.h"
 
+// ------------------ MemoryLog ------------------
+template <class sint, class sgf2n, class T>
+void  MemoryLog<sint, sgf2n, T>::generate_Memory(Memory<T> *target_memory) {
+            this->generate_MS(&(target_memory -> MS));
+            this->generate_MC(&(target_memory -> MC));
+        }
+
+template <class sint, class sgf2n, class T>
+void MemoryLog<sint, sgf2n, T>::generate_MS(MemoryPart<T> *target_memorypart) {
+    MS_log.resize(target_memorypart -> size());
+    for (size_t i = 0; i < target_memorypart -> size(); i++) {
+        MS_log[i] = (*target_memorypart)[i];
+    }
+}
+
+template <class sint, class sgf2n, class T>
+void MemoryLog<sint, sgf2n, T>::generate_MC(MemoryPartImpl<typename T::clear, CheckVector> *target_memoryartimpl) {
+    MC_log.resize(target_memoryartimpl -> size());
+    for (size_t i = 0; i < target_memoryartimpl -> size(); i++) {
+        MC_log[i] = (*target_memoryartimpl)[i];
+    }
+}
+
+// ------------------ MachineLog ------------------
 template <class sint, class sgf2n>
 MachineLog<sint, sgf2n>::MachineLog(Processor<sint, sgf2n> *processor) {
     this -> machine = &(processor ->machine);
-    this -> log_file_manager = &LogFileManager<sint, sgf2n>::getInstance(processor);
 }
 
 template <class sint, class sgf2n>
-template <class T>
-void MachineLog<sint, sgf2n>::dump_Memory(string memory_type, Memory<T> *target_memory) {
-    LOGOUT("Memory type ", memory_type, "\n");
-    (void) target_memory;
-    dump_MemoryPart("MS", &(target_memory -> MS));
-    dump_MemoryPart("MC", &(target_memory -> MC));
+void MachineLog<sint, sgf2n>::generate_machinelog() {
+    M2_log.generate_Memory(&(machine -> M2));
+    Mp_log.generate_Memory(&(machine -> Mp));
+    Mi_log.generate_Memory(&(machine -> Mi));
 }
 
-template <class sint, class sgf2n>
-void MachineLog<sint, sgf2n>::dump_machinelog() {
-    (this -> log_file_manager) -> dump_to_file("MachineLog\n");
-    dump_Memory("M2", &(machine -> M2));
-    dump_Memory("Mp", &(machine -> Mp));
-    dump_Memory("Mi", &(machine -> Mi)); 
-}
-
-template <class sint, class sgf2n>
-template <class T>
-void MachineLog<sint, sgf2n>::dump_MemoryPart(string memorypart_type, MemoryPart<T> *target_memorypart) {
-    LOGOUT("MemoryPart type ", memorypart_type, "\n");
-    LOGOUT("size\n", target_memorypart->size(), "\n");
-    for (size_t i = 0; i < target_memorypart -> size(); i++) {
-        LOGOUT((*target_memorypart)[i], " ");
-    }
-    LOGOUT("\n");
-}
