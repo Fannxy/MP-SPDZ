@@ -4,14 +4,9 @@
 #include <iostream>
 #include <string>
 
-template <class sint, class sgf2n>
-LogFileManager<sint, sgf2n>::LogFileManager(Processor<sint, sgf2n> *processor, Log<sint, sgf2n> *log) {
-    this -> processor = processor;
-    this -> log = log;
-}
+LogFileManager::LogFileManager() {}
 
-template <class sint, class sgf2n>
-LogFileManager<sint, sgf2n>::~LogFileManager() {
+LogFileManager::~LogFileManager() {
     if (outf.is_open()) {
         outf.close(); 
     }
@@ -21,7 +16,7 @@ LogFileManager<sint, sgf2n>::~LogFileManager() {
 }
 
 template <class sint, class sgf2n>
-void LogFileManager<sint, sgf2n>::generate_log_title_file(int &id_log) {
+void LogFileManager::generate_log_title_file(int &id_log, Processor<sint, sgf2n>* processor) {
     title_inpf.open(LOG_TITLE_FILE_PATH);
     if (title_inpf.fail()) {
         system(("mkdir -p " + string(LOG_DIR)).c_str());
@@ -40,7 +35,7 @@ void LogFileManager<sint, sgf2n>::generate_log_title_file(int &id_log) {
 }
 
 template <class sint, class sgf2n>
-void LogFileManager<sint, sgf2n>::generate_log_file(int &id_log) {
+void LogFileManager::generate_log_file(int &id_log, Processor<sint, sgf2n>* processor) {
     outf.open(LOG_ITEM_FILE_PATH(id_log), ios::out | ios::trunc);
     if (! outf.good()) {
         throw runtime_error(
@@ -48,15 +43,13 @@ void LogFileManager<sint, sgf2n>::generate_log_file(int &id_log) {
     }
 }
 
-template <class sint, class sgf2n>
-void LogFileManager<sint, sgf2n>::end_generate_log_file() {
+void LogFileManager::end_generate_log_file() {
     if (outf.is_open()) {
         outf.close();
     }
 }
 
-template <class sint, class sgf2n>
-void LogFileManager<sint, sgf2n>::dump_time() {
+void LogFileManager::dump_time() {
     time_t rawtime;
     struct tm *ptminfo;
     time(&rawtime);
@@ -67,15 +60,15 @@ void LogFileManager<sint, sgf2n>::dump_time() {
 }
 
 template <class sint, class sgf2n>
-void LogFileManager<sint, sgf2n>::dump_basic_info(int id_log) {
+void LogFileManager::dump_basic_info(int id_log, Processor<sint, sgf2n>* processor) {
     dump_to_file("id\n", id_log, "\n");
-    dump_to_file("player_no\n", ((this -> processor) -> P).my_num(), "\n");
-    dump_to_file("nthreads\n", ((this -> processor)->machine).nthreads, "\n");
+    dump_to_file("player_no\n", (processor -> P).my_num(), "\n");
+    dump_to_file("nthreads\n", (processor -> machine).nthreads, "\n");
     dump_time();
 }
 
 template <class sint, class sgf2n>
-void LogFileManager<sint, sgf2n>::dump_machine_log() {
+void LogFileManager::dump_machine_log(Log<sint, sgf2n>* log) {
     dump_to_file("Memory type ", "M2", "\n");
     dump_memory_log(M2_LOG);
     dump_to_file("Memory type ", "Mp" , "\n");
@@ -84,9 +77,8 @@ void LogFileManager<sint, sgf2n>::dump_machine_log() {
     dump_memory_log(MI_LOG);
 }
 
-template <class sint, class sgf2n>
-template <class T>
-void LogFileManager<sint, sgf2n>::dump_memory_log(MemoryLog<sint, sgf2n, T> memory_log) {
+template <class sint, class sgf2n, class T>
+void LogFileManager::dump_memory_log(MemoryLog<sint, sgf2n, T> memory_log) {
     dump_to_file("MemoryPart type ", "MS", "\n");
     dump_to_file("size ", MS_LOG.size(), "\n");
     for (size_t i = 0; i < MS_LOG.size(); i++) {
@@ -104,7 +96,7 @@ void LogFileManager<sint, sgf2n>::dump_memory_log(MemoryLog<sint, sgf2n, T> memo
 
 
 template <class sint, class sgf2n>
-void LogFileManager<sint, sgf2n>::dump_stacki(ProcessorLog<sint, sgf2n>* processor_log) {
+void LogFileManager::dump_stacki(ProcessorLog<sint, sgf2n>* processor_log) {
     dump_to_file("size ", STACKI_LOG.size(), "\n");
     while (! STACKI_LOG.empty()) {
         dump_to_file(STACKI_LOG.top(), " ");
@@ -114,7 +106,7 @@ void LogFileManager<sint, sgf2n>::dump_stacki(ProcessorLog<sint, sgf2n>* process
 }
 
 template <class sint, class sgf2n>
-void LogFileManager<sint, sgf2n>::dump_Ci(ProcessorLog<sint, sgf2n>* processor_log) {
+void LogFileManager::dump_Ci(ProcessorLog<sint, sgf2n>* processor_log) {
     dump_to_file("size ", CI_LOG.size(), "\n");
     for (size_t i = 0; i < CI_LOG.size(); i++) {
         dump_to_file(CI_LOG[i], " ");
@@ -122,9 +114,8 @@ void LogFileManager<sint, sgf2n>::dump_Ci(ProcessorLog<sint, sgf2n>* processor_l
     dump_to_file("\n");
 }
 
-template <class sint, class sgf2n>
-template <class T>
-void LogFileManager<sint, sgf2n>::dump_subprocessor(SubProcessorLog<sint, sgf2n, T>* subprocessor_log) {
+template <class sint, class sgf2n, class T>
+void LogFileManager::dump_subprocessor(SubProcessorLog<sint, sgf2n, T>* subprocessor_log) {
     dump_to_file("C\n");
     dump_to_file("size ", C_LOG.size(), "\n");
     for (size_t i = 0; i < C_LOG.size(); i++) {
@@ -141,7 +132,7 @@ void LogFileManager<sint, sgf2n>::dump_subprocessor(SubProcessorLog<sint, sgf2n,
 }
 
 template <class sint, class sgf2n>
-void LogFileManager<sint, sgf2n>::dump_processor_log(ProcessorLog<sint, sgf2n>* processor_log) {
+void LogFileManager::dump_processor_log(ProcessorLog<sint, sgf2n>* processor_log) {
     dump_to_file("PC\n");
     dump_to_file(processor_log -> PC_log, "\n");
     dump_to_file("stacki (with top at first)\n");
@@ -156,7 +147,7 @@ void LogFileManager<sint, sgf2n>::dump_processor_log(ProcessorLog<sint, sgf2n>* 
 }
 
 template <class sint, class sgf2n>
-void LogFileManager<sint, sgf2n>::dump_processor_logs() {
+void LogFileManager::dump_processor_logs(Log<sint, sgf2n>* log) {
     dump_to_file("size ", PROCESSOR_LOGS.size(), "\n");
     for (size_t i = 0; i < PROCESSOR_LOGS.size(); i++) {
         dump_to_file("Processor ", i, "\n"); // TODO: Now can only handle circumstance {0}.
@@ -166,23 +157,24 @@ void LogFileManager<sint, sgf2n>::dump_processor_logs() {
 
 // Main Thread Func, need to satisfy no using of processor(it is dynamic)
 template <class sint, class sgf2n>
-void LogFileManager<sint, sgf2n>::dump_pthread_func() {
+void* LogFileManager::dump_pthread_func(Log<sint, sgf2n>* log) {
     dump_to_file("MachineLog\n");
-    dump_machine_log();
+    dump_machine_log(log);
     dump_to_file("ProcessorLogs\n");
     dump_to_file("Processors\n");
-    dump_processor_logs();
+    dump_processor_logs(log);
     end_generate_log_file();
     // Any Other TODO?
+    return nullptr;
 }
 
 template <class sint, class sgf2n>
-void LogFileManager<sint, sgf2n>::dump_log() {
+void LogFileManager::dump_log(Log<sint, sgf2n>* log, Processor<sint, sgf2n> *processor) {
     int id_log = 0;
-    generate_log_title_file(id_log);
-    generate_log_file(id_log);
-    dump_basic_info(id_log);
-    dump_pthread_func();
+    generate_log_title_file(id_log, processor);
+    generate_log_file(id_log, processor);
+    dump_basic_info(id_log, processor);
+    dump_pthread_func(log);
 }
 
 

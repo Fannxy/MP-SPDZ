@@ -987,8 +987,8 @@ template<class sint, class sgf2n>
 void Processor<sint, sgf2n>::dump_log() {
   Log<sint, sgf2n> log(this); 
   log.generate_log();
-  LogFileManager<sint, sgf2n> log_file_manager(this, &log);
-  log_file_manager.dump_log();
+  LogFileManager log_file_manager;
+  log_file_manager.dump_log(&log, this);
 }
 
 #endif
