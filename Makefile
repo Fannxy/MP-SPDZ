@@ -357,7 +357,7 @@ mac-setup: mac-machine-setup
 	brew install openssl boost libsodium gmp yasm ntl cmake
 
 linux-machine-setup:
-mac-machine-setup:
+mac-machine-setup: 
 
 deps/simde/simde:
 	git submodule update --init deps/simde || git clone https://github.com/simd-everywhere/simde deps/simde

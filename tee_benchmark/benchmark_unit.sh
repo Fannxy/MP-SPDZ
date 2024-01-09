@@ -1,6 +1,6 @@
 prot=$1; func=$2;
 logFolder=./tee_benchmark/Record/
-exec_perf='/usr/lib/linux-tools/4.15.0-20-generic/perf'
+# exec_perf='/usr/lib/linux-tools/4.15.0-20-generic/perf'
 
 declare -A protocol
 protocol["repring"]=./replicated-ring-party.x
@@ -43,17 +43,17 @@ logFile=${logFolder}${func}_${prot}_log
 logTmp=${logFolder}tmp
 
 if [ ${parties[$prot]} == 2 ]; then
-    ./${protocol[$prot]} -p 0 ${benchmark[$func]} >> ${logFile} & 
-    pid=$!  
-    ${exec_perf} record -g -F 180 -p $pid -o ./Perf/${prot}.data &
-    ./${protocol[$prot]} -p 1 ${benchmark[$func]} >> ${logTmp};
+    ./${protocol[$prot]} -p 0 ${benchmark[$func]} &>> ${logFile}0 & 
+    # pid=$!  
+    # ${exec_perf} record -g -F 180 -p $pid -o ./Perf/${prot}.data &
+    ./${protocol[$prot]} -p 1 ${benchmark[$func]} &>> ${logFile}1;
 fi
 wait;
 if [ ${parties[$prot]} == 3 ]; then
-    ./${protocol[$prot]} -p 0 ${benchmark[$func]} >> ${logFile} & 
-    pid=$!  
-    ${exec_perf} record -g -F 180 -p $pid -o ./Perf/${prot}.data &
-    ./${protocol[$prot]} -p 1 ${benchmark[$func]} >> ${logTmp} &
-    ./${protocol[$prot]} -p 2 ${benchmark[$func]} >> ${logTmp};
+    ./${protocol[$prot]} -p 0 ${benchmark[$func]} &>> ${logFile} & 
+    # pid=$!  
+    # ${exec_perf} record -g -F 180 -p $pid -o ./Perf/${prot}.data &
+    ./${protocol[$prot]} -p 1 ${benchmark[$func]} &>> ${logTmp} &
+    ./${protocol[$prot]} -p 2 ${benchmark[$func]} &>> ${logTmp};
 fi
 wait;

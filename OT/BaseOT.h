@@ -11,6 +11,8 @@
 #include "Networking/Player.h"
 #include "Tools/random.h"
 #include "Tools/BitVector.h"
+#include <iostream>
+#include <iomanip>
 
 // currently always assumes BOTH, i.e. do 2 sets of OT symmetrically,
 // use bitwise & to check for role
@@ -26,6 +28,8 @@ OT_ROLE INV_ROLE(OT_ROLE role);
 const char* role_to_str(OT_ROLE role);
 void send_if_ot_sender(TwoPartyPlayer* P, vector<octetStream>& os, OT_ROLE role);
 void send_if_ot_receiver(TwoPartyPlayer* P, vector<octetStream>& os, OT_ROLE role);
+
+void print_octet_stream_hex(const octet* data, size_t size);
 
 /** Generating and holding a number of base OTs.
  * @param nOT number of OTs
@@ -121,6 +125,9 @@ protected:
 	/// CPU-specific instantiation of Simplest OT using Curve25519
 	template<class T, class U>
 	void exec_base(bool new_receiver_inputs=true);
+
+	template<class T, class U>
+	void exec_base_tee(bool new_receiver_inputs=true);
 };
 
 class FakeOT : public BaseOT

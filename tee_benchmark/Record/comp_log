@@ -4,9 +4,9 @@ Compiling file Programs/Source/comp.mpc
 WARNING: Order of memory instructions not preserved, errors possible
 Writing to Programs/Schedules/comp.sch
 Writing to Programs/Bytecode/comp-0.bc
-Hash: f7009cf84f729d1a798d854039296a61e974e4a2bcde72f6b39c4e28e85e0aec
+Hash: 440f98e83b8d6e6414933a2b3c1b507cb8c3334fed365b255aa02abb3a93b330
 Program requires at most:
-       14300 integer bits
-         200 integer opens
-        8500 integer triples
-          30 virtual machine rounds
+        8600 integer triples
+       23000 integer bits
+         300 integer opens
+          80 virtual machine rounds

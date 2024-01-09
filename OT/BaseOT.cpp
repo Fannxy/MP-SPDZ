@@ -8,7 +8,8 @@
 #include <fstream>
 #include <pthread.h>
 
-extern "C" {
+extern "C"
+{
 #ifndef NO_AVX_OT
 #include "SimpleOT/ot_sender.h"
 #include "SimpleOT/ot_receiver.h"
@@ -17,9 +18,12 @@ extern "C" {
 #include "SimplestOT_C/ref10/ot_receiver.h"
 }
 
+#define TEE_OT_DEBUG
+// #define DEBUG_OUTPUT
+
 using namespace std;
 
-const char* role_to_str(OT_ROLE role)
+const char *role_to_str(OT_ROLE role)
 {
     if (role == RECEIVER)
         return "RECEIVER";
@@ -38,7 +42,17 @@ OT_ROLE INV_ROLE(OT_ROLE role)
         return BOTH;
 }
 
-void send_if_ot_sender(TwoPartyPlayer* P, vector<octetStream>& os, OT_ROLE role)
+void print_octet_stream_hex(const octet *data, size_t size)
+{
+    std::cerr << "length - " << std::dec << size << std::endl;
+    for (size_t i = 0; i < size; ++i)
+    {
+        std::cerr << std::hex << std::setw(2) << std::setfill('0') << static_cast<int>(data[i]) << " ";
+    }
+    std::cerr << std::endl;
+}
+
+void send_if_ot_sender(TwoPartyPlayer *P, vector<octetStream> &os, OT_ROLE role)
 {
     if (role == SENDER)
     {
@@ -55,8 +69,9 @@ void send_if_ot_sender(TwoPartyPlayer* P, vector<octetStream>& os, OT_ROLE role)
     }
 }
 
-void send_if_ot_receiver(TwoPartyPlayer* P, vector<octetStream>& os, OT_ROLE role)
+void send_if_ot_receiver(TwoPartyPlayer *P, vector<octetStream> &os, OT_ROLE role)
 {
+    // std::cerr << "INVOKE THIS IN THIS OT RECEIVER FUNCTION" << std::endl;
     if (role == RECEIVER)
     {
         P->send(os[0]);
@@ -74,65 +89,193 @@ void send_if_ot_receiver(TwoPartyPlayer* P, vector<octetStream>& os, OT_ROLE rol
 
 // type-dependent redirection
 
-void sender_genS(ref10_SENDER* s, unsigned char* S_pack)
+void sender_genS(ref10_SENDER *s, unsigned char *S_pack)
 {
     ref10_sender_genS(s, S_pack);
 }
 
-void sender_keygen(ref10_SENDER* s, unsigned char* Rs_pack,
-        unsigned char (*keys)[4][HASHBYTES])
+void sender_keygen(ref10_SENDER *s, unsigned char *Rs_pack,
+                   unsigned char (*keys)[4][HASHBYTES])
 {
     ref10_sender_keygen(s, Rs_pack, keys);
 }
 
-void receiver_maketable(ref10_RECEIVER* r)
+void receiver_maketable(ref10_RECEIVER *r)
 {
     ref10_receiver_maketable(r);
 }
 
-void receiver_procS(ref10_RECEIVER* r)
+void receiver_procS(ref10_RECEIVER *r)
 {
     ref10_receiver_procS(r);
 }
 
-void receiver_rsgen(ref10_RECEIVER* r, unsigned char* Rs_pack,
-        unsigned char* cs)
+void receiver_rsgen(ref10_RECEIVER *r, unsigned char *Rs_pack,
+                    unsigned char *cs)
 {
     ref10_receiver_rsgen(r, Rs_pack, cs);
 }
 
-void receiver_keygen(ref10_RECEIVER* r, unsigned char (*keys)[HASHBYTES])
+void receiver_keygen(ref10_RECEIVER *r, unsigned char (*keys)[HASHBYTES])
 {
     ref10_receiver_keygen(r, keys);
 }
 
 void BaseOT::exec_base(bool new_receiver_inputs)
 {
+#ifdef TEE_OT_DEBUG
+    exec_base_tee<SIMPLEOT_SENDER, SIMPLEOT_RECEIVER>(new_receiver_inputs);
+#endif
+#ifndef TEE_OT_DEBUG
 #ifndef NO_AVX_OT
     if (cpu_has_avx(true))
         exec_base<SIMPLEOT_SENDER, SIMPLEOT_RECEIVER>(new_receiver_inputs);
     else
 #endif
         exec_base<ref10_SENDER, ref10_RECEIVER>(new_receiver_inputs);
+#endif
+}
+
+template <class T, class U>
+void BaseOT::exec_base_tee(bool new_receiver_inputs)
+{
+    size_t len;
+    vector<octetStream> os(2);
+    PRNG G;
+    G.ReSeed();
+
+    T sender;
+    U receiver;
+
+    size_t unit_length = sender_inputs[0][0].size_bytes(); // 16 bytes
+
+    os[0].reset_write_head();
+    os[1].reset_write_head();
+
+    // set the receiver inputs and the sender inputs.
+    if (ot_role & RECEIVER)
+    {   
+        if(new_receiver_inputs){
+            for(int i=0; i<nOT; i++){
+                receiver_inputs[i] = G.get_uchar() & 1;
+                // for(size_t j=0; j<unit_length; j++) sender_inputs[i][0].set_byte(j, G.get_uchar());
+                // G.ReSeed();
+                // for(size_t j=0; j<unit_length; j++) sender_inputs[i][1].set_byte(j, G.get_uchar());
+            }
+        }
+        for(int i=0; i<nOT; i++){
+            for(size_t j=0; j<unit_length; j++) sender_inputs[i][0].set_byte(j, G.get_uchar());
+            G.ReSeed();
+            for(size_t j=0; j<unit_length; j++) sender_inputs[i][1].set_byte(j, G.get_uchar());
+        }
+    }
+
+#ifdef DEBUG_OUTPUT 
+    // check sender inputs.
+    std::cerr << "sender inputs 1: " << std::endl;
+    for(int i=0; i<nOT; i++){
+        print_octet_stream_hex(sender_inputs[i][0].get_ptr(), unit_length);   
+    }
+    for(int i=0; i<nOT; i++){
+        print_octet_stream_hex(sender_inputs[i][1].get_ptr(), unit_length);
+    }
+    std::cerr << std::endl;
+#endif
+
+    if (ot_role & RECEIVER)
+    {
+
+        os[0].store_bytes(receiver_inputs.get_ptr(), receiver_inputs.size_bytes());
+
+#ifdef DEBUG_OUTPUT
+        std::cerr << "receiver inputs: " << std::endl;
+        print_octet_stream_hex(receiver_inputs.get_ptr(), receiver_inputs.size_bytes());
+        std::cerr << std::endl;
+        print_octet_stream_hex(os[0].get_data(), os[0].get_length());
+        std::cerr << std::endl;
+#endif
+        P->send_receive_player(os); // exchange the information os[0] with os[1].
+    }
+
+    // the server choose the value according to the choice bit and sends to the receiver.
+    if (ot_role & SENDER)
+    {
+
+// // both the sender save the receivers inputs in os[1], set their own inputs in os[0].
+// #ifdef DEBUG_OUTPUT
+//         print_octet_stream_hex(os[1].get_data(), os[1].get_length());
+//         print_octet_stream_hex(os[0].get_data(), os[0].get_length());
+// #endif
+        
+        // set the corresponding valur based on os[1] bits, and save it in os[0].
+        size_t stream_length = unit_length * nOT;
+        octet *target_oct = new octet[stream_length];
+
+        int starting_length = 4;
+        for (int i = 0; i < nOT; i++)
+        {
+            int byte = i / 8 + starting_length;
+            int bit_loc = i % 8;
+            int choice = (int)os[1].get_data()[byte] >> bit_loc & 1;
+
+#ifdef DEBUG_OUTPUT
+    std::cerr << "choice: " << choice << std::endl;
+#endif
+            // choice = 1;
+            std::copy(sender_inputs[i][choice].get_ptr(), sender_inputs[i][choice].get_ptr() + unit_length, (target_oct + i * unit_length));
+        }
+        os[0].reset_read_head();
+        os[0].reset_write_head();
+        os[1].reset_read_head();
+        os[1].reset_write_head();
+        os[0].store_bytes(target_oct, stream_length);
+
+#ifdef DEBUG_OUTPUT
+        std::cerr << "extracted inputs: " << std::endl;
+        print_octet_stream_hex(target_oct, stream_length);
+        std::cerr << std::endl;
+#endif
+
+        P->send_receive_player(os);
+    }
+
+    // the receiver sets the received value to receiver_outputs.
+    if (ot_role & RECEIVER)
+    {
+        int starting_length = 4;
+        for (int i = 0; i < nOT; i++)
+        {
+            octet *target_oct = new octet[unit_length];
+            size_t starting_point = i+starting_length;
+            std::copy(os[1].get_data() + starting_point * unit_length, os[1].get_data() + (starting_point + 1) * unit_length, target_oct);
+            for (size_t j = 0; j < unit_length; j++)
+            {
+                receiver_outputs[i].set_byte(j, os[1].get_data()[i * unit_length + starting_length + j]);
+            }
+        }
+    }
 }
 
 // See https://eprint.iacr.org/2015/267.pdf
-template<class T, class U>
+template <class T, class U>
 void BaseOT::exec_base(bool new_receiver_inputs)
 {
     int i, j, k;
     size_t len;
     PRNG G;
     G.ReSeed();
+    // G.SetSeed(16);
     vector<octetStream> os(2);
     T sender;
     U receiver;
 
-    unsigned char S_pack[ PACKBYTES ];
-    unsigned char Rs_pack[ 2 ][ 4 * PACKBYTES ];
-    unsigned char sender_keys[ 2 ][ 4 ][ HASHBYTES ];
-    unsigned char receiver_keys[ 4 ][ HASHBYTES ];
-    unsigned char cs[ 4 ];
+    std::cerr << "INVOKE THIS IN THIS BASE-OT FUNCTION" << std::endl;
+
+    unsigned char S_pack[PACKBYTES];
+    unsigned char Rs_pack[2][4 * PACKBYTES];
+    unsigned char sender_keys[2][4][HASHBYTES];
+    unsigned char receiver_keys[4][HASHBYTES];
+    unsigned char cs[4];
 
     if (ot_role & SENDER)
     {
@@ -146,7 +289,7 @@ void BaseOT::exec_base(bool new_receiver_inputs)
     if (ot_role & RECEIVER)
     {
         // Receive A
-        os[1].get_bytes((octet*) receiver.S_pack, len);
+        os[1].get_bytes((octet *)receiver.S_pack, len);
         if (len != HASHBYTES)
         {
             cerr << "Received invalid length in base OT\n";
@@ -168,7 +311,7 @@ void BaseOT::exec_base(bool new_receiver_inputs)
             {
                 // Process choice bits
                 if (new_receiver_inputs)
-                    receiver_inputs[i + j] = G.get_uchar()&1;
+                    receiver_inputs[i + j] = G.get_uchar() & 1;
                 cs[j] = receiver_inputs[i + j].get();
             }
             // Compute B
@@ -191,8 +334,9 @@ void BaseOT::exec_base(bool new_receiver_inputs)
             for (j = 0; j < 4; j++)
                 for (k = 0; k < AES_BLK_SIZE; k++)
                 {
-                    printf("%4d-th receiver key:", i+j);
-                    for (k = 0; k < HASHBYTES; k++) printf("%.2X", receiver_keys[j][k]);
+                    printf("%4d-th receiver key:", i + j);
+                    for (k = 0; k < HASHBYTES; k++)
+                        printf("%.2X", receiver_keys[j][k]);
                     printf("\n");
                 }
 
@@ -202,13 +346,13 @@ void BaseOT::exec_base(bool new_receiver_inputs)
     }
 
     send_if_ot_receiver(P, os, ot_role);
-        
+
     for (i = 0; i < nOT; i += 4)
     {
         if (ot_role & SENDER)
         {
             // Receive B
-            os[1].get_bytes((octet*) Rs_pack[1], len);
+            os[1].get_bytes((octet *)Rs_pack[1], len);
             if (len != sizeof(Rs_pack[1]))
             {
                 cerr << "Received invalid length in base OT\n";
@@ -227,22 +371,30 @@ void BaseOT::exec_base(bool new_receiver_inputs)
                 }
             }
         }
-        #ifdef BASE_OT_DEBUG
+#ifdef BASE_OT_DEBUG
         for (j = 0; j < 4; j++)
         {
             if (ot_role & SENDER)
             {
-                printf("%4d-th sender keys:", i+j);
-                for (k = 0; k < HASHBYTES; k++) printf("%.2X", sender_keys[0][j][k]);
+                printf("%4d-th sender keys:", i + j);
+                for (k = 0; k < HASHBYTES; k++)
+                    printf("%.2X", sender_keys[0][j][k]);
                 printf(" ");
-                for (k = 0; k < HASHBYTES; k++) printf("%.2X", sender_keys[1][j][k]);
+                for (k = 0; k < HASHBYTES; k++)
+                    printf("%.2X", sender_keys[1][j][k]);
                 printf("\n");
             }
         }
 
         printf("\n");
-        #endif
+#endif
     }
+
+    // std::cerr << "sender inputs 0" << std::endl;
+    // for (int i = 0; i < nOT; i++)
+    // {
+    //     print_octet_stream_hex(sender_inputs[i][0].get_ptr(), sender_inputs[i][0].size_bytes());
+    // }
 
     // Hash with counter to avoid collisions
     for (int i = 0; i < nOT; i++)
@@ -258,7 +410,7 @@ void BaseOT::exec_base(bool new_receiver_inputs)
     set_seeds();
 }
 
-void BaseOT::hash_with_id(BitVector& bits, long id)
+void BaseOT::hash_with_id(BitVector &bits, long id)
 {
     assert(bits.size_bytes() >= AES_BLK_SIZE);
     Hash hash;
@@ -301,12 +453,10 @@ void BaseOT::extend_length()
     }
 }
 
-
 void BaseOT::check()
 {
     vector<octetStream> os(2);
     BitVector tmp_vector(8 * AES_BLK_SIZE);
-
 
     for (int i = 0; i < nOT; i++)
     {
@@ -331,7 +481,7 @@ void BaseOT::check()
         if (ot_role & RECEIVER)
         {
             tmp_vector.unpack(os[1]);
-        
+
             if (receiver_inputs[i] == 1)
             {
                 tmp_vector.unpack(os[1]);
@@ -347,7 +497,6 @@ void BaseOT::check()
     }
 }
 
-
 void FakeOT::exec_base(bool new_receiver_inputs)
 {
     insecure("base OTs");
@@ -360,7 +509,7 @@ void FakeOT::exec_base(bool new_receiver_inputs)
     {
         for (int i = 0; i < nOT; i++)
             // Generate my receiver inputs
-            receiver_inputs[i] = G.get_uchar()&1;
+            receiver_inputs[i] = G.get_uchar() & 1;
     }
 
     if (ot_role & SENDER)
