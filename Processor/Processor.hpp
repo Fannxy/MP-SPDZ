@@ -984,11 +984,46 @@ long Processor<sint, sgf2n>::sync(long x) const
 }
 
 template<class sint, class sgf2n>
-void Processor<sint, sgf2n>::dump_log() {
-  Log<sint, sgf2n> log(this); 
-  log.generate_log();
+Log<sint, sgf2n>* Processor<sint, sgf2n>::dump_log() {
+  Log<sint, sgf2n>* log = new Log<sint, sgf2n>(this); 
+  log -> generate_log();
   LogFileManager log_file_manager;
-  log_file_manager.dump_log(&log, this);
+  log_file_manager.dump_log(log, this);
+  return log;
 }
 
+template <class sint, class sgf2n>
+void* Processor<sint, sgf2n>:: request_entry_point(void* arg) {
+  Processor<sint, sgf2n>* obj = (Processor<sint, sgf2n>*) arg;
+  obj->request_checkpoint();
+  return nullptr;
+}
+
+template <class sint, class sgf2n>
+void Processor<sint, sgf2n>::request_checkpoint() {
+  queue<Log<sint, sgf2n>*> log_buffer;
+  while (true) {
+      pthread_mutex_lock(&request_lock);
+      while (request_signal ==  IDLE) {
+        pthread_cond_wait(&request_avaliable, &request_lock);
+      }
+      // TODO Check Workers and begin dump_log
+      request_signal = IDLE;
+      pthread_mutex_unlock(&request_lock);
+  }
+}
+
+template <class sint, class sgf2n>
+void Processor<sint, sgf2n>::init_multi_thread_members() {
+  for (size_t i = 0; i < LOG_BUFFER_SIZE; i++) {
+    workers_status[i] = IDLE;
+  }
+  request_signal = IDLE;
+  pthread_mutex_init(&workers_lock, NULL);
+  pthread_mutex_init(&buffer_lock, NULL);
+  pthread_mutex_init(&request_lock, NULL);
+  pthread_cond_init(&request_avaliable, NULL);
+  pthread_cond_init(&workers_available, NULL);
+  pthread_cond_init(&buffer_available, NULL);
+}
 #endif

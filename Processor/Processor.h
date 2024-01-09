@@ -4,6 +4,8 @@
 
 /* This is a representation of a processing element
  */
+#include <pthread.h>
+#include <queue>
 
 #include "Math/Integer.h"
 #include "Tools/Exceptions.h"
@@ -21,6 +23,11 @@
 #include "GC/Processor.h"
 #include "GC/ShareThread.h"
 #include "Protocols/SecureShuffle.h"
+#include "Processor/Log.h"
+
+#define LOG_BUFFER_SIZE 1
+#define BUSY false
+#define IDLE true
 
 class Program;
 
@@ -218,6 +225,14 @@ class Processor : public ArithmeticProcessor
   CommStats client_stats;
   Timer& client_timer;
 
+  // Members for multi-thread
+  pthread_t request_tid;
+  pthread_t workers[LOG_BUFFER_SIZE];
+  bool workers_status[LOG_BUFFER_SIZE];
+  bool request_signal;
+  pthread_mutex_t request_lock, workers_lock, buffer_lock;
+  pthread_cond_t request_avaliable, workers_available, buffer_available;
+
   void reset(const Program& program,int arg); // Reset the state of the processor
   string get_filename(const char* basename, bool use_number);
 
@@ -285,7 +300,14 @@ class Processor : public ArithmeticProcessor
   // synchronize in asymmetric protocols
   long sync(long x) const;
 
-  void dump_log();
+  Log<sint, sgf2n>* dump_log();
+
+  static void* request_entry_point(void* arg);
+
+  // Monitor's Main_Func and son_funcs as follows
+  void request_checkpoint();
+
+  void init_multi_thread_members();
 
   ofstream& get_public_output();
   ofstream& get_binary_output();

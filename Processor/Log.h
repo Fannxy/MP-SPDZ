@@ -12,7 +12,6 @@
 #define _LOG_
 
 #include "Tools/CheckVector.h"
-#include "Processor/Machine.h"
 #include "Processor/Processor.h"
 #include "Processor/MachineLog.h"
 #include "Processor/ProcessorLog.h"

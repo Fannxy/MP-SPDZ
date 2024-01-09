@@ -155,7 +155,16 @@ void LogFileManager::dump_processor_logs(Log<sint, sgf2n>* log) {
     }
 }
 
-// Main Thread Func, need to satisfy no using of processor(it is dynamic)
+template <class sint, class sgf2n>
+void LogFileManager::dump_log(Log<sint, sgf2n>* log, Processor<sint, sgf2n> *processor) {
+    int id_log = 0;
+    generate_log_title_file(id_log, processor);
+    generate_log_file(id_log, processor);
+    dump_basic_info(id_log, processor);
+    dump_pthread_func(log);
+}
+
+// Producer's func to consume source
 template <class sint, class sgf2n>
 void* LogFileManager::dump_pthread_func(Log<sint, sgf2n>* log) {
     dump_to_file("MachineLog\n");
@@ -167,14 +176,3 @@ void* LogFileManager::dump_pthread_func(Log<sint, sgf2n>* log) {
     // Any Other TODO?
     return nullptr;
 }
-
-template <class sint, class sgf2n>
-void LogFileManager::dump_log(Log<sint, sgf2n>* log, Processor<sint, sgf2n> *processor) {
-    int id_log = 0;
-    generate_log_title_file(id_log, processor);
-    generate_log_file(id_log, processor);
-    dump_basic_info(id_log, processor);
-    dump_pthread_func(log);
-}
-
-
