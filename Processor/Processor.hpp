@@ -8,6 +8,8 @@
 #include "Conv2dTuple.h"
 
 #include "Processor/ProcessorBase.hpp"
+#include "Processor/Log.hpp"
+#include "Processor/LogFileManager.hpp"
 #include "GC/Processor.hpp"
 #include "GC/ShareThread.hpp"
 #include "Protocols/SecureShuffle.hpp"
@@ -983,8 +985,10 @@ long Processor<sint, sgf2n>::sync(long x) const
 
 template<class sint, class sgf2n>
 void Processor<sint, sgf2n>::dump_log() {
-  Log log(this);
-  log.dump_log();
+  Log<sint, sgf2n> log(this); 
+  log.generate_log();
+  LogFileManager<sint, sgf2n> log_file_manager(this, &log);
+  log_file_manager.dump_log();
 }
 
 #endif

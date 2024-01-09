@@ -3,35 +3,44 @@
 
 #include <iostream>
 #include "Processor/Memory.h"
-#include "Processor/LogFileManager.h"
 #include "Processor/Processor.h"
 
 using namespace std;
 
-template<class sint, class sgf2n>
+template <class sint, class sgf2n, class T>
+class MemoryLog {
+public:
+
+    // TODO: MS's type is decided by build function of the Class Memory(Memory.hpp)
+    // Actually it is converted to MemoryImpl
+    // default: 0
+    MemoryPartImpl<T, CheckVector> MS_log;
+    MemoryPartImpl<typename T::clear, CheckVector> MC_log;
+
+    MemoryLog() {};
+
+    void generate_Memory(Memory<T> *target_memory);
+
+    void generate_MS(MemoryPart<T> *target_memorypart);
+
+    void generate_MC(MemoryPartImpl<typename T::clear, CheckVector> *target_memoryartimpl);
+};
+
+
+template <class sint, class sgf2n>
 class MachineLog {
 
 public:
-    // file manager in singleton mode
-    LogFileManager<sint, sgf2n> *log_file_manager;
-
     // Mahcine_ptr
     Machine<sint, sgf2n> *machine;
 
-    // Target to dump Memory of Machine
-    // Memory<sgf2n> M2_log;
-    // Memory<sint> Mp_log;
-    // Memory<Integer> Mi_log;
+    // Target to generate Memory of Machine
+    MemoryLog<sint, sgf2n, sgf2n> M2_log;
+    MemoryLog<sint, sgf2n, sint> Mp_log;
+    MemoryLog<sint, sgf2n, Integer> Mi_log;
 
     MachineLog(Processor<sint, sgf2n> *processor);
 
-    void dump_machinelog();
-
-    template <class T>
-    void dump_Memory(string memory_type, Memory<T> *target_memory);
-
-    template <class T>
-    void dump_MemoryPart(string memorypart_type, MemoryPart<T> *target_memorypart);
-
+    void generate_machinelog();
 };
 #endif

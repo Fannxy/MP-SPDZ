@@ -1651,7 +1651,6 @@ def break_point(name='', dump_log=False):
     """
 
     if (dump_log) :
-        print("试着打Log吧兄弟")
         instructions.dump_log()
 
 
