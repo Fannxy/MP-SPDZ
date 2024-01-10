@@ -16,6 +16,7 @@
 
 #include <sodium.h>
 #include <string>
+#include <utility>
 
 template <class T>
 SubProcessor<T>::SubProcessor(ArithmeticProcessor& Proc, typename T::MAC_Check& MC,
@@ -983,42 +984,52 @@ long Processor<sint, sgf2n>::sync(long x) const
   return x;
 }
 
+// TODO: change this! (In Main thread)
 template<class sint, class sgf2n>
-Log<sint, sgf2n>* Processor<sint, sgf2n>::dump_log() {
-  Log<sint, sgf2n>* log = new Log<sint, sgf2n>(this); 
-  log -> generate_log();
-  LogFileManager log_file_manager;
-  log_file_manager.dump_log(log, this);
-  return log;
+void Processor<sint, sgf2n>::dump_log() {
+  // Begin of Critical Section
+  pthread_mutex_lock(&request_lock);
+  log_ptr = new Log<sint, sgf2n>(this); 
+  log_ptr -> generate_log();
+  log_file_manager.prepare_dump_log(this);
+  request_signal = HAVE_REQUEST;
+  pthread_mutex_unlock(&request_lock);
+  pthread_cond_signal(&request_avaliable);
+  // End of Critical Section
 }
 
 template <class sint, class sgf2n>
-void* Processor<sint, sgf2n>:: request_entry_point(void* arg) {
+void* Processor<sint, sgf2n>::request_check_entry(void* arg) {
   Processor<sint, sgf2n>* obj = (Processor<sint, sgf2n>*) arg;
-  obj->request_checkpoint();
+  obj->request_check_thread();
   return nullptr;
 }
 
+// SubProcessor(Consumer)
 template <class sint, class sgf2n>
-void Processor<sint, sgf2n>::request_checkpoint() {
-  queue<Log<sint, sgf2n>*> log_buffer;
+void Processor<sint, sgf2n>::request_check_thread() {
   while (true) {
       pthread_mutex_lock(&request_lock);
-      while (request_signal ==  IDLE) {
+      while (request_signal ==  NO_REQUEST) {
         pthread_cond_wait(&request_avaliable, &request_lock);
       }
-      // TODO Check Workers and begin dump_log
-      request_signal = IDLE;
+      if (request_signal == EXIT) {
+        pthread_mutex_unlock(&request_lock);
+        return;
+      }
+      pair<LogFileManager*, Log<sint, sgf2n>*> param = make_pair(&log_file_manager, log_ptr);
+      pthread_create(&worker_tid, NULL, LogFileManager::dump_entry<sint, sgf2n>, (void*) &param); 
+      request_signal = NO_REQUEST;
       pthread_mutex_unlock(&request_lock);
   }
 }
 
 template <class sint, class sgf2n>
 void Processor<sint, sgf2n>::init_multi_thread_members() {
-  for (size_t i = 0; i < LOG_BUFFER_SIZE; i++) {
-    workers_status[i] = IDLE;
-  }
-  request_signal = IDLE;
+  //for (size_t i = 0; i < LOG_BUFFER_SIZE; i++) {
+  //  workers_status[i] = IDLE;
+  //}
+  request_signal = NO_REQUEST;
   pthread_mutex_init(&workers_lock, NULL);
   pthread_mutex_init(&buffer_lock, NULL);
   pthread_mutex_init(&request_lock, NULL);

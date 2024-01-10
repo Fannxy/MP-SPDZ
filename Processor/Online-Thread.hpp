@@ -278,7 +278,7 @@ void thread_info<sint, sgf2n>::Sub_Main_Func()
           // Before Exec, init members for multi-threads
           Proc.init_multi_thread_members();
           // Start monitor_thread
-          pthread_create(&Proc.request_tid, NULL, Processor<sint, sgf2n>::request_entry_point, (void*) &Proc); 
+          pthread_create(&Proc.request_tid, NULL, Processor<sint, sgf2n>::request_check_entry, (void*) &Proc); 
           //printf("\tExecuting program");
           // Execute the program
           progs[program].execute(Proc);

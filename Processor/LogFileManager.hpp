@@ -3,6 +3,7 @@
 #include <fstream>
 #include <iostream>
 #include <string>
+#include <utility>
 
 LogFileManager::LogFileManager() {}
 
@@ -15,35 +16,41 @@ LogFileManager::~LogFileManager() {
     }
 }
 
-template <class sint, class sgf2n>
-void LogFileManager::generate_log_title_file(int &id_log, Processor<sint, sgf2n>* processor) {
+void LogFileManager::generate_log_title_file() {
     title_inpf.open(LOG_TITLE_FILE_PATH);
     if (title_inpf.fail()) {
         system(("mkdir -p " + string(LOG_DIR)).c_str());
         title_outf.open(LOG_TITLE_FILE_PATH, ios::out);
-        title_outf << "LOG_TITLE" << endl << id_log << endl;
-        title_outf.close();
+        log_id = 0;
     } else {
         string ttmp;
-        title_inpf >> ttmp >> id_log;
-        id_log++;
+        title_inpf >> ttmp >> log_id;
+        log_id++;
         title_outf.open(LOG_TITLE_FILE_PATH, ios::out | ios::trunc);
-        title_outf << "LOG_TITLE" << endl << id_log << endl;
-        title_outf.close();
     }
+    title_outf << "LOG_TITLE" << endl << log_id << endl;
+    title_outf.close();
     title_inpf.close();
 }
 
-template <class sint, class sgf2n>
-void LogFileManager::generate_log_file(int &id_log, Processor<sint, sgf2n>* processor) {
-    outf.open(LOG_ITEM_FILE_PATH(id_log), ios::out | ios::trunc);
+void LogFileManager::generate_log_file() {
+    outf.open(LOG_ITEM_FILE_PATH, ios::out | ios::trunc);
+    if (! outf.good()) {
+        throw runtime_error(
+            "^^^^^^^^^^^^^^^^^^^^Err in opening target file.^^^^^^^^^^^^^^^^^^^^");
+    }
+    outf.close();
+}
+
+void LogFileManager::open_log_file() {
+    outf.open(LOG_ITEM_FILE_PATH, ios::out | ios::app);
     if (! outf.good()) {
         throw runtime_error(
             "^^^^^^^^^^^^^^^^^^^^Err in opening target file.^^^^^^^^^^^^^^^^^^^^");
     }
 }
 
-void LogFileManager::end_generate_log_file() {
+void LogFileManager::close_log_file() {
     if (outf.is_open()) {
         outf.close();
     }
@@ -59,11 +66,10 @@ void LogFileManager::dump_time() {
     dump_to_file(ptminfo -> tm_min, " ", ptminfo -> tm_sec, "\n");
 }
 
-template <class sint, class sgf2n>
-void LogFileManager::dump_basic_info(int id_log, Processor<sint, sgf2n>* processor) {
-    dump_to_file("id\n", id_log, "\n");
-    dump_to_file("player_no\n", (processor -> P).my_num(), "\n");
-    dump_to_file("nthreads\n", (processor -> machine).nthreads, "\n");
+void LogFileManager::dump_basic_info() {
+    dump_to_file("id\n", log_id, "\n");
+    dump_to_file("player_no\n", player_num, "\n");
+    dump_to_file("nthreads\n", player_nthreads, "\n");
     dump_time();
 }
 
@@ -156,23 +162,32 @@ void LogFileManager::dump_processor_logs(Log<sint, sgf2n>* log) {
 }
 
 template <class sint, class sgf2n>
-void LogFileManager::dump_log(Log<sint, sgf2n>* log, Processor<sint, sgf2n> *processor) {
-    int id_log = 0;
-    generate_log_title_file(id_log, processor);
-    generate_log_file(id_log, processor);
-    dump_basic_info(id_log, processor);
-    dump_pthread_func(log);
+void LogFileManager::prepare_dump_log(Processor<sint, sgf2n> *processor) {
+    player_num = (processor -> P).my_num();
+    player_nthreads = (processor -> machine).nthreads;
+    generate_log_title_file();
+    generate_log_file();
 }
 
 // Producer's func to consume source
 template <class sint, class sgf2n>
-void* LogFileManager::dump_pthread_func(Log<sint, sgf2n>* log) {
+void* LogFileManager::dump_entry(void* arg) {
+    pair<LogFileManager*, Log<sint, sgf2n>*>* outer_obj = (pair<LogFileManager*, Log<sint, sgf2n>*>*)arg;
+    LogFileManager* obj_1 = outer_obj -> first;
+    Log<sint, sgf2n>* obj_2 = outer_obj -> second;
+    obj_1 -> dump_thread(obj_2);
+    return nullptr;
+}
+
+template <class sint, class sgf2n>
+void LogFileManager::dump_thread(Log<sint, sgf2n>* log) {
+    open_log_file();
+    dump_basic_info();
     dump_to_file("MachineLog\n");
     dump_machine_log(log);
     dump_to_file("ProcessorLogs\n");
     dump_to_file("Processors\n");
     dump_processor_logs(log);
-    end_generate_log_file();
+    close_log_file();
     // Any Other TODO?
-    return nullptr;
 }

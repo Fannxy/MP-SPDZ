@@ -5,7 +5,6 @@
 /* This is a representation of a processing element
  */
 #include <pthread.h>
-#include <queue>
 
 #include "Math/Integer.h"
 #include "Tools/Exceptions.h"
@@ -24,10 +23,14 @@
 #include "GC/ShareThread.h"
 #include "Protocols/SecureShuffle.h"
 #include "Processor/Log.h"
+#include "Processor/LogFileManager.h"
 
-#define LOG_BUFFER_SIZE 1
+// #define LOG_BUFFER_SIZE 1
 #define BUSY false
 #define IDLE true
+#define EXIT 0
+#define HAVE_REQUEST 1
+#define NO_REQUEST 2
 
 class Program;
 
@@ -225,11 +228,14 @@ class Processor : public ArithmeticProcessor
   CommStats client_stats;
   Timer& client_timer;
 
-  // Members for multi-thread
+  // Members for multi-thread, and shared members queue<Log>
+  LogFileManager log_file_manager;
+  Log<sint, sgf2n>* log_ptr;
   pthread_t request_tid;
-  pthread_t workers[LOG_BUFFER_SIZE];
-  bool workers_status[LOG_BUFFER_SIZE];
-  bool request_signal;
+    //pthread_t workers[LOG_BUFFER_SIZE];
+  pthread_t worker_tid;
+    // bool workers_status[LOG_BUFFER_SIZE];
+  int request_signal;
   pthread_mutex_t request_lock, workers_lock, buffer_lock;
   pthread_cond_t request_avaliable, workers_available, buffer_available;
 
@@ -300,12 +306,12 @@ class Processor : public ArithmeticProcessor
   // synchronize in asymmetric protocols
   long sync(long x) const;
 
-  Log<sint, sgf2n>* dump_log();
+  void dump_log();
 
-  static void* request_entry_point(void* arg);
+  static void* request_check_entry(void* arg);
 
   // Monitor's Main_Func and son_funcs as follows
-  void request_checkpoint();
+  void request_check_thread();
 
   void init_multi_thread_members();
 

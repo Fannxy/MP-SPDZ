@@ -12,11 +12,11 @@
 
 using namespace std;
 
-#define LOG_DIR "Logs-Player" + to_string((processor -> P).my_num())
+#define LOG_DIR "Logs-Player" + to_string(player_num)
 #define LOG_TITLE_FILE_NAME  "Title.log"
 #define LOG_TITLE_FILE_PATH  (string(LOG_DIR) + "/" + string(LOG_TITLE_FILE_NAME)).c_str()
-#define LOG_ITEM_FILE_NAME(x)   "CheckPoint" + to_string(x) + ".log"
-#define LOG_ITEM_FILE_PATH(x)   (string(LOG_DIR) + "/" + string(LOG_ITEM_FILE_NAME(x))).c_str()
+#define LOG_ITEM_FILE_NAME   "CheckPoint" + to_string(log_id) + ".log"
+#define LOG_ITEM_FILE_PATH   (string(LOG_DIR) + "/" + string(LOG_ITEM_FILE_NAME)).c_str()
 
 #define MACHINE_LOG (log -> machine_log)
 #define M2_LOG (MACHINE_LOG -> M2_log)
@@ -32,22 +32,23 @@ using namespace std;
 
 class LogFileManager {
 public:
-    static LogFileManager* instance;
     ofstream title_outf;
     ifstream title_inpf;
     ofstream outf;
     ifstream inpf;
+
+    int log_id;
+    int player_num;
+    int player_nthreads;
 
     LogFileManager();
     
     ~LogFileManager();
 
     // dump func with file opperations
-    template <class sint, class sgf2n>
-    void generate_log_title_file(int &id_log, Processor<sint, sgf2n>* processor);
+    void generate_log_title_file();
 
-    template <class sint, class sgf2n>
-    void generate_log_file(int &id_log, Processor<sint, sgf2n>* processor);
+    void generate_log_file();
 
     // directly dump_func (consumer's main_func is at bottom)
     void dump_to_file() {};
@@ -58,10 +59,11 @@ public:
         dump_to_file(args...);
     }
 
-    void end_generate_log_file();
+    void open_log_file();
 
-    template <class sint, class sgf2n>
-    void dump_basic_info(int id_log, Processor<sint, sgf2n>* processor);
+    void close_log_file();
+
+    void dump_basic_info();
 
     void dump_time();
 
@@ -87,11 +89,14 @@ public:
     void dump_processor_logs(Log<sint, sgf2n>* log);
 
     template <class sint, class sgf2n>
-    void dump_log(Log<sint, sgf2n>* log, Processor<sint, sgf2n> *processor);
+    void prepare_dump_log(Processor<sint, sgf2n> *processor);
 
     // consumer's main_func called by mutex from Program::dump_log
     template <class sint, class sgf2n>
-    void* dump_pthread_func(Log<sint, sgf2n>* log);
+    static void* dump_entry(void* arg);
+
+    template <class sint, class sgf2n>
+    void dump_thread(Log<sint, sgf2n>* log);
 };
 
 #endif
