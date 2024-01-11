@@ -988,9 +988,7 @@ long Processor<sint, sgf2n>::sync(long x) const
 template<class sint, class sgf2n>
 void Processor<sint, sgf2n>::dump_log() {
   // Begin of Critical Section
-  //cout << "Begin of Processor::dump_log()" << endl;
   pthread_mutex_lock(&workers_lock);
-  //cout << "Producer get lock" << endl;
   new_log_ptr = new Log<sint, sgf2n>(this); 
   new_log_ptr -> generate_log();
   while (workers_no_idle()) {
@@ -1000,8 +998,6 @@ void Processor<sint, sgf2n>::dump_log() {
   log_ptrs[cur_worker_id] = new_log_ptr;
   workers_status[cur_worker_id] = WAIT;
   pthread_mutex_unlock(&workers_lock);
-  //cout << "Producer release lock" << endl;
-  //cout << "signal New Work";
   pthread_cond_signal(&new_work_signal);
   // End of Critical Section
 }
@@ -1017,19 +1013,19 @@ void* Processor<sint, sgf2n>::request_check_entry(void* arg) {
 template <class sint, class sgf2n>
 void Processor<sint, sgf2n>::request_check_thread() {
   while (true) {
-      //cout << "Request Working" << endl;
       // Begin of Critical Section
       pthread_mutex_lock(&workers_lock);
-      //cout << "Consumer release lock" << endl;
-      while (workers_no_wait()) {
+      while (workers_no_wait() && ! check_exit) {
         pthread_cond_wait(&new_work_signal, &workers_lock);
       }
+      if (check_exit) {
+        wait_workers_done();
+        return;
+      }
       pair<LogFileManager*, Log<sint, sgf2n>*> param = make_pair(log_file_managers[cur_worker_id], log_ptrs[cur_worker_id]);
-      //cout << "Begin dump!" << endl;
       workers_status[cur_worker_id] = BUSY;
       pthread_create(&workers[cur_worker_id], NULL, LogFileManager::dump_entry<sint, sgf2n>, (void*) &param); 
       pthread_mutex_unlock(&workers_lock);
-      //cout << "Consumer release lock" << endl;
       // End of Critical Section
   }
 }
@@ -1046,12 +1042,7 @@ void Processor<sint, sgf2n>::init_multi_thread_members() {
   pthread_cond_init(&finish_work_signal, NULL);
   pthread_cond_init(&new_work_signal, NULL);
   pthread_mutex_init(&workers_lock, NULL);
-  
-  //pthread_mutex_init(&request_lock, NULL);
-  //pthread_mutex_init(&buffer_lock, NULL);
-  //pthread_cond_init(&new_request_signal, NULL);
-  //pthread_cond_init(&get_request_signal, NULL);
-  //pthread_cond_init(&exit_signal, NULL);
+  check_exit = false;
 }
 
 template <class sint, class sgf2n>
@@ -1085,4 +1076,12 @@ int Processor<sint, sgf2n>::allocate_worker() {
   throw runtime_error("^^^^^^^^^Err in alocate_worker!^^^^^^^^^");
 }
 
+template <class sint, class sgf2n>
+void Processor<sint, sgf2n>::wait_workers_done() {
+  for (size_t i = 0; i < LOG_BUFFER_SIZE; i++) {
+    if (workers_status[i] != IDLE) {
+      pthread_join(workers[i], NULL);
+    }
+  }
+}
 #endif

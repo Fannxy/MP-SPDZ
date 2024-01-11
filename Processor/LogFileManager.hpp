@@ -183,7 +183,6 @@ void* LogFileManager::dump_entry(void* arg) {
 
 template <class sint, class sgf2n>
 void LogFileManager::dump_thread(Log<sint, sgf2n>* log) {
-    //cout << "DUMPPPPPPPPPPPPP" << endl;
     prepare_dump_log(log -> processor);
     open_log_file();
     dump_basic_info();

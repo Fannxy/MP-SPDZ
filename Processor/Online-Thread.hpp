@@ -286,7 +286,9 @@ void thread_info<sint, sgf2n>::Sub_Main_Func()
           progs[program].execute(Proc);
 
           // Wait all logs to be dumped
-          //pthread_join(Proc.request_tid, NULL);
+          Proc.check_exit = true;
+          pthread_cond_signal(&(Proc.new_work_signal));
+          pthread_join(Proc.request_tid, NULL);
 
           // make sure values used in other threads are safe
           Proc.check();

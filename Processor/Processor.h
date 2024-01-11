@@ -234,15 +234,11 @@ class Processor : public ArithmeticProcessor
   LogFileManager* log_file_managers[LOG_BUFFER_SIZE];
   Log<sint, sgf2n>* new_log_ptr;
   int cur_worker_id;
+  bool check_exit;
   Log<sint, sgf2n>* log_ptrs[LOG_BUFFER_SIZE];
-  //pthread_cond_t new_request_signal;
-  //pthread_cond_t get_request_signal;
   pthread_cond_t finish_work_signal;
   pthread_cond_t new_work_signal;
-  //pthread_cond_t exit_signal;
-  //pthread_mutex_t request_lock;
   pthread_mutex_t workers_lock;
-  //pthread_mutex_t buffer_lock;
 
   void reset(const Program& program,int arg); // Reset the state of the processor
   string get_filename(const char* basename, bool use_number);
@@ -320,6 +316,8 @@ class Processor : public ArithmeticProcessor
   bool workers_no_idle();
 
   int allocate_worker();
+  
+  void wait_workers_done();
   
   // Monitor's Main_Func and son_funcs as follows
   void request_check_thread();
