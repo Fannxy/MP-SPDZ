@@ -5,7 +5,7 @@
 #include <string>
 #include <utility>
 
-LogFileManager::LogFileManager() {}
+LogFileManager::LogFileManager(int worker_id): worker_id(worker_id) {}
 
 LogFileManager::~LogFileManager() {
     if (outf.is_open()) {
@@ -161,6 +161,8 @@ void LogFileManager::dump_processor_logs(Log<sint, sgf2n>* log) {
     }
 }
 
+// Assume all vars from processor here will not be changed.
+// OR to throw all theses vars into log, and detach log with template and processor
 template <class sint, class sgf2n>
 void LogFileManager::prepare_dump_log(Processor<sint, sgf2n> *processor) {
     player_num = (processor -> P).my_num();
@@ -181,6 +183,8 @@ void* LogFileManager::dump_entry(void* arg) {
 
 template <class sint, class sgf2n>
 void LogFileManager::dump_thread(Log<sint, sgf2n>* log) {
+    //cout << "DUMPPPPPPPPPPPPP" << endl;
+    prepare_dump_log(log -> processor);
     open_log_file();
     dump_basic_info();
     dump_to_file("MachineLog\n");
@@ -189,5 +193,7 @@ void LogFileManager::dump_thread(Log<sint, sgf2n>* log) {
     dump_to_file("Processors\n");
     dump_processor_logs(log);
     close_log_file();
+    (log -> processor) -> workers_status[worker_id] = IDLE;
+    pthread_cond_signal(&((log -> processor) -> finish_work_signal));
     // Any Other TODO?
 }

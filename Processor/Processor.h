@@ -5,6 +5,7 @@
 /* This is a representation of a processing element
  */
 #include <pthread.h>
+#include <queue>
 
 #include "Math/Integer.h"
 #include "Tools/Exceptions.h"
@@ -25,12 +26,10 @@
 #include "Processor/Log.h"
 #include "Processor/LogFileManager.h"
 
-// #define LOG_BUFFER_SIZE 1
-#define BUSY false
-#define IDLE true
-#define EXIT 0
-#define HAVE_REQUEST 1
-#define NO_REQUEST 2
+#define LOG_BUFFER_SIZE 1
+#define BUSY 0
+#define IDLE 1
+#define WAIT 2
 
 class Program;
 
@@ -229,15 +228,21 @@ class Processor : public ArithmeticProcessor
   Timer& client_timer;
 
   // Members for multi-thread, and shared members queue<Log>
-  LogFileManager log_file_manager;
-  Log<sint, sgf2n>* log_ptr;
   pthread_t request_tid;
-    //pthread_t workers[LOG_BUFFER_SIZE];
-  pthread_t worker_tid;
-    // bool workers_status[LOG_BUFFER_SIZE];
-  int request_signal;
-  pthread_mutex_t request_lock, workers_lock, buffer_lock;
-  pthread_cond_t request_avaliable, workers_available, buffer_available;
+  pthread_t workers[LOG_BUFFER_SIZE];
+  int workers_status[LOG_BUFFER_SIZE];
+  LogFileManager* log_file_managers[LOG_BUFFER_SIZE];
+  Log<sint, sgf2n>* new_log_ptr;
+  int cur_worker_id;
+  Log<sint, sgf2n>* log_ptrs[LOG_BUFFER_SIZE];
+  //pthread_cond_t new_request_signal;
+  //pthread_cond_t get_request_signal;
+  pthread_cond_t finish_work_signal;
+  pthread_cond_t new_work_signal;
+  //pthread_cond_t exit_signal;
+  //pthread_mutex_t request_lock;
+  pthread_mutex_t workers_lock;
+  //pthread_mutex_t buffer_lock;
 
   void reset(const Program& program,int arg); // Reset the state of the processor
   string get_filename(const char* basename, bool use_number);
@@ -310,6 +315,12 @@ class Processor : public ArithmeticProcessor
 
   static void* request_check_entry(void* arg);
 
+  bool workers_no_wait();
+
+  bool workers_no_idle();
+
+  int allocate_worker();
+  
   // Monitor's Main_Func and son_funcs as follows
   void request_check_thread();
 

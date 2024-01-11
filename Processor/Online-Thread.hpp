@@ -277,14 +277,20 @@ void thread_info<sint, sgf2n>::Sub_Main_Func()
 
           // Before Exec, init members for multi-threads
           Proc.init_multi_thread_members();
+
           // Start monitor_thread
           pthread_create(&Proc.request_tid, NULL, Processor<sint, sgf2n>::request_check_entry, (void*) &Proc); 
+
           //printf("\tExecuting program");
           // Execute the program
           progs[program].execute(Proc);
 
+          // Wait all logs to be dumped
+          //pthread_join(Proc.request_tid, NULL);
+
           // make sure values used in other threads are safe
           Proc.check();
+          
 
           // prevent mangled output
           cout.flush();
@@ -304,7 +310,7 @@ void thread_info<sint, sgf2n>::Sub_Main_Func()
           online_prep_timer += Proc.DataF.total_time();
           wait_timer.start();
           queues->finished(job, P.total_comm());
-	 wait_timer.stop();
+	        wait_timer.stop();
        }  
     }
 

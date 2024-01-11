@@ -41,7 +41,9 @@ public:
     int player_num;
     int player_nthreads;
 
-    LogFileManager();
+    int worker_id;
+
+    LogFileManager(int id);
     
     ~LogFileManager();
 
