@@ -18,7 +18,8 @@ extern "C"
 #include "SimplestOT_C/ref10/ot_receiver.h"
 }
 
-#define TEE_OT_DEBUG
+// #define TEE_OT_DEBUG
+#define TEE_RANDOM_OT
 // #define DEBUG_OUTPUT
 
 using namespace std;
@@ -123,6 +124,9 @@ void receiver_keygen(ref10_RECEIVER *r, unsigned char (*keys)[HASHBYTES])
 
 void BaseOT::exec_base(bool new_receiver_inputs)
 {
+#ifdef TEE_RANDOM_OT
+    exec_base_tee_rot<SIMPLEOT_SENDER, SIMPLEOT_RECEIVER>(new_receiver_inputs);
+#endif
 #ifdef TEE_OT_DEBUG
     exec_base_tee<SIMPLEOT_SENDER, SIMPLEOT_RECEIVER>(new_receiver_inputs);
 #endif
@@ -134,6 +138,66 @@ void BaseOT::exec_base(bool new_receiver_inputs)
 #endif
         exec_base<ref10_SENDER, ref10_RECEIVER>(new_receiver_inputs);
 #endif
+}
+
+
+template <class T, class U>
+void BaseOT::exec_base_tee_rot(bool new_receiver_inputs){
+
+    size_t len;
+    vector<octetStream> os(2);
+    PRNG G;
+
+    T sender;
+    U receiver;
+
+    size_t unit_length = sender_inputs[0][0].size_bytes(); // 16 bytes
+
+    os[0].reset_write_head();
+    os[1].reset_write_head();
+
+    // 1 - 1 sender set a random seed and send to the receiver.
+    // set the random seed.
+    octet *seed = new octet[16];
+    for(int i=0; i<16; i++) seed[i] = G.get_uchar();
+    os[0].store_bytes(seed, 16);
+
+    // send the seed to the receiver.
+    P->send_receive_player(os);
+
+    // 1 - 2 receiver generates the choice bits is new_receiver_inputs is true.
+    if(new_receiver_inputs){
+        for(int i=0; i<nOT; i++){
+            receiver_inputs[i] = G.get_uchar() & 1;
+        }
+    }
+
+
+    // 2 - sender: generate the two inputs.
+    G.SetSeed(seed);
+    for(int i=0; i<nOT; i++){
+        for(size_t j=0; j<unit_length; j++) {
+            for(size_t k = 0; k < 8; k++){
+                sender_inputs[i][0].set_bit(j*8+k, (G.get_uchar() & 1) ^ 0);
+                sender_inputs[i][1].set_bit(j*8+k, (G.get_uchar() & 1) ^ 1);
+            }
+        }
+    }
+
+
+    // 2 - receiver: generate the inputs according to the choice bits.
+    octet *seed_receiver = new octet[16];
+    int starting_length = 4;
+    for(int i=0; i<16; i++) seed_receiver[i] = os[1].get_data()[i+starting_length];
+    G.SetSeed(seed_receiver);
+
+    for(int i=0; i<nOT; i++){
+        for(size_t j=0; j<unit_length; j++) {
+            for(size_t k = 0; k < 8; k++){
+                receiver_outputs[i].set_bit(j*8+k, (G.get_uchar() & 1) ^ receiver_inputs[i]);
+            }
+        }
+    }
 }
 
 template <class T, class U>
@@ -153,14 +217,12 @@ void BaseOT::exec_base_tee(bool new_receiver_inputs)
     os[1].reset_write_head();
 
     // set the receiver inputs and the sender inputs.
+    // sender sends the inputs to receivers and receiver it self selects.
     if (ot_role & RECEIVER)
     {   
         if(new_receiver_inputs){
             for(int i=0; i<nOT; i++){
                 receiver_inputs[i] = G.get_uchar() & 1;
-                // for(size_t j=0; j<unit_length; j++) sender_inputs[i][0].set_byte(j, G.get_uchar());
-                // G.ReSeed();
-                // for(size_t j=0; j<unit_length; j++) sender_inputs[i][1].set_byte(j, G.get_uchar());
             }
         }
         for(int i=0; i<nOT; i++){

@@ -128,6 +128,9 @@ protected:
 
 	template<class T, class U>
 	void exec_base_tee(bool new_receiver_inputs=true);
+
+	template<class T, class U>
+	void exec_base_tee_rot(bool new_receiver_inputs=true);
 };
 
 class FakeOT : public BaseOT
