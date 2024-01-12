@@ -16,6 +16,7 @@
 
 #include <sodium.h>
 #include <string>
+#include <utility>
 
 template <class T>
 SubProcessor<T>::SubProcessor(ArithmeticProcessor& Proc, typename T::MAC_Check& MC,
@@ -983,12 +984,104 @@ long Processor<sint, sgf2n>::sync(long x) const
   return x;
 }
 
+// Producer
 template<class sint, class sgf2n>
 void Processor<sint, sgf2n>::dump_log() {
-  Log<sint, sgf2n> log(this); 
-  log.generate_log();
-  LogFileManager<sint, sgf2n> log_file_manager(this, &log);
-  log_file_manager.dump_log();
+  // Begin of Critical Section
+  pthread_mutex_lock(&workers_lock);
+  new_log_ptr = new Log<sint, sgf2n>(this); 
+  new_log_ptr -> generate_log();
+  while (workers_no_idle()) {
+    pthread_cond_wait(&finish_work_signal, &workers_lock);
+  }
+  cur_worker_id = allocate_worker();
+  log_ptrs[cur_worker_id] = new_log_ptr;
+  workers_status[cur_worker_id] = WAIT;
+  pthread_mutex_unlock(&workers_lock);
+  pthread_cond_signal(&new_work_signal);
+  // End of Critical Section
 }
 
+template <class sint, class sgf2n>
+void* Processor<sint, sgf2n>::request_check_entry(void* arg) {
+  Processor<sint, sgf2n>* obj = (Processor<sint, sgf2n>*) arg;
+  obj->request_check_thread();
+  return nullptr;
+}
+
+// SubProcessor(Consumer)
+template <class sint, class sgf2n>
+void Processor<sint, sgf2n>::request_check_thread() {
+  while (true) {
+      // Begin of Critical Section
+      pthread_mutex_lock(&workers_lock);
+      while (workers_no_wait() && ! check_exit) {
+        pthread_cond_wait(&new_work_signal, &workers_lock);
+      }
+      if (check_exit) {
+        wait_workers_done();
+        return;
+      }
+      pair<LogFileManager*, Log<sint, sgf2n>*> param = make_pair(log_file_managers[cur_worker_id], log_ptrs[cur_worker_id]);
+      workers_status[cur_worker_id] = BUSY;
+      pthread_create(&workers[cur_worker_id], NULL, LogFileManager::dump_entry<sint, sgf2n>, (void*) &param); 
+      pthread_mutex_unlock(&workers_lock);
+      // End of Critical Section
+  }
+}
+
+template <class sint, class sgf2n>
+void Processor<sint, sgf2n>::init_multi_thread_members() {
+  for (size_t i = 0; i < LOG_BUFFER_SIZE; i++) {
+    workers_status[i] = IDLE;
+    LogFileManager* new_log_file_manager = new LogFileManager(i);
+    log_file_managers[i] = new_log_file_manager;
+    log_ptrs[i] = nullptr;
+  }
+
+  pthread_cond_init(&finish_work_signal, NULL);
+  pthread_cond_init(&new_work_signal, NULL);
+  pthread_mutex_init(&workers_lock, NULL);
+  check_exit = false;
+}
+
+template <class sint, class sgf2n>
+bool Processor<sint, sgf2n>::workers_no_wait() {
+  for (size_t i = 0; i < LOG_BUFFER_SIZE; i++) {
+    if (workers_status[i] == WAIT) {
+      return false;
+    }
+  }
+  return true;
+}
+
+template <class sint, class sgf2n>
+bool Processor<sint, sgf2n>::workers_no_idle() {
+  for (size_t i = 0; i < LOG_BUFFER_SIZE; i++) {
+    if (workers_status[i] == IDLE) {
+      return false;
+    }
+  }
+  return true;
+}
+
+template <class sint, class sgf2n>
+int Processor<sint, sgf2n>::allocate_worker() {
+  for (size_t i = 0; i < LOG_BUFFER_SIZE; i++) {
+    if (workers_status[i] == IDLE) {
+      workers_status[i] = WAIT;
+      return i;
+    }
+  }
+  throw runtime_error("^^^^^^^^^Err in alocate_worker!^^^^^^^^^");
+}
+
+template <class sint, class sgf2n>
+void Processor<sint, sgf2n>::wait_workers_done() {
+  for (size_t i = 0; i < LOG_BUFFER_SIZE; i++) {
+    if (workers_status[i] != IDLE) {
+      pthread_join(workers[i], NULL);
+    }
+  }
+}
 #endif

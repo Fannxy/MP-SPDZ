@@ -4,6 +4,8 @@
 
 /* This is a representation of a processing element
  */
+#include <pthread.h>
+#include <queue>
 
 #include "Math/Integer.h"
 #include "Tools/Exceptions.h"
@@ -21,6 +23,13 @@
 #include "GC/Processor.h"
 #include "GC/ShareThread.h"
 #include "Protocols/SecureShuffle.h"
+#include "Processor/Log.h"
+#include "Processor/LogFileManager.h"
+
+#define LOG_BUFFER_SIZE 1
+#define BUSY 0
+#define IDLE 1
+#define WAIT 2
 
 class Program;
 
@@ -218,6 +227,19 @@ class Processor : public ArithmeticProcessor
   CommStats client_stats;
   Timer& client_timer;
 
+  // Members for multi-thread, and shared members queue<Log>
+  pthread_t request_tid;
+  pthread_t workers[LOG_BUFFER_SIZE];
+  int workers_status[LOG_BUFFER_SIZE];
+  LogFileManager* log_file_managers[LOG_BUFFER_SIZE];
+  Log<sint, sgf2n>* new_log_ptr;
+  int cur_worker_id;
+  bool check_exit;
+  Log<sint, sgf2n>* log_ptrs[LOG_BUFFER_SIZE];
+  pthread_cond_t finish_work_signal;
+  pthread_cond_t new_work_signal;
+  pthread_mutex_t workers_lock;
+
   void reset(const Program& program,int arg); // Reset the state of the processor
   string get_filename(const char* basename, bool use_number);
 
@@ -286,6 +308,21 @@ class Processor : public ArithmeticProcessor
   long sync(long x) const;
 
   void dump_log();
+
+  static void* request_check_entry(void* arg);
+
+  bool workers_no_wait();
+
+  bool workers_no_idle();
+
+  int allocate_worker();
+  
+  void wait_workers_done();
+  
+  // Monitor's Main_Func and son_funcs as follows
+  void request_check_thread();
+
+  void init_multi_thread_members();
 
   ofstream& get_public_output();
   ofstream& get_binary_output();
