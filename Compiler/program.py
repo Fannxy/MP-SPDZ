@@ -1288,13 +1288,28 @@ class Tape:
             filename = self.program.programs_dir + "/Bytecode/" + filename
         print("Writing to", filename)
         f = open(filename, "wb")
+        # ______jbt___
+        # file to record end position of every basicblock
+        if self.program.options.auto_checkpoint:
+            rec_filename =  filename + ".info"
+            rec_position = 0
+            dump_rec_file = open(rec_filename, "w")
+            print("Writing to", rec_filename)
+            for basicblock in self.basicblocks:
+                if rec_position:
+                    dump_rec_file.write(str(rec_position) + " ")
+                rec_position += len(basicblock.instructions)
+            dump_rec_file.close()
         h = hashlib.sha256()
+        # fff = open("res.txt", 'w')
         for i in self._get_instructions():
             if i is not None:
+                # fff.write(str(i) + "\n")
                 b = i.get_bytes()
                 f.write(b)
                 h.update(b)
         f.close()
+        # fff.close()
         self.hash = h.digest()
 
     def new_reg(self, reg_type, size=None):

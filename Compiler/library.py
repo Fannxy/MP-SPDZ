@@ -1650,7 +1650,7 @@ def break_point(name='', dump_log=False):
     Baiting Jiang.23.12.22 16:45
     """
 
-    if (dump_log) :
+    if dump_log and not get_program().options.auto_checkpoint:
         instructions.dump_log()
 
 
