@@ -289,7 +289,8 @@ void thread_info<sint, sgf2n>::Sub_Main_Func()
           Proc.check_exit = true;
           pthread_cond_signal(&(Proc.new_work_signal));
           pthread_join(Proc.request_tid, NULL);
-
+          Proc.destroy_multi_thread_members();
+          
           // make sure values used in other threads are safe
           Proc.check();
           

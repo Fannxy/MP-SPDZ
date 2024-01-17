@@ -326,6 +326,8 @@ class Processor : public ArithmeticProcessor
 
   void init_multi_thread_members();
 
+  void destroy_multi_thread_members();
+
   ofstream& get_public_output();
   ofstream& get_binary_output();
 

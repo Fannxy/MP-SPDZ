@@ -1046,6 +1046,16 @@ void Processor<sint, sgf2n>::init_multi_thread_members() {
 }
 
 template <class sint, class sgf2n>
+void Processor<sint, sgf2n>::destroy_multi_thread_members() {
+  for (size_t i = 0; i < LOG_BUFFER_SIZE; i++) {
+    delete log_file_managers[i];
+  }
+  pthread_cond_destroy(&finish_work_signal);
+  pthread_cond_destroy(&new_work_signal);
+  pthread_mutex_destroy(&workers_lock);
+}
+
+template <class sint, class sgf2n>
 bool Processor<sint, sgf2n>::workers_no_wait() {
   for (size_t i = 0; i < LOG_BUFFER_SIZE; i++) {
     if (workers_status[i] == WAIT) {

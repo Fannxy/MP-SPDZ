@@ -16,6 +16,14 @@ Log<sint, sgf2n>::Log(Processor<sint, sgf2n> *processor) {
 }
 
 template <class sint, class sgf2n>
+Log<sint, sgf2n>::~Log() {
+    delete this -> machine_log;
+    for (size_t i = 0; i < processor_logs.size(); i++) {
+        delete processor_logs[i];
+    }
+}
+
+template <class sint, class sgf2n>
 void Log<sint, sgf2n>::generate_machine_log(Processor<sint, sgf2n> *processor) {
     machine_log = new MachineLog(processor);
     this -> machine_log = machine_log;
@@ -24,9 +32,9 @@ void Log<sint, sgf2n>::generate_machine_log(Processor<sint, sgf2n> *processor) {
 
 template <class sint, class sgf2n>
 void Log<sint, sgf2n>::generate_current_processor_log(Processor<sint, sgf2n> *processor) {
-    ProcessorLog curr_processorlog(processor);
-    (this -> processor_logs).push_back(curr_processorlog);
-    (this -> processor_logs)[(this -> processor_logs).size() - 1].generate_processorlog();
+    ProcessorLog<sint, sgf2n>* cur_processorlog = new ProcessorLog(processor);
+    (this -> processor_logs).push_back(cur_processorlog);
+    cur_processorlog -> generate_processorlog();
 }
 
 template <class sint, class sgf2n>
