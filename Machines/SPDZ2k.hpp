@@ -3,6 +3,9 @@
  *
  */
 
+#ifndef SPDZ2K_HPP_
+#define SPDZ2K_HPP_
+
 #include "Protocols/Spdz2kShare.h"
 #include "Protocols/Spdz2kPrep.h"
 #include "Protocols/SPDZ2k.h"
@@ -31,3 +34,5 @@
 #include "GC/CcdPrep.h"
 
 #include "GC/VectorProtocol.hpp"
+
+#endif

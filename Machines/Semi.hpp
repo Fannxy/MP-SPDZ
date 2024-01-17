@@ -2,6 +2,8 @@
  * Semi.cpp
  *
  */
+#ifndef MACHINES_SEMI_HPP_
+#define MACHINES_SEMI_HPP_
 
 #include "Protocols/SemiShare.h"
 #include "Math/gf2n.h"
@@ -20,3 +22,5 @@
 #include "Protocols/Beaver.hpp"
 #include "Protocols/MalRepRingPrep.hpp"
 #include "GC/SemiSecret.hpp"
+
+#endif

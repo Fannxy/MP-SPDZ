@@ -24,7 +24,7 @@
 #include "GC/ShareThread.h"
 #include "Protocols/SecureShuffle.h"
 #include "Processor/Log.h"
-#include "Processor/LogFileManager.h"
+// #include "Processor/LogFileManager.h"
 
 #define LOG_BUFFER_SIZE 1
 #define BUSY 0
@@ -32,6 +32,8 @@
 #define WAIT 2
 
 class Program;
+
+class LogFileManager;
 
 template <class T>
 class SubProcessor
