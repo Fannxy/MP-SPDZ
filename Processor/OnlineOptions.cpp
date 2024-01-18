@@ -36,6 +36,8 @@ OnlineOptions::OnlineOptions() : playerno(-1)
     opening_sum = 0;
     max_broadcast = 0;
     receive_threads = false;
+    auto_dump = false;
+    dump_interval = 1;
 #ifdef VERBOSE
     verbose = true;
 #else
@@ -112,7 +114,15 @@ OnlineOptions::OnlineOptions(ez::ezOptionParser& opt, int argc,
             "-B", // Flag token.
             "--bucket-size" // Flag token.
     );
-
+    opt.add(
+            "1", // Default.
+            0, // Required?
+            1, // Number of args expected.
+            0, // Delimiter if expecting multiple args.
+            "Automatically dump checkpoints", // Help description.
+            "-A", // Flag token.
+            "--bucket-size" // Flag token.
+    );
     if (security)
         opt.add(
             to_string(security_parameter).c_str(), // Default.
@@ -134,6 +144,9 @@ OnlineOptions::OnlineOptions(ez::ezOptionParser& opt, int argc,
 
     opt.get("--bucket-size")->getInt(bucket_size);
 
+    auto_dump = opt.isSet("-A");
+    opt.get("-A")->getInt(dump_interval);
+    
 #ifndef VERBOSE
     verbose = opt.isSet("--verbose");
 #endif

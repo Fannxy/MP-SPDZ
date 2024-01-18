@@ -240,6 +240,7 @@ class Compiler:
             help="more verbose output",
         )
         parser.add_option(
+            "-A",
             "--auto-checkpoint",
             action="store_true",
             dest="auto_checkpoint",

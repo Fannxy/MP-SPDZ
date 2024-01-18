@@ -1404,8 +1404,26 @@ void Program::execute(Processor<sint, sgf2n>& Proc) const
   auto& processor = Proc.Procb;
   auto& Ci = Proc.get_Ci();
 
+  // if auto-checkpoint
+  bool auto_dump = Proc.opts.auto_dump;
+  int dump_interval = Proc.opts.dump_interval;
+  
+  if (auto_dump) {
+    if (! auto_dump_pc.size()) {
+      throw runtime_error(
+            "^^^^^^^^^^^^^^^^^^^^Err in auto_dump_file^^^^^^^^^^^^^^^^^^^^");
+    }
+  }
+
+  int dump_interval_cnt = 0;
   while (Proc.PC<size)
     {
+      if (auto_dump && auto_dump_pc.find(Proc.PC) != auto_dump_pc.end()) {
+        if (! dump_interval_cnt) {
+          Proc.dump_log();
+        }
+        dump_interval_cnt = (dump_interval_cnt+1) % dump_interval; 
+      }
       auto& instruction = p[Proc.PC];
       auto& r = instruction.r;
       auto& n = instruction.n;

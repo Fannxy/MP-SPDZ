@@ -1299,17 +1299,15 @@ class Tape:
                 if rec_position:
                     dump_rec_file.write(str(rec_position) + " ")
                 rec_position += len(basicblock.instructions)
+            dump_rec_file.write("-1")
             dump_rec_file.close()
         h = hashlib.sha256()
-        # fff = open("res.txt", 'w')
         for i in self._get_instructions():
             if i is not None:
-                # fff.write(str(i) + "\n")
                 b = i.get_bytes()
                 f.write(b)
                 h.update(b)
         f.close()
-        # fff.close()
         self.hash = h.digest()
 
     def new_reg(self, reg_type, size=None):
