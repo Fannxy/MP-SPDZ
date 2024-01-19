@@ -69,6 +69,7 @@ protected:
             const vector<BitVector>& baseReceiverOutput) = 0;
 
 public:
+    map<string,Timer> timers;
     OTTripleGenerator<T>& generator;
     int thread_num;
     OTExtensionWithMatrix rot_ext;

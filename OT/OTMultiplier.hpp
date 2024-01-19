@@ -240,6 +240,7 @@ void SemiMultiplier<T>::multiplyForMixed()
     this->outbox.push({});
 }
 
+// fanxy - compute for the triples?
 template<class W>
 void OTMultiplier<W>::multiplyForTriples()
 {
@@ -264,16 +265,19 @@ void OTMultiplier<W>::multiplyForTriples()
         BitVector aBits = generator.valueBits[0];
         //timers["Extension"].start();
         if (generator.machine.use_extension)
+        // if(false)
         {
 #ifdef USE_KOS
             rot_ext.extend_correlated(aBits);
 #else
+            // std::cerr << "in ot-based extension? " << std::endl;
             rot_ext.extend(aBits.size(), aBits);
             corr_hash = false;
 #endif
         }
         else
         {
+            // std::cerr << "in ot-based multipliers? " << std::endl;
             BaseOT bot(aBits.size(), -1, generator.players[thread_num]);
             bot.set_receiver_inputs(aBits);
             bot.exec_base(false);
@@ -287,16 +291,16 @@ void OTMultiplier<W>::multiplyForTriples()
             }
         }
 
-        rot_ext.hash_outputs(aBits.size(), baseSenderOutputs,
-                baseReceiverOutput, corr_hash);
+        // rot_ext.hash_outputs(aBits.size(), baseSenderOutputs,
+        //         baseReceiverOutput, corr_hash);
         //timers["Extension"].stop();
 
-        //timers["Correlation"].start();
+        timers["Correlation"].start();
         otCorrelator.setup_for_correlation(aBits, baseSenderOutputs,
                 baseReceiverOutput);
         otCorrelator.correlate(0, generator.nPreampTriplesPerLoop,
                 generator.valueBits[1], false, generator.nAmplify);
-        //timers["Correlation"].stop();
+        timers["Correlation"].stop();
 
         //timers["Triple computation"].start();
 

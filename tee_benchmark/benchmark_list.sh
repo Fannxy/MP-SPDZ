@@ -1,18 +1,15 @@
-# prot_list=(repring repfield psrepring psrepfield semi2k semi spdz mascot)
-prot_list=(mascot)
-# prot_list=(semi2k semi spdz mascot)
-# prot_list=(repring)
-func_list=(comp)
-# exec_perf='/usr/lib/linux-tools/4.15.0-20-generic/perf'
 
-make mascot
+./tee_benchmark/compile_list.sh
+
+prot_list=(repring repfield psrepring psrepfield semi2k semi spdz mascot)
+# prot_list=(repring)
+func_list=(oppe)
+# func_list=(lr oppe oram)
+
 rm -r ./tee_benchmark/Record/*
 
 for func in ${func_list[*]}; do
     for prot in ${prot_list[*]}; do
-        ./tee_benchmark/benchmark_unit.sh ${prot} ${func} &> ./tee_benchmark/Record/${prot}.txt
-        # ${exec_perf} script -i ./Perf/${prot}.data > ./Perf/${prot}_out.perf
+        ./tee_benchmark/benchmark_unit.sh ${prot} ${func} &> ./tee_benchmark/Record/${prot}-${func}.txt
     done;
 done;
-
-cat ./tee_benchmark/Record/comp_mascot_log

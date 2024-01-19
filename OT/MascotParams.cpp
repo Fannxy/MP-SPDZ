@@ -12,7 +12,8 @@ MascotParams::MascotParams()
     check = true;
     correlation_check = true;
     generateBits = false;
-    use_extension = true;
+    // use_extension = true;
+    use_extension = false;
     fewer_rounds = false;
     fiat_shamir = false;
     timerclear(&start);

@@ -1,7 +1,7 @@
 """Using comp functions to find OT usages.
 """
 
-N = 100
+N = 10
 x = Array.create_from([sfix(i) for i in range(N)])
 y = Array.create_from([sfix(N-i) for i in range(N)])
 z_comp = Array.create_from([sfix(0) for i in range(N)])
@@ -11,6 +11,7 @@ z_mul = Array.create_from([sfix(0) for i in range(N)])
 @for_range_opt(N)
 def _(i):
     z_comp[i] = x[i] > y[i]
-    z_eq[i] = x[i] == y[i]
-    z_mul[i] = z_comp[i] * z_eq[i]
-    
+    # z_eq[i] = x[i] == y[i]
+    # z_mul[i] = z_comp[i] * z_eq[i]
+
+print_ln("comp res = %s", z_comp.reveal())

@@ -58,9 +58,11 @@ int OfflineMachine<W>::run()
     T::bit_type::MAC_Check::setup(P);
     U::MAC_Check::setup(P);
 
+    timer[0].start(total_comm());
     generate<T>();
     generate<typename T::bit_type::part_type>();
     generate<U>();
+    timer[0].stop(total_comm());
 
     thread.MC->Check(P);
 
@@ -68,6 +70,7 @@ int OfflineMachine<W>::run()
     T::bit_type::MAC_Check::teardown();
     U::MAC_Check::teardown();
 
+    print_timers();
     return 0;
 }
 

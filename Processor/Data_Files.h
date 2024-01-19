@@ -412,6 +412,7 @@ array<T, 3> Preprocessing<T>::get_triple(int n_bits)
   return get_triple_no_count(n_bits);
 }
 
+// fanxy - get_triple func
 template<class T>
 array<T, 3> Preprocessing<T>::get_triple_no_count(int n_bits)
 {

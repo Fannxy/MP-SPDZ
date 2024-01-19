@@ -1,0 +1,8 @@
+"""sigmoid-based OPPE func
+"""
+from Compiler.code.Rep3_code import *
+
+# Test performance.
+N = 1000
+x = Array.create_from([sfix(i) for i in range(N)])
+z = sigmoid(x)

@@ -102,6 +102,7 @@ OTTripleGenerator<T>::OTTripleGenerator(const OTTripleSetup& setup,
     //baseReceiverOutputs.resize(n-1);
     nbase = setup.get_nbase();
     baseReceiverInput.resize(nbase);
+    // fanxy - the sender inputs and receiver outputs got from here.
     baseReceiverOutputs = setup.baseReceiverOutputs;
     baseSenderInputs = setup.baseSenderInputs;
     players.resize(n-1);
