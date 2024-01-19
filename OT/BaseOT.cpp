@@ -20,7 +20,7 @@ extern "C"
 
 // #define TEE_OT_DEBUG
 // #define TEE_RANDOM_OT
-// #define NORMAL_OT
+#define NORMAL_OT
 // #define DEBUG_OUTPUT
 
 using namespace std;
