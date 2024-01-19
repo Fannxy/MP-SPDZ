@@ -44,6 +44,8 @@ public:
 
     ProcessorLog(Processor<sint, sgf2n> *processor);
 
+    ~ProcessorLog();
+    
     void generate_processorlog();
 
     void generate_online_options();

@@ -239,6 +239,14 @@ class Compiler:
             dest="verbose",
             help="more verbose output",
         )
+        parser.add_option(
+            "-A",
+            "--auto-checkpoint",
+            action="store_true",
+            dest="auto_checkpoint",
+            help="automatically add dump information beginning of every basicblock "
+            "the end of every basicblock",
+        )
         if self.execute:
             parser.add_option(
                 "-E",

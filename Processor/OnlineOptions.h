@@ -37,6 +37,8 @@ public:
     bool receive_threads;
     std::string disk_memory;
     vector<long> args;
+    bool auto_dump;
+    int dump_interval;
 
     OnlineOptions();
     OnlineOptions(ez::ezOptionParser& opt, int argc, const char** argv,

@@ -1,6 +1,8 @@
 #ifndef _Program
 #define _Program
 
+#include <map>
+
 #include "Processor/Instruction.h"
 #include "Processor/Data_Files.h"
 
@@ -27,6 +29,8 @@ class Program
   bool unknown_usage;
 
   string hash;
+
+  map<size_t, bool> auto_dump_pc;
 
   void compute_constants();
 

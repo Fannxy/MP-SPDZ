@@ -21,6 +21,12 @@ ProcessorLog<sint, sgf2n>::ProcessorLog(Processor<sint, sgf2n> *processor) {
 }
 
 template <class sint, class sgf2n>
+ProcessorLog<sint, sgf2n>::~ProcessorLog() {
+    delete procp_log;
+    delete proc2_log;
+}
+
+template <class sint, class sgf2n>
 void ProcessorLog<sint, sgf2n>::generate_processorlog() {
     this -> PC_log = processor -> PC;
     this -> stacki_log = processor -> get_stack();

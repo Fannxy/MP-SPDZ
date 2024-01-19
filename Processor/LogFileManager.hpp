@@ -5,74 +5,6 @@
 #include <string>
 #include <utility>
 
-// LogFileManager::LogFileManager(int worker_id): worker_id(worker_id) {}
-
-// LogFileManager::~LogFileManager() {
-//     if (outf.is_open()) {
-//         outf.close(); 
-//     }
-//     if (inpf.is_open()) {
-//         inpf.close();
-//     }
-// }
-
-// void LogFileManager::generate_log_title_file() {
-//     title_inpf.open(LOG_TITLE_FILE_PATH);
-//     if (title_inpf.fail()) {
-//         system(("mkdir -p " + string(LOG_DIR)).c_str());
-//         title_outf.open(LOG_TITLE_FILE_PATH, ios::out);
-//         log_id = 0;
-//     } else {
-//         string ttmp;
-//         title_inpf >> ttmp >> log_id;
-//         log_id++;
-//         title_outf.open(LOG_TITLE_FILE_PATH, ios::out | ios::trunc);
-//     }
-//     title_outf << "LOG_TITLE" << endl << log_id << endl;
-//     title_outf.close();
-//     title_inpf.close();
-// }
-
-// void LogFileManager::generate_log_file() {
-//     outf.open(LOG_ITEM_FILE_PATH, ios::out | ios::trunc);
-//     if (! outf.good()) {
-//         throw runtime_error(
-//             "^^^^^^^^^^^^^^^^^^^^Err in opening target file.^^^^^^^^^^^^^^^^^^^^");
-//     }
-//     outf.close();
-// }
-
-// void LogFileManager::open_log_file() {
-//     outf.open(LOG_ITEM_FILE_PATH, ios::out | ios::app);
-//     if (! outf.good()) {
-//         throw runtime_error(
-//             "^^^^^^^^^^^^^^^^^^^^Err in opening target file.^^^^^^^^^^^^^^^^^^^^");
-//     }
-// }
-
-// void LogFileManager::close_log_file() {
-//     if (outf.is_open()) {
-//         outf.close();
-//     }
-// }
-
-// void LogFileManager::dump_time() {
-//     time_t rawtime;
-//     struct tm *ptminfo;
-//     time(&rawtime);
-//     ptminfo = localtime(&rawtime);
-//     dump_to_file("time\n", ptminfo -> tm_year + 1900, " ", ptminfo -> tm_mon + 1, " ");
-//     dump_to_file(ptminfo -> tm_mday, " ", ptminfo -> tm_hour, " ");
-//     dump_to_file(ptminfo -> tm_min, " ", ptminfo -> tm_sec, "\n");
-// }
-
-// void LogFileManager::dump_basic_info() {
-//     dump_to_file("id\n", log_id, "\n");
-//     dump_to_file("player_no\n", player_num, "\n");
-//     dump_to_file("nthreads\n", player_nthreads, "\n");
-//     dump_time();
-// }
-
 template <class sint, class sgf2n>
 void LogFileManager::dump_machine_log(Log<sint, sgf2n>* log) {
     dump_to_file("Memory type ", "M2", "\n");
@@ -157,7 +89,7 @@ void LogFileManager::dump_processor_logs(Log<sint, sgf2n>* log) {
     dump_to_file("size ", PROCESSOR_LOGS.size(), "\n");
     for (size_t i = 0; i < PROCESSOR_LOGS.size(); i++) {
         dump_to_file("Processor ", i, "\n"); // TODO: Now can only handle circumstance {0}.
-        dump_processor_log(&PROCESSOR_LOGS[i]);
+        dump_processor_log(PROCESSOR_LOGS[i]);
     }
 }
 
@@ -192,7 +124,9 @@ void LogFileManager::dump_thread(Log<sint, sgf2n>* log) {
     dump_to_file("Processors\n");
     dump_processor_logs(log);
     close_log_file();
-    (log -> processor) -> workers_status[worker_id] = IDLE;
-    pthread_cond_signal(&((log -> processor) -> finish_work_signal));
+    Processor<sint, sgf2n>* cur_processor = log -> processor;
+    delete log;
+    cur_processor -> workers_status[worker_id] = IDLE;
+    pthread_cond_signal(&(cur_processor -> finish_work_signal));
     // Any Other TODO?
 }

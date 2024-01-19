@@ -45,6 +45,19 @@ void Program::parse(string filename)
       hasher.update(buf, n);
     }
   hash = hasher.final().str();
+
+  // ___jbt__ auto-checkpoint
+  ifstream dump_rec_file(filename + ".info");
+  if (dump_rec_file.is_open()) {
+    int rec_position = 0;
+    while (rec_position >= 0) {
+      dump_rec_file >> rec_position;
+      auto_dump_pc[rec_position] = true;
+    }
+    dump_rec_file.close();
+  } else {
+    auto_dump_pc.clear();
+  }
 }
 
 void Program::parse(istream& s)
