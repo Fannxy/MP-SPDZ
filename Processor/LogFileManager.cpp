@@ -14,7 +14,11 @@ LogFileManager::~LogFileManager() {
 void LogFileManager::generate_log_title_file() {
     title_inpf.open(LOG_TITLE_FILE_PATH);
     if (title_inpf.fail()) {
-        system(("mkdir -p " + string(LOG_DIR)).c_str());
+        int ret = system(("mkdir -p " + string(LOG_DIR)).c_str());
+        if (ret) {
+            throw runtime_error(
+            "^^^^^^^^^^^^^^^^^^^^Err in mkdir command.^^^^^^^^^^^^^^^^^^^^");
+        }
         title_outf.open(LOG_TITLE_FILE_PATH, ios::out);
         log_id = 0;
     } else {
