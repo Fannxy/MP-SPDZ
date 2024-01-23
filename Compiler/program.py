@@ -1291,7 +1291,7 @@ class Tape:
         # ______jbt___
         # file to record end position of every basicblock
         rec_filename =  filename + ".info"
-        exit_code = os.system("rm " + rec_filename)
+        os.system("rm " + rec_filename)
         if self.program.options.auto_checkpoint:
             rec_position = 0
             dump_rec_file = open(rec_filename, "w")
