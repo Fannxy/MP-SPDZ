@@ -14,6 +14,7 @@
 #include "GC/ShareThread.hpp"
 #include "Protocols/SecureShuffle.hpp"
 
+#include <filesystem>
 #include <sodium.h>
 #include <string>
 #include <utility>
@@ -96,10 +97,15 @@ Processor<sint, sgf2n>::Processor(int thread_num,Player& P,
 {
   reset(program,0);
 
+#ifdef OCCLUM
+  public_input_filename = get_filename("/Programs/Public-Input/",false);
+#else
   public_input_filename = get_filename("Programs/Public-Input/",false);
+#endif
   public_input.open(public_input_filename);
   private_input_filename = (get_filename(PREP_DIR "Private-Input-",true));
   private_input.open(private_input_filename.c_str());
+  std::cout << "Current working directory: " << std::filesystem::current_path() << '\n';
 
   open_input_file(P.my_num(), thread_num, machine.opts.cmd_private_input_file);
 

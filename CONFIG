@@ -12,18 +12,16 @@ PREP_DIR = '-DPREP_DIR="Player-Data/"'
 SSL_DIR = '-DSSL_DIR="Player-Data/"'
 
 # set for SHE preprocessing (SPDZ and Overdrive)
-# USE_NTL = 0 
-USE_NTL = 0 
-
-# set to 1 to compile for TEE OTs
-USE_TEE = 1
-
-# set to 1 to disable hash check for OT-multipliers
-DISABLE_MAC_CHECK = 0
+# USE_NTL = 0
+USE_NTL = 1
+OCCLUM = 1
 
 # set for using GF(2^128)
 # unset for GF(2^40)
 USE_GF2N_LONG = 1
+
+USE_TEE = 0
+DDISABLE_MAC_CHECK = 0
 
 # set to -march=<architecture> for optimization
 # SSE4.2 is required homomorphic encryption in GF(2^n) when compiling with clang
@@ -71,7 +69,7 @@ endif
 USE_KOS = 0
 
 # allow to set compiler in CONFIG.mine
-CXX = clang++
+#CXX = clang++
 
 # use CONFIG.mine to overwrite DIR settings
 -include CONFIG.mine

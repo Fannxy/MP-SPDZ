@@ -81,7 +81,11 @@ BaseMachine::BaseMachine() : nthreads(0)
 void BaseMachine::load_schedule(const string& progname, bool load_bytecode)
 {
   this->progname = progname;
+#ifdef OCCLUM
+  string fname = "/Programs/Schedules/" + progname + ".sch";
+#else
   string fname = "Programs/Schedules/" + progname + ".sch";
+#endif
 #ifdef DEBUG_FILES
   cerr << "Opening file " << fname << endl;
 #endif
@@ -114,8 +118,11 @@ void BaseMachine::load_schedule(const string& progname, bool load_bytecode)
           expected = atoi(threadname.substr(split + 1).c_str());
           threadname = threadname.substr(0, split);
         }
-
+#ifdef OCCLUM
+      string filename = "/Programs/Bytecode/" + threadname + ".bc";
+#else
       string filename = "Programs/Bytecode/" + threadname + ".bc";
+#endif
       bc_filenames.push_back(filename);
       if (load_bytecode)
         {

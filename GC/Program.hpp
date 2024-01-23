@@ -48,7 +48,11 @@ void Program::compute_constants()
 inline
 void Program::parse(const string& bytecode_name)
 {
+#ifdef OCCLUM
+    string filename = "/Programs/Bytecode/" + bytecode_name + ".bc";
+#else
     string filename = "Programs/Bytecode/" + bytecode_name + ".bc";
+#endif
     parse_file(filename);
 }
 

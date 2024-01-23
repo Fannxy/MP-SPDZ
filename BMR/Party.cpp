@@ -240,7 +240,11 @@ FakeProgramParty::FakeProgramParty(int argc, const char** argv) :
 		int n_parties = init("LOOPBACK", _id);
 		N.init(_id - 1, 5000, vector<string>(n_parties, "localhost"));
 	}
+#ifdef OCCLUM
+	ifstream schfile((string("/Programs/Schedules/") + argv[2] + ".sch").c_str());
+#else
 	ifstream schfile((string("Programs/Schedules/") + argv[2] + ".sch").c_str());
+#endif
 	string curr, prev;
 	while (schfile.good())
 	{
