@@ -21,7 +21,11 @@ void ProcessorBase::open_input_file(int my_num, int thread_num,
 {
     string tmp = prefix;
     if (prefix.empty())
+#ifdef OCCLUM
+	tmp = "/Player-Data/Input";
+#else
         tmp = "Player-Data/Input";
+#endif
 
     open_input_file(get_parameterized_filename(my_num, thread_num, tmp));
 }
