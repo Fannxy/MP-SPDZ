@@ -12,8 +12,14 @@ PREP_DIR = '-DPREP_DIR="Player-Data/"'
 SSL_DIR = '-DSSL_DIR="Player-Data/"'
 
 # set for SHE preprocessing (SPDZ and Overdrive)
-# USE_NTL = 0 # with preprocessing
-USE_NTL = 1 # without preprocessing.
+# USE_NTL = 0 
+USE_NTL = 0 
+
+# set to 1 to compile for TEE OTs
+USE_TEE = 1
+
+# set to 1 to disable hash check for OT-multipliers
+DISABLE_MAC_CHECK = 0
 
 # set for using GF(2^128)
 # unset for GF(2^40)
@@ -126,4 +132,12 @@ ifeq ($(USE_KOS),1)
 CFLAGS += -DUSE_KOS
 else
 CFLAGS += -std=c++17
+endif
+
+ifeq ($(USE_TEE),1)
+CFLAGS += -DTEE_RANDOM_OT
+endif
+
+ifeq ($(DISABLE_MAC_CHECK),1)
+CFLAGS += -DDISABLE_MAC_CHECK
 endif

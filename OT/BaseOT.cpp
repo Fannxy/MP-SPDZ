@@ -18,10 +18,6 @@ extern "C"
 #include "SimplestOT_C/ref10/ot_receiver.h"
 }
 
-// #define TEE_OT_DEBUG
-// #define TEE_RANDOM_OT
-#define NORMAL_OT
-// #define DEBUG_OUTPUT
 
 using namespace std;
 
@@ -131,7 +127,8 @@ void BaseOT::exec_base(bool new_receiver_inputs)
 #ifdef TEE_OT_DEBUG
     exec_base_tee<SIMPLEOT_SENDER, SIMPLEOT_RECEIVER>(new_receiver_inputs);
 #endif
-#ifdef NORMAL_OT
+#ifndef TEE_RANDOM_OT
+    // std::cerr << "in regular ot" << std::endl;
 #ifndef NO_AVX_OT
     if (cpu_has_avx(true))
         exec_base<SIMPLEOT_SENDER, SIMPLEOT_RECEIVER>(new_receiver_inputs);
@@ -139,6 +136,7 @@ void BaseOT::exec_base(bool new_receiver_inputs)
 #endif
         exec_base<ref10_SENDER, ref10_RECEIVER>(new_receiver_inputs);
 #endif
+
 }
 
 
@@ -169,22 +167,15 @@ void BaseOT::exec_base_tee_rot(bool new_receiver_inputs){
     // 1 - 2 receiver generates the choice bits is new_receiver_inputs is true.
     if(new_receiver_inputs){
         for(int i=0; i<nOT; i++){
-            // receiver_inputs.set_bit(i, 1);
             receiver_inputs.set_bit(i, G.get_uchar() & 1);
         }
     }
 
+    // std::cerr << "receiver inputs length: " << receiver_inputs.size() << std::endl;
+
 
     // 2 - sender: generate the two inputs.
     G.SetSeed(seed);
-
-#ifdef DEBUG_OUTPUT
-     std::cerr << "seed sender" << std::endl;
-     print_octet_stream_hex(seed, 16);
-    // for(int i=0; i<16; i++){
-    //     std::cerr << seed[i] << std::endl;
-    // }
-#endif
 
     for(int i=0; i<nOT; i++){
         for(size_t j=0; j<unit_length; j++) {
@@ -232,16 +223,6 @@ void BaseOT::exec_base_tee_rot(bool new_receiver_inputs){
     std::cerr << "receiver outputs - " << std::endl;
     for(int i=0; i<nOT; i++) print_octet_stream_hex(receiver_outputs[i].get_ptr(), unit_length);
 #endif
-
-    // // debug - check hashs.
-    // for (int i = 0; i < nOT; i++)
-    // {
-    //     if (ot_role & RECEIVER)
-    //         hash_with_id(receiver_outputs.at(i), i);
-    //     if (ot_role & SENDER)
-    //         for (int j = 0; j < 2; j++)
-    //             hash_with_id(sender_inputs.at(i).at(j), i);
-    // }    
 }
 
 template <class T, class U>

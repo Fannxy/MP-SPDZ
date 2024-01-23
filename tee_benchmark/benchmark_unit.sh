@@ -42,20 +42,18 @@ if [ ${modular[$prot]} == "f" ]; then
     ./compile.py ${benchmark[$func]} > ${compileLog}
 fi
 
-logFile=${logFolder}${func}_${prot}_log
-logTmp=${logFolder}tmp
+logFile=${logFolder}${func}_${prot}_log.txt
+logTmp=${logFolder}${func}_${prot}_tmp
 
 if [ ${parties[$prot]} == 2 ]; then
-    ./${protocol[$prot]} -p 0 ${benchmark[$func]} -v &>> ${logFile}0 & 
-    # pid=$!  
-    # ${exec_perf} record -g -F 180 -p $pid -o ./Perf/${prot}.data &
-    ./${protocol[$prot]} -p 1 ${benchmark[$func]} -v &>> ${logFile}1;
+    ./${protocol[$prot]} -p 0 ${benchmark[$func]} -v --encrypted &>> ${logFile} & 
+    ./${protocol[$prot]} -p 1 ${benchmark[$func]} -v --encrypted &>> ${logTmp};
+    # ./${protocol[$prot]} -p 0 ${benchmark[$func]} -v &>> ${logFile} & 
+    # ./${protocol[$prot]} -p 1 ${benchmark[$func]} -v &>> ${logTmp};
 fi
 wait;
 if [ ${parties[$prot]} == 3 ]; then
     ./${protocol[$prot]} -p 0 ${benchmark[$func]} -v &>> ${logFile} & 
-    # pid=$!  
-    # ${exec_perf} record -g -F 180 -p $pid -o ./Perf/${prot}.data &
     ./${protocol[$prot]} -p 1 ${benchmark[$func]} -v &>> ${logTmp} &
     ./${protocol[$prot]} -p 2 ${benchmark[$func]} -v &>> ${logTmp};
 fi

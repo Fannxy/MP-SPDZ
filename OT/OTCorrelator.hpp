@@ -64,15 +64,10 @@ void OTCorrelator<U>::setup_for_correlation(BitVector& baseReceiverInput,
     senderOutputMatrices.resize(2);
     senderOutputMatrices[0] = baseReceiverOutput;
 }
-
-// fanxy - seems for other correlations. 
 template <class U>
 void OTCorrelator<U>::correlate(int start, int slice,
         BitVector& newReceiverInput, bool useConstantBase, int repeat)
-{
-    
-    std::cerr << "in this correlation " << std::endl;
-    
+{    
     vector<octetStream> os(2);
 
     Slice<U> receiverOutputSlice(receiverOutputMatrix, start, slice);

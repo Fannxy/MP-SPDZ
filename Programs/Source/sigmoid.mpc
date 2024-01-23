@@ -1,8 +1,11 @@
 """sigmoid-based OPPE func
 """
-from Compiler.code.Rep3_code import *
+from Compiler.ml import approx_sigmoid
+from Compiler.types import *
 
 # Test performance.
-N = 1000
+N = 50
 x = Array.create_from([sfix(i) for i in range(N)])
-z = sigmoid(x)
+
+for i in range(N):
+    z = approx_sigmoid(x[i])

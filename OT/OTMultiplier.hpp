@@ -270,17 +270,18 @@ void OTMultiplier<W>::multiplyForTriples()
 #ifdef USE_KOS
             rot_ext.extend_correlated(aBits);
 #else
-            // std::cerr << "in ot-based extension? " << std::endl;
             rot_ext.extend(aBits.size(), aBits);
             corr_hash = false;
 #endif
         }
         else
         {
-            // std::cerr << "in ot-based multipliers? " << std::endl;
             BaseOT bot(aBits.size(), -1, generator.players[thread_num]);
             bot.set_receiver_inputs(aBits);
             bot.exec_base(false);
+
+            rot_ext.resize(aBits.size()); // sometimes failed without this allocation!
+
             for (size_t i = 0; i < aBits.size(); i++)
             {
                 rot_ext.receiverOutputMatrix[i] =
@@ -291,8 +292,10 @@ void OTMultiplier<W>::multiplyForTriples()
             }
         }
 
-        // rot_ext.hash_outputs(aBits.size(), baseSenderOutputs,
-        //         baseReceiverOutput, corr_hash);
+#ifndef DISABLE_MAC_CHECK
+        rot_ext.hash_outputs(aBits.size(), baseSenderOutputs,
+                baseReceiverOutput, corr_hash);
+#endif
         //timers["Extension"].stop();
 
         timers["Correlation"].start();

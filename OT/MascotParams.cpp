@@ -12,8 +12,13 @@ MascotParams::MascotParams()
     check = true;
     correlation_check = true;
     generateBits = false;
-    // use_extension = true;
+#ifdef TEE_RANDOM_OT
+    // std::cerr << "Using TEE random OT\n" << std::endl;
     use_extension = false;
+#else
+    // std::cerr << "Using regular random OT\n" << std::endl;
+    use_extension = true;
+#endif
     fewer_rounds = false;
     fiat_shamir = false;
     timerclear(&start);
