@@ -21,7 +21,7 @@ OCCLUM = 1
 USE_GF2N_LONG = 1
 
 USE_TEE = 0
-DDISABLE_MAC_CHECK = 0
+DISABLE_MAC_CHECK = 0
 
 # set to -march=<architecture> for optimization
 # SSE4.2 is required homomorphic encryption in GF(2^n) when compiling with clang
