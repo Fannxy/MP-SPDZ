@@ -32,6 +32,7 @@ benchmark["lr"]=breast_logistic
 benchmark["oppe"]=sigmoid
 benchmark["oram"]=oram_tutorial
 benchmark["comp"]=comp
+benchmark["nn"]=benchmark_secureNN
 
 compileLog=${logFolder}comp_log
 
