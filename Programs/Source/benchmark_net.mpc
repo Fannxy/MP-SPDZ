@@ -4,10 +4,13 @@ import math
 import sys
 
 if len(program.args) < 2:
-   print('Usage: %s <net> <n_threads>' % program.args[0],
-         file=sys.stderr)
-   print('<net> refers to the letter naming in SecureNN.', file=sys.stderr)
-   exit(1)
+#    print('Usage: %s <net> <n_threads>' % program.args[0],
+#          file=sys.stderr)
+#    print('<net> refers to the letter naming in SecureNN.', file=sys.stderr)
+#    exit(1)
+    network = 'B'
+else:
+    network = program.args[1]
 
 program.options_from_args()
 program.options.cisc = True
@@ -25,7 +28,7 @@ if 'full' in program.args:
 else:
     sfix.set_precision(12, 31)
 
-if program.args[1] == 'A':
+if network == 'A':
     layers = [
         ml.Dense(1, 784, 128),
         ml.Square([1, 128]),
@@ -34,7 +37,7 @@ if program.args[1] == 'A':
         ml.Dense(1, 128, 10),
         ml.Argmax((1, 10)),
     ]
-elif program.args[1] == 'B':
+elif network == 'B':
     layers = [
         ml.FixConv2d([1, 28, 28, 1], (16, 5, 5, 1), (16,), [1, 24, 24, 16], (1, 1), 'VALID'),
         ml.MaxPool([1, 24, 24, 16]),
@@ -47,7 +50,7 @@ elif program.args[1] == 'B':
         ml.Dense(1, 100, 10),
         ml.Argmax((1, 10)),
     ]
-elif program.args[1] == 'C':
+elif network == 'C':
     layers = [
         ml.FixConv2d([1, 28, 28, 1], (20, 5, 5, 1), (20,), [1, 24, 24, 20], (1, 1), 'VALID'),
         ml.MaxPool([1, 24, 24, 20]),
@@ -60,7 +63,7 @@ elif program.args[1] == 'C':
         ml.Dense(1, 500, 10),
         ml.Argmax((1, 10)),
     ]
-elif program.args[1] == 'D':
+elif network == 'D':
     layers = [
         ml.FixConv2d([1, 28, 28, 1], (5, 5, 5, 1), (5,), [1, 14, 14, 5], (2, 2)),
         ml.Relu([1, 14, 14, 5]),
@@ -71,6 +74,16 @@ elif program.args[1] == 'D':
     ]
 else:
     raise Exception('unknown network: ' + program.args[1])
+
+# generate data beforehead.
+fake_data = [0 for i in range(1000000)]
+with open("/Player-Data/Input-P0-0", "w") as f:
+    for data in fake_data:  
+        f.write(str(data) + "\n")
+        
+with open("/Player-Data/Input-P1-0", "w") as f:
+    for data in fake_data:  
+        f.write(str(data) + "\n")
 
 opt = ml.Optimizer()
 opt.layers = layers

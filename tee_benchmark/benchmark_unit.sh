@@ -32,7 +32,7 @@ benchmark["lr"]=breast_logistic
 benchmark["oppe"]=sigmoid
 benchmark["oram"]=oram_tutorial
 benchmark["comp"]=comp
-benchmark["nn"]=benchmark_secureNN
+benchmark["nn"]=benchmark_net
 
 compileLog=${logFolder}comp_log
 
@@ -42,6 +42,8 @@ fi
 if [ ${modular[$prot]} == "f" ]; then 
     ./compile.py ${benchmark[$func]} > ${compileLog}
 fi
+
+cp -r ./Programs /Programs
 
 logFile=${logFolder}${func}_${prot}_log.txt
 logTmp=${logFolder}${func}_${prot}_tmp

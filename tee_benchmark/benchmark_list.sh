@@ -7,7 +7,8 @@ prot_list=(spdz)
 # prot_list=(spdz mascot)
 # prot_list=(mascot)
 # func_list=(comp oppe oram lr)
-func_list=(comp)
+# func_list=(comp)
+func_list=(nn)
 rm -r ./tee_benchmark/Record/*
 
 for func in ${func_list[*]}; do

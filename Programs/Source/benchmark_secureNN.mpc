@@ -28,12 +28,14 @@ NetworkC = [
     (500, 10, 'FC')
 ]
 
-try:
-     network = globals()['Network' + program.args[1]]
-except:
-     import sys
-     print('Usage: %s [A,B,C,D]' % ' '.join(sys.argv))
-     sys.exit(1)
+# try:
+#      network = globals()['Network' + program.args[1]]
+# except:
+#      import sys
+#      print('Usage: %s [A,B,C,D]' % ' '.join(sys.argv))
+#      sys.exit(1)
+
+network = NetworkB
 
 # c5.9xlarge has 36 cores
 n_threads = 8
@@ -76,6 +78,8 @@ for l, n, typ in network:
         b.assign_all(zero2)
 
         # parallelization for optimization
+        # @for_range_multithread(n_threads, 1000, n)
+        # @for_range_opt(1000)
         @for_range_multithread(n_threads, 1000, n)
         def _(i):
             # only for optimization

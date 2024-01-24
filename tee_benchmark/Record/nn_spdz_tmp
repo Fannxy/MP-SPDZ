@@ -1,0 +1,39 @@
+Using SPDZ2k security parameter 64
+Using statistical security parameter 40
+Trying to run 64-bit computation
+Current working directory: "/root/MP-SPDZ"
+Starting timer 1 at 0 (0 MB, 0 rounds) after 5.8771e-05
+Stopped timer 1 at 612.391 (37342.2 MB, 107616 rounds)
+Compiler: ./compile.py -R 64 benchmark_net
+	503 triples of SPDZ2^(64+64) left
+	432 bits of SPDZ2^(64+64) left
+Spent 3.79825 seconds (40.9 MB, 40327 rounds) on the online phase and 609.187 seconds (37311.6 MB, 67469 rounds) on the preprocessing/offline phase.
+Join timer: 0 612985
+Finish timer: 0.0142468
+Communication details:
+Broadcasting 0.817982 MB in 30759 rounds, taking 15.6368 seconds
+Exchanging one-to-one 29030.6 MB in 24538 rounds, taking 72.7588 seconds
+Receiving directly 167.525 MB in 19452 rounds, taking 4.93384 seconds
+Receiving one-to-one 8184.95 MB in 6637 rounds, taking 24.9167 seconds
+Sending directly 166.989 MB in 19418 rounds, taking 1.28225 seconds
+Sending one-to-one 8154.15 MB in 6633 rounds, taking 2.45966 seconds
+Sending to all 0.012544 MB in 34 rounds, taking 0.0014053 seconds
+Sending/receiving 0.0052 MB in 325 rounds, taking 0.0510247 seconds
+CPU time = 570.595
+The following benchmarks are including preprocessing (offline phase).
+Time = 613 seconds 
+Time1 = 612391 ms (37342.2 MB)
+Data sent = 37352.5 MB in ~107796 rounds (party 1 only)
+Global data sent = 74736.4 MB (all parties)
+Actual cost of program:
+  Type int
+       1256497        Triples
+        786568           Bits
+         20700          Opens
+         34326   Input tuples (33542 784)
+This program might benefit from some protocol options.
+Consider adding the following at the beginning of your code:
+	program.use_edabit(True)
+This virtual machine was compiled with GCC. Recompile with 'CXX = clang++' in 'CONFIG.mine' for optimal performance.
+Coordination took 0.905646 seconds
+Command line: ././spdz2k-party.x -p 1 benchmark_net -v --encrypted

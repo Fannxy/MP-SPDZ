@@ -135,3 +135,7 @@ endif
 ifeq ($(DISABLE_MAC_CHECK),1)
 CFLAGS += -DDISABLE_MAC_CHECK
 endif
+
+ifeq ($(OCCLUM),1)
+CFLAGS += -DOCCLUM
+endif
