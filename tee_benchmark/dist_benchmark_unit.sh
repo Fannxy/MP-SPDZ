@@ -1,5 +1,6 @@
 prot=$1; func=$2; comptype=$3;
-logFolder=$HOME/MP-SPDZ/tee_benchmark/Record/
+logFolder=$HOME/MP-SPDZ/tee_benchmark/Record
+echo "compute type = $comptype"
 
 declare -A protocol
 protocol["repring"]=replicated-ring-party.x
@@ -40,35 +41,50 @@ benchmark["nn"]=benchmark_net
 # local host: 172.31.244.198
 remoteHosts=(172.31.244.198 172.31.244.197 172.31.244.196)
 
-compileLog=${logFolder}comp_log
+compileLog=${logFolder}/comp_log
 for host in ${remoteHosts[*]}
 do
     ssh -i $HOME/.ssh/id_ed25519 -p 1234 root@$host "mkdir -p $logFolder"
     if [ ${modular[$prot]} == "r" ]; then
+	echo "compile -R 64 for $prot $func on host $host"
         ssh -i $HOME/.ssh/id_ed25519 -p 1234 root@$host "cd $HOME/MP-SPDZ && ./compile.py -R 64 ${benchmark[$func]} > ${compileLog}"
     fi
     if [ ${modular[$prot]} == "f" ]; then
+	echo "compile for $prot $func on host $host"
         ssh -i $HOME/.ssh/id_ed25519 -p 1234 root@$host "cd $HOME/MP-SPDZ && ./compile.py ${benchmark[$func]} > ${compileLog}"
     fi
 done
 
-logFile=${logFolder}${func}_${prot}_${comptype}_log.txt
+logFile=${logFolder}/${func}_${prot}_${comptype}_log.txt
+echo "logFile = $logFile"
 
 if [ ${comptype} == 1 -o ${comptype} == 3 ]; then
+    echo "without TEE"
     for host in ${remoteHosts[*]}
     do
         ssh -i $HOME/.ssh/id_ed25519 -p 1234 root@$host "rm -r /Programs ; cp -r $HOME/MP-SPDZ/Programs / ; rm -r /Player-Data ; cp -r $HOME/MP-SPDZ/Player-Data /"
     done
+
+    echo "begin to run"
     i=0
-    if [ ${parties[$prot]} == 2 ]; then
-        ssh -i $HOME/.ssh/id_ed25519 -p 1234 root@${remoteHosts[$i]} "cd $HOME/MP-SPDZ && ./${protocol[$prot]} -N 2 -e --ip-file-name /HOST -p $i -v ${benchmark[$func]} >${logFile} 2>&1"
+    for host in ${remoteHosts[*]}
+    do
+        if [ $i == 2 -a ${parties[$prot]} == 2 ]; then
+	    break
+	fi
+	echo ${parties[$prot]}
+	{
+        if [ ${parties[$prot]} == 2 ]; then
+	    echo "run command: ./${protocol[$prot]} -N 2 -e --ip-file-name /HOST -p $i -v ${benchmark[$func]} on host $host"
+            ssh -i $HOME/.ssh/id_ed25519 -p 1234 root@${remoteHosts[$i]} "cd $HOME/MP-SPDZ && ./${protocol[$prot]} -N 2 -e --ip-file-name /HOST -p $i -v ${benchmark[$func]} >${logFile} 2>&1"
+        fi
+        if [ ${parties[$prot]} == 3 ]; then
+	    echo "run command: ./${protocol[$prot]} --ip-file-name /HOST -p $i -v ${benchmark[$func]} on host $host"
+            ssh -i $HOME/.ssh/id_ed25519 -p 1234 root@${remoteHosts[$i]} "cd $HOME/MP-SPDZ && ./${protocol[$prot]} --ip-file-name /HOST -p $i -v ${benchmark[$func]} >${logFile} 2>&1"
+        fi
+        }&
         i=$(( i + 1 ))
-    fi
-    wait;
-    if [ ${parties[$prot]} == 3 ]; then
-        ssh -i $HOME/.ssh/id_ed25519 -p 1234 root@${remoteHosts[$i]} "cd $HOME/MP-SPDZ && ./${protocol[$prot]} -N 3 -e --ip-file-name /HOST -p $i -v ${benchmark[$func]} >${logFile} 2>&1"
-        i=$(( i + 1 ))
-    fi
+    done
     wait;
 
 else
@@ -78,14 +94,20 @@ else
     done
 
     i=0
-    if [ ${parties[$prot]} == 2 ]; then
-        ssh -i $HOME/.ssh/id_ed25519 -p 1234 root@${remoteHosts[$i]} "cd $HOME/MP-SPDZ/occlum_workspace && occlum run /bin/${protocol[$prot]} -N 2 -e --ip-file-name /HOST -p $i -v ${benchmark[$func]} >${logFile} 2>&1"
+    for host in ${remoteHosts[*]}
+    do
+        if [ $i == 2 -a ${parties[$prot]} == 2 ]; then
+            break
+        fi
+        {
+        if [ ${parties[$prot]} == 2 ]; then
+            ssh -i $HOME/.ssh/id_ed25519 -p 1234 root@${remoteHosts[$i]} "cd $HOME/MP-SPDZ/occlum_workspace && occlum run /bin/${protocol[$prot]} -N 2 -e --ip-file-name /HOST -p $i -v ${benchmark[$func]} >${logFile} 2>&1"
+        fi
+        if [ ${parties[$prot]} == 3 ]; then
+            ssh -i $HOME/.ssh/id_ed25519 -p 1234 root@${remoteHosts[$i]} "cd $HOME/MP-SPDZ/occlum_workspace && occlum run /bin/${protocol[$prot]} --ip-file-name /HOST -p $i -v ${benchmark[$func]} >${logFile} 2>&1"
+        fi
+        }&
         i=$(( i + 1 ))
-    fi
-    wait;
-    if [ ${parties[$prot]} == 3 ]; then
-        ssh -i $HOME/.ssh/id_ed25519 -p 1234 root@${remoteHosts[$i]} "cd $HOME/MP-SPDZ/occlum_workspace && occlum run /bin/${protocol[$prot]} -N 3 -e --ip-file-name /HOST -p $i -v ${benchmark[$func]} >${logFile} 2>&1"
-         i=$(( i + 1 ))
-    fi
+    done
     wait;
 fi
