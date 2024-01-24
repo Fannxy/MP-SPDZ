@@ -1,5 +1,4 @@
 func_list=(comp oppe oram lr nn)
-rm -r $HOME/MP-SPDZ/tee_benchmark/Record
 passive_list=(semi2k semi repring repfield)
 
 cd $HOME/MP-SPDZ
