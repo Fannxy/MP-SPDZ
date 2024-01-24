@@ -5,23 +5,19 @@ OPTIM= -O3
 #DEBUG = -DDEBUG
 GDEBUG = -g
 
-# set this to your preferred local storage directory
-PREP_DIR = '-DPREP_DIR="Player-Data/"'
-
-# directory to store SSL keys
-SSL_DIR = '-DSSL_DIR="Player-Data/"'
-
 # set for SHE preprocessing (SPDZ and Overdrive)
 # USE_NTL = 0
 USE_NTL = 1
+# the following options are affected when using TEE
 OCCLUM = 1
+PREP_DIR = '-DPREP_DIR="/Player-Data/"' # set this to your preferred local storage directory
+SSL_DIR = '-DSSL_DIR="/Player-Data/"' # directory to store SSL keys
+USE_TEE = 0 # set 1 to enable TEE-OT
+DISABLE_MAC_CHECK = 0 # set 1 to skip hash, have bug to fix
 
 # set for using GF(2^128)
 # unset for GF(2^40)
 USE_GF2N_LONG = 1
-
-USE_TEE = 0
-DISABLE_MAC_CHECK = 0
 
 # set to -march=<architecture> for optimization
 # SSE4.2 is required homomorphic encryption in GF(2^n) when compiling with clang

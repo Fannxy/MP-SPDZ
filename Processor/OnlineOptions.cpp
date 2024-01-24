@@ -29,7 +29,11 @@ OnlineOptions::OnlineOptions() : playerno(-1)
     bucket_size = 4;
     security_parameter = DEFAULT_SECURITY;
     use_security_parameter = false;
+#ifdef OCCLUM
+    cmd_private_input_file = "/Player-Data/Input";
+#else
     cmd_private_input_file = "Player-Data/Input";
+#endif
     cmd_private_output_file = "";
     file_prep_per_thread = false;
     trunc_error = DEFAULT_SECURITY;
