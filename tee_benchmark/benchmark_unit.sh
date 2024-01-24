@@ -44,6 +44,7 @@ if [ ${modular[$prot]} == "f" ]; then
 fi
 
 cp -r ./Programs /Programs
+cp -r ./Player-Data /Player-Data
 
 logFile=${logFolder}${func}_${prot}_log.txt
 logTmp=${logFolder}${func}_${prot}_tmp

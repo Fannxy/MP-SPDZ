@@ -77,11 +77,11 @@ else:
 
 # generate data beforehead.
 fake_data = [0 for i in range(1000000)]
-with open("/Player-Data/Input-P0-0", "w") as f:
+with open("Player-Data/Input-P0-0", "w") as f:
     for data in fake_data:  
         f.write(str(data) + "\n")
         
-with open("/Player-Data/Input-P1-0", "w") as f:
+with open("Player-Data/Input-P1-0", "w") as f:
     for data in fake_data:  
         f.write(str(data) + "\n")
 
