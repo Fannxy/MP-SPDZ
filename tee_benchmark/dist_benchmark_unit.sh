@@ -8,7 +8,7 @@ protocol["psrepring"]=ps-rep-ring-party.x
 protocol["psrepfield"]=ps-rep-field-party.x
 protocol["semi2k"]=semi2k-party.x
 protocol["semi"]=semi-party.x
-protocol["spdz"]=spdz2k-party.x
+protocol["spdz2k"]=spdz2k-party.x
 protocol["mascot"]=mascot-party.x
 protocol["semi-offline"]=semi-offline.x
 protocol["semi2k-offline"]=semi2k-offline.x
@@ -18,7 +18,7 @@ declare -A parties
 parties["repring"]=3; parties["repfield"]=3;
 parties["psrepring"]=3; parties["psrepfield"]=3;
 parties["semi2k"]=2; parties["semi"]=2;
-parties["spdz"]=2; parties["mascot"]=2;
+parties["spdz2k"]=2; parties["mascot"]=2;
 parties["semi2k-offline"]=2; parties["semi-offline"]=2;
 parties["hemi-offline"]=2;
 
@@ -26,7 +26,7 @@ declare -A modular
 modular["repring"]=r; modular["repfield"]=f;
 modular["psrepring"]=r; modular["psrepfield"]=f;
 modular["semi2k"]=r; modular["semi"]=f;
-modular["spdz"]=r; modular["mascot"]=f;
+modular["spdz2k"]=r; modular["mascot"]=f;
 modular["semi2k-offline"]=r; modular["semi-offline"]=f;
 modular["hemi-offline"]=f;
 
