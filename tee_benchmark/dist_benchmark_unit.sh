@@ -90,7 +90,7 @@ if [ ${comptype} == 1 -o ${comptype} == 3 ]; then
 else
     for host in ${remoteHosts[*]}
     do
-        ssh -i $HOME/.ssh/id_ed25519 -p 1234 root@$host "rm -r $HOME/MP-SPDZ/occlum_workspace/image/Programs ; rm -r $HOME/MP-SPDZ/occlum_workspace/image/Player-Data ; cp -r $HOME/MP-SPDZ/Programs $HOME/MP-SPDZ/occlum_workspace/image/ ; cp -r $HOME/MP-SPDZ/Player-Data $HOME/MP-SPDZ/occlum_workspace/image/ ; cd $HOME/MP-SPDZ/occlum_workspace && occlum build"
+        ssh -i $HOME/.ssh/id_ed25519 -p 1234 root@$host "PATH=$PATH ; rm -r $HOME/MP-SPDZ/occlum_workspace/image/Programs ; rm -r $HOME/MP-SPDZ/occlum_workspace/image/Player-Data ; cp -r $HOME/MP-SPDZ/Programs $HOME/MP-SPDZ/occlum_workspace/image/ ; cp -r $HOME/MP-SPDZ/Player-Data $HOME/MP-SPDZ/occlum_workspace/image/ ; cd $HOME/MP-SPDZ/occlum_workspace && occlum build"
     done
 
     i=0
@@ -101,10 +101,10 @@ else
         fi
         {
         if [ ${parties[$prot]} == 2 ]; then
-            ssh -i $HOME/.ssh/id_ed25519 -p 1234 root@${remoteHosts[$i]} "cd $HOME/MP-SPDZ/occlum_workspace && occlum run /bin/${protocol[$prot]} -N 2 -e --ip-file-name /HOST -p $i -v ${benchmark[$func]} >${logFile} 2>&1"
+            ssh -i $HOME/.ssh/id_ed25519 -p 1234 root@${remoteHosts[$i]} "PATH=$PATH ; cd $HOME/MP-SPDZ/occlum_workspace && occlum run /bin/${protocol[$prot]} -N 2 -e --ip-file-name /HOST -p $i -v ${benchmark[$func]} >${logFile} 2>&1"
         fi
         if [ ${parties[$prot]} == 3 ]; then
-            ssh -i $HOME/.ssh/id_ed25519 -p 1234 root@${remoteHosts[$i]} "cd $HOME/MP-SPDZ/occlum_workspace && occlum run /bin/${protocol[$prot]} --ip-file-name /HOST -p $i -v ${benchmark[$func]} >${logFile} 2>&1"
+            ssh -i $HOME/.ssh/id_ed25519 -p 1234 root@${remoteHosts[$i]} "PATH=$PATH ; cd $HOME/MP-SPDZ/occlum_workspace && occlum run /bin/${protocol[$prot]} --ip-file-name /HOST -p $i -v ${benchmark[$func]} >${logFile} 2>&1"
         fi
         }&
         i=$(( i + 1 ))
