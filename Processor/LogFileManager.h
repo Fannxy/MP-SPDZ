@@ -12,7 +12,11 @@
 
 using namespace std;
 
-#define LOG_DIR "Logs-Player" + to_string(player_num)
+#ifdef OCCLUM
+    #define LOG_DIR "/Logs-Player" + to_string(player_num)
+#else
+    #define LOG_DIR "Logs-Player" + to_string(player_num)
+#endif
 #define LOG_TITLE_FILE_NAME  "Title.log"
 #define LOG_TITLE_FILE_PATH  (string(LOG_DIR) + "/" + string(LOG_TITLE_FILE_NAME)).c_str()
 #define LOG_ITEM_FILE_NAME   "CheckPoint" + to_string(log_id) + ".log"
