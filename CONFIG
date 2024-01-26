@@ -129,7 +129,7 @@ CFLAGS += -std=c++17
 endif
 
 ifeq ($(USE_TEE),1)
-CFLAGS += -DTEE_RANDOM_OT
+CFLAGS += -DTEE_RANDOM_OT -DTEE_OPE
 endif
 
 ifeq ($(DISABLE_MAC_CHECK),1)
