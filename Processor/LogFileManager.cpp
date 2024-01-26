@@ -16,6 +16,8 @@ void LogFileManager::generate_log_title_file() {
     if (title_inpf.fail()) {
         int ret = system(("mkdir -p " + string(LOG_DIR)).c_str());
         if (ret) {
+            cout << "Try mkdir, path: " << ("mkdir -p " + string(LOG_DIR)).c_str() << endl;
+            cout << "ret code " << ret << endl;
             throw runtime_error(
             "^^^^^^^^^^^^^^^^^^^^Err in mkdir command.^^^^^^^^^^^^^^^^^^^^");
         }
