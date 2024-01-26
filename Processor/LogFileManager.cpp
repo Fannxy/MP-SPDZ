@@ -30,12 +30,12 @@ void LogFileManager::generate_log_title_file() {
         title_inpf.open(LOG_TITLE_FILE_PATH);
         string ttmp;
         title_inpf >> ttmp >> log_id;
+        title_inpf.close();
         log_id++;
         title_outf.open(LOG_TITLE_FILE_PATH, ios::out | ios::trunc);
     }
     title_outf << "LOG_TITLE" << endl << log_id << endl;
     title_outf.close();
-    title_inpf.close();
 }
 
 void LogFileManager::generate_log_file() {
