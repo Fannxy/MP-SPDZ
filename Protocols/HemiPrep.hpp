@@ -104,6 +104,11 @@ void HemiPrep<T>::buffer_triples()
     b.randomize(G);
     c.mul(a, b);
     Bundle<octetStream> bundle(P);
+#ifdef TEE_OPE
+    for (auto m : multipliers) {
+        m->multiply_and_add(c, b, a);
+    }
+#else
     pairwise_machine->pk.encrypt(a).pack(bundle.mine);
     P.unchecked_broadcast(bundle);
     Ciphertext C(pairwise_machine->pk);
@@ -112,6 +117,7 @@ void HemiPrep<T>::buffer_triples()
         C.unpack(bundle[P.get_player(-m->get_offset())]);
         m->multiply_and_add(c, C, b);
     }
+#endif
     assert(b.num_slots() == a.num_slots());
     assert(c.num_slots() == a.num_slots());
     for (unsigned i = 0; i < a.num_slots(); i++)

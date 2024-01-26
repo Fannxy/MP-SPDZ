@@ -41,6 +41,61 @@ void Multiplier<FD>::multiply_and_add(Plaintext_<FD>& res,
     multiply_and_add(res, enc_a, bb);
 }
 
+#ifdef TEE_OPE
+template <class FD>
+void Multiplier<FD>::multiply_and_add(Plaintext_<FD>& res,
+                                      const Plaintext_<FD>& b, const Plaintext_<FD>& a) {
+    C = other_pk.encrypt(b);
+    Rq_Element aa(C.get_params(), evaluation, evaluation);
+    aa.from(a.get_iterator());
+    multiply_and_add(res, C, aa);
+}
+
+template <class FD>
+void Multiplier<FD>::multiply_and_add(Plaintext_<FD>& res,
+                                      const Ciphertext& enc_b, const Rq_Element& a, OT_ROLE role) {
+    o.reset_write_head();
+
+    if (role & SENDER) {
+        PRNG G;
+        G.ReSeed();
+        timers["Random number encryption"].start();
+        product_share.randomize(G);
+        mask = other_pk.encrypt(product_share);
+        timers["Random number encryption"].stop();
+        enc_b.pack(o);
+        mask.pack(o);
+        res -= product_share;
+    }
+
+    timers["Separate ciphertext sending"].start();
+    if (role == BOTH)
+        P.reverse_exchange(o);
+    else if (role == SENDER)
+        P.reverse_send(o);
+    else if (role == RECEIVER)
+        P.receive(o);
+    timers["Separate ciphertext sending"].stop();
+
+    if (role & RECEIVER) {
+        C.unpack(o);
+        C.mul(C, a);
+        mask.unpack(o);
+        C += mask;
+        timers["Decryption"].start();
+        machine.sk.decrypt_any(product_share, C);
+        res += product_share;
+        timers["Decryption"].stop();
+    }
+
+    memory_usage.update("multiplied ciphertext", C.report_size(CAPACITY));
+    memory_usage.update("mask ciphertext", mask.report_size(CAPACITY));
+    memory_usage.update("product shares", product_share.report_size(CAPACITY));
+    memory_usage.update("masking random coins", rc.report_size(CAPACITY));
+}
+
+#else
+
 template <class FD>
 void Multiplier<FD>::multiply_and_add(Plaintext_<FD>& res,
         const Ciphertext& enc_a, const Rq_Element& b, OT_ROLE role)
@@ -54,6 +109,8 @@ void Multiplier<FD>::multiply_and_add(Plaintext_<FD>& res,
 
     add(res, C, role);
 }
+
+#endif
 
 template <class FD>
 void Multiplier<FD>::add(Plaintext_<FD>& res, const Ciphertext& c,
