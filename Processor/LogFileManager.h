@@ -13,9 +13,9 @@
 using namespace std;
 
 #ifdef OCCLUM
-    #define LOG_DIR "/Logs-Player" + to_string(player_num)
+    #define LOG_DIR ("/host/Logs-Player" + to_string(player_num))
 #else
-    #define LOG_DIR "Logs-Player" + to_string(player_num)
+    #define LOG_DIR ("Logs-Player" + to_string(player_num))
 #endif
 #define LOG_TITLE_FILE_NAME  "Title.log"
 #define LOG_TITLE_FILE_PATH  (string(LOG_DIR) + "/" + string(LOG_TITLE_FILE_NAME)).c_str()
@@ -55,6 +55,8 @@ public:
     void generate_log_title_file();
 
     void generate_log_file();
+
+    bool directoryExists(const std::string& directory);
 
     // directly dump_func (consumer's main_func is at bottom)
     void dump_to_file() {};

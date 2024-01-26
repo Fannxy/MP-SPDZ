@@ -1,3 +1,7 @@
+#include <sys/stat.h>
+#include <errno.h>
+#include <cstdlib> 
+
 #include "Processor/LogFileManager.hpp"
 
 LogFileManager::LogFileManager(int worker_id): worker_id(worker_id) {}
@@ -12,18 +16,18 @@ LogFileManager::~LogFileManager() {
 }
 
 void LogFileManager::generate_log_title_file() {
-    title_inpf.open(LOG_TITLE_FILE_PATH);
-    if (title_inpf.fail()) {
-        int ret = system(("mkdir -p " + string(LOG_DIR)).c_str());
+    if (!directoryExists(LOG_DIR)) {
+        int ret = mkdir(LOG_DIR.c_str(), 0777);
         if (ret) {
             cout << "Try mkdir, path: " << ("mkdir -p " + string(LOG_DIR)).c_str() << endl;
             cout << "ret code " << ret << endl;
             throw runtime_error(
-            "^^^^^^^^^^^^^^^^^^^^Err in mkdir command.^^^^^^^^^^^^^^^^^^^^");
+                "^^^^^^^^^^^^^^^^^^^^Err in mkdir command.^^^^^^^^^^^^^^^^^^^^");
         }
         title_outf.open(LOG_TITLE_FILE_PATH, ios::out);
         log_id = 0;
     } else {
+        title_inpf.open(LOG_TITLE_FILE_PATH);
         string ttmp;
         title_inpf >> ttmp >> log_id;
         log_id++;
@@ -41,6 +45,11 @@ void LogFileManager::generate_log_file() {
             "^^^^^^^^^^^^^^^^^^^^Err in opening target file.^^^^^^^^^^^^^^^^^^^^");
     }
     outf.close();
+}
+
+bool LogFileManager::directoryExists(const std::string& directory) {
+    struct stat info;
+    return stat(directory.c_str(), &info) == 0 && S_ISDIR(info.st_mode);
 }
 
 void LogFileManager::open_log_file() {
