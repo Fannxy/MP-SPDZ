@@ -59,10 +59,10 @@ if [ ${comptype} == 6 ]; then
             fi
             {
             if [ ${parties[$prot]} == 2 ]; then
-                ssh -i $HOME/.ssh/id_ed25519 -p 1234 root@${remoteHosts[$i]} "cd $HOME/MP-SPDZ/occlum_workspace && occlum run /bin/${protocol[$prot]} -A $period -N 2 -e --ip-file-name /HOST -p $i -v ${benchmark[$func]} >${logFile} 2>&1"
+                ssh -i $HOME/.ssh/id_ed25519 -p 1234 root@${remoteHosts[$i]} "cd $HOME/MP-SPDZ/occlum_workspace && occlum run /bin/${protocol[$prot]} -A $period -N 2 -e --ip-file-name /HOST -p $i -v ${benchmark[$func]} > $period-${logFile} 2>&1"
             fi
             if [ ${parties[$prot]} == 3 ]; then
-                ssh -i $HOME/.ssh/id_ed25519 -p 1234 root@${remoteHosts[$i]} "cd $HOME/MP-SPDZ/occlum_workspace && occlum run /bin/${protocol[$prot]} -A $period --ip-file-name /HOST -p $i -v ${benchmark[$func]} >${logFile} 2>&1"
+                ssh -i $HOME/.ssh/id_ed25519 -p 1234 root@${remoteHosts[$i]} "cd $HOME/MP-SPDZ/occlum_workspace && occlum run /bin/${protocol[$prot]} -A $period --ip-file-name /HOST -p $i -v ${benchmark[$func]} >$period-${logFile} 2>&1"
             fi
             }&
             i=$(( i + 1 ))
