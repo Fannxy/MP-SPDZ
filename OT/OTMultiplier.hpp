@@ -17,7 +17,7 @@
 #include <math.h>
 #include <chrono>
 
-#define MICRO_TIMER
+// #define MICRO_TIMER
 
 template<class T>
 OTMultiplier<T>::OTMultiplier(OTTripleGenerator<T>& generator,
@@ -263,11 +263,11 @@ void OTMultiplier<W>::multiplyForTriples()
     outbox.push(job);
 
     bool corr_hash = generator.machine.use_extension;
-
     for (int i = 0; i < generator.nloops; i++)
     {
         this->inbox.pop(job);
         BitVector aBits = generator.valueBits[0];
+        BaseOT bot(aBits.size(), -1, generator.players[thread_num]);
         //timers["Extension"].start();
         if (generator.machine.use_extension)
         // if(false)
@@ -281,7 +281,6 @@ void OTMultiplier<W>::multiplyForTriples()
         }
         else
         {
-            BaseOT bot(aBits.size(), -1, generator.players[thread_num]);
             bot.set_receiver_inputs(aBits);
             bot.exec_base(false);
 

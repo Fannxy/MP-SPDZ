@@ -9,7 +9,7 @@
 #include <pthread.h>
 #include <chrono>
 
-#define MICRO_TIMER
+// #define MICRO_TIMER
 
 extern "C"
 {
