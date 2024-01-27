@@ -46,7 +46,7 @@ public:
     void multiply_and_add(Plaintext_<FD>& res, const Ciphertext& C,
             const Plaintext_<FD>& b);
     void multiply_and_add(Plaintext_<FD>& res, const Plaintext_<FD>& C,
-            const Plaintext_<FD>& b);
+            const Plaintext_<FD>& b, OT_ROLE role = BOTH);
     void multiply_and_add(Plaintext_<FD>& res, const Ciphertext& C,
             const Rq_Element& b, OT_ROLE role = BOTH);
     void add(Plaintext_<FD>& res, const Ciphertext& C, OT_ROLE role = BOTH,

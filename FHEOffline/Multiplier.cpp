@@ -41,29 +41,19 @@ void Multiplier<FD>::multiply_and_add(Plaintext_<FD>& res,
     multiply_and_add(res, enc_a, bb);
 }
 
-#ifdef TEE_OPE
 template <class FD>
 void Multiplier<FD>::multiply_and_add(Plaintext_<FD>& res,
-                                      const Plaintext_<FD>& b, const Plaintext_<FD>& a) {
-    C = other_pk.encrypt(b);
-    Rq_Element aa(C.get_params(), evaluation, evaluation);
-    aa.from(a.get_iterator());
-    multiply_and_add(res, C, aa);
-}
-
-template <class FD>
-void Multiplier<FD>::multiply_and_add(Plaintext_<FD>& res,
-                                      const Ciphertext& enc_b, const Rq_Element& a, OT_ROLE role) {
+                                      const Plaintext_<FD>& b, const Plaintext_<FD>& a, OT_ROLE role) {
     o.reset_write_head();
-
     if (role & SENDER) {
         PRNG G;
         G.ReSeed();
-        timers["Random number encryption"].start();
+        timers["Encryption"].start();
         product_share.randomize(G);
+        C = other_pk.encrypt(b);
         mask = other_pk.encrypt(product_share);
-        timers["Random number encryption"].stop();
-        enc_b.pack(o);
+        timers["Encryption"].stop();
+        C.pack(o);
         mask.pack(o);
         res -= product_share;
     }
@@ -94,8 +84,6 @@ void Multiplier<FD>::multiply_and_add(Plaintext_<FD>& res,
     memory_usage.update("masking random coins", rc.report_size(CAPACITY));
 }
 
-#else
-
 template <class FD>
 void Multiplier<FD>::multiply_and_add(Plaintext_<FD>& res,
         const Ciphertext& enc_a, const Rq_Element& b, OT_ROLE role)
@@ -109,8 +97,6 @@ void Multiplier<FD>::multiply_and_add(Plaintext_<FD>& res,
 
     add(res, C, role);
 }
-
-#endif
 
 template <class FD>
 void Multiplier<FD>::add(Plaintext_<FD>& res, const Ciphertext& c,
