@@ -15,8 +15,9 @@
 #include "OT/OTCorrelator.hpp"
 
 #include <math.h>
+#include <chrono>
 
-//#define OTCORR_TIMER
+#define MICRO_TIMER
 
 template<class T>
 OTMultiplier<T>::OTMultiplier(OTTripleGenerator<T>& generator,
@@ -244,6 +245,10 @@ void SemiMultiplier<T>::multiplyForMixed()
 template<class W>
 void OTMultiplier<W>::multiplyForTriples()
 {
+#ifdef MICRO_TIMER
+    auto start = std::chrono::high_resolution_clock::now();
+#endif
+
     typedef typename W::Rectangle X;
 
     otCorrelator.resize(X::n_columns() * generator.nPreampTriplesPerLoop);
@@ -308,6 +313,12 @@ void OTMultiplier<W>::multiplyForTriples()
         //timers["Triple computation"].start();
 
         this->after_correlation();
+
+#ifdef MICRO_TIMER
+    auto end = std::chrono::high_resolution_clock::now();
+    auto diff = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
+    std::cerr << "Multiply time: " << diff.count() << "MS" << std::endl;
+#endif
     }
 }
 

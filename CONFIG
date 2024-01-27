@@ -12,8 +12,10 @@ USE_NTL = 1
 OCCLUM = 1
 PREP_DIR = '-DPREP_DIR="/Player-Data/"' # set this to your preferred local storage directory
 SSL_DIR = '-DSSL_DIR="/Player-Data/"' # directory to store SSL keys
-USE_TEE = 0 # set 1 to enable TEE-OT
-DISABLE_MAC_CHECK = 0 # set 1 to skip hash, have bug to fix
+# set 1 to enable TEE-OT
+USE_TEE = 1
+# set 1 to skip hash, have bug to fix
+DISABLE_MAC_CHECK = 1
 
 # set for using GF(2^128)
 # unset for GF(2^40)

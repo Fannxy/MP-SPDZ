@@ -7,6 +7,9 @@
 #include <iostream>
 #include <fstream>
 #include <pthread.h>
+#include <chrono>
+
+#define MICRO_TIMER
 
 extern "C"
 {
@@ -121,14 +124,13 @@ void receiver_keygen(ref10_RECEIVER *r, unsigned char (*keys)[HASHBYTES])
 
 void BaseOT::exec_base(bool new_receiver_inputs)
 {
+#ifdef MICRO_TIMER
+auto start = std::chrono::high_resolution_clock::now();
+#endif
+
 #ifdef TEE_RANDOM_OT
     exec_base_tee_rot<SIMPLEOT_SENDER, SIMPLEOT_RECEIVER>(new_receiver_inputs);
-#endif
-#ifdef TEE_OT_DEBUG
-    exec_base_tee<SIMPLEOT_SENDER, SIMPLEOT_RECEIVER>(new_receiver_inputs);
-#endif
-#ifndef TEE_RANDOM_OT
-    // std::cerr << "in regular ot" << std::endl;
+#else
 #ifndef NO_AVX_OT
     if (cpu_has_avx(true))
         exec_base<SIMPLEOT_SENDER, SIMPLEOT_RECEIVER>(new_receiver_inputs);
@@ -136,7 +138,11 @@ void BaseOT::exec_base(bool new_receiver_inputs)
 #endif
         exec_base<ref10_SENDER, ref10_RECEIVER>(new_receiver_inputs);
 #endif
-
+#ifdef MICRO_TIMER
+    auto end = std::chrono::high_resolution_clock::now();
+    auto diff = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
+    std::cerr << "base OT time: " << diff.count() << "MS" << std::endl;
+#endif
 }
 
 
@@ -166,63 +172,40 @@ void BaseOT::exec_base_tee_rot(bool new_receiver_inputs){
 
     // 1 - 2 receiver generates the choice bits is new_receiver_inputs is true.
     if(new_receiver_inputs){
-        for(int i=0; i<nOT; i++){
-            receiver_inputs.set_bit(i, G.get_uchar() & 1);
+        for (int i = 0; i < nOT / 8; i++) {
+            receiver_inputs.set_byte(i, G.get_uchar());
         }
     }
-
-    // std::cerr << "receiver inputs length: " << receiver_inputs.size() << std::endl;
 
 
     // 2 - sender: generate the two inputs.
     G.SetSeed(seed);
-
+    char tmp_bytes0[unit_length];
+    char tmp_bytes1[unit_length];
     for(int i=0; i<nOT; i++){
         for(size_t j=0; j<unit_length; j++) {
-            for(size_t k = 0; k < 8; k++){
-                bool tmp_bit = G.get_uchar() & 1;
-                sender_inputs[i][0].set_bit(j*8+k, tmp_bit ^ 0);
-                sender_inputs[i][1].set_bit(j*8+k, tmp_bit ^ 1);
-            }
+            char tmp_byte = G.get_uchar();
+            tmp_bytes0[j] = tmp_byte ^ 0x00;
+            tmp_bytes1[j] = tmp_byte ^ 0xFF;
         }
+        sender_inputs[i][0].assign_bytes(tmp_bytes0, unit_length);
+        sender_inputs[i][1].assign_bytes(tmp_bytes1, unit_length);
     }
 
-#ifdef DEBUG_OUTPUT
-    std::cerr << "sender inputs 0 - " << std::endl;
-    for(int i=0; i<nOT; i++){
-        print_octet_stream_hex(sender_inputs[i][0].get_ptr(), unit_length);   
-    }
-
-    std::cerr << "sender inputs 1 - " << std::endl;
-    for(int i=0; i<nOT; i++) print_octet_stream_hex(sender_inputs[i][1].get_ptr(), unit_length);
-#endif
-    
-
-    // 2 - receiver: generate the inputs according to the choice bits.
+    // 2 - receiver: generate the inputs accrding to the choice bits.
     octet *seed_receiver = new octet[16];
     int starting_length = 4;
     for(int i=0; i<16; i++) seed_receiver[i] = os[1].get_data()[i+starting_length];
     G.SetSeed(seed_receiver);
 
-#ifdef DEBUG_OUTPUT
-    std::cerr << "os[1] value: " << std::endl;
-    print_octet_stream_hex(os[1].get_data(), os[1].get_length());
-    std::cerr << "seed receiver" << std::endl;
-    print_octet_stream_hex(seed_receiver, 16);
-#endif
-
+    char tmp_bytes[unit_length];
     for(int i=0; i<nOT; i++){
         for(size_t j=0; j<unit_length; j++) {
-            for(size_t k = 0; k < 8; k++){
-                receiver_outputs[i].set_bit(j*8+k, (G.get_uchar() & 1) ^ receiver_inputs[i]);
-            }
+            char tmp_byte = G.get_uchar() ^ (receiver_inputs[i] ? 0xFF : 0x00);
+            tmp_bytes[j] = tmp_byte;
         }
+        receiver_outputs[i].assign_bytes(tmp_bytes, unit_length);
     }
-
-#ifdef DEBUG_OUTPUT
-    std::cerr << "receiver outputs - " << std::endl;
-    for(int i=0; i<nOT; i++) print_octet_stream_hex(receiver_outputs[i].get_ptr(), unit_length);
-#endif
 }
 
 template <class T, class U>
@@ -355,8 +338,6 @@ void BaseOT::exec_base(bool new_receiver_inputs)
     vector<octetStream> os(2);
     T sender;
     U receiver;
-
-    // std::cerr << "INVOKE THIS IN THIS BASE-OT FUNCTION" << std::endl;
 
     unsigned char S_pack[PACKBYTES];
     unsigned char Rs_pack[2][4 * PACKBYTES];
