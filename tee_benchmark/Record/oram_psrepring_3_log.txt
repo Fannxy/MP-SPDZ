@@ -1,0 +1,699 @@
+Using statistical security parameter 40
+Trying to run 64-bit computation
+Current working directory: Current working directory: "/root/MP-SPDZ"
+"/root/MP-SPDZ"
+Current working directory: "/root/MP-SPDZ"
+Current working directory: "/root/MP-SPDZ"
+Current working directory: "/root/MP-SPDZ"
+Current working directory: "/root/MP-SPDZ"
+Current working directory: "/root/MP-SPDZ"
+Current working directory: "/root/MP-SPDZ"
+Current working directory: "/root/MP-SPDZ"
+Stopped timer 0 at 0.0721763 (0 MB, 0 rounds)
+Starting timer 1 at 0 (0 MB, 0 rounds) after 2.585e-06
+Stopped timer 1 at 7.996e-06 (0 MB, 0 rounds)
+Starting timer 0 at 0.0721763 (0 MB, 0 rounds) after 5.3974e-05
+Elapsed time: 0.119748
+packed ORAM init 0/313
+Elapsed time: 0.129384
+packed ORAM init 1/313
+Elapsed time: 0.135296
+packed ORAM init 2/313
+Elapsed time: 0.141675
+packed ORAM init 3/313
+Elapsed time: 0.15154
+packed ORAM init 4/313
+Elapsed time: 0.157264
+packed ORAM init 5/313
+Elapsed time: 0.164063
+packed ORAM init 6/313
+Elapsed time: 0.170407
+packed ORAM init 7/313
+Elapsed time: 0.179751
+packed ORAM init 8/313
+Elapsed time: 0.185394
+packed ORAM init 9/313
+Elapsed time: 0.191253
+packed ORAM init 10/313
+Elapsed time: 0.197509
+packed ORAM init 11/313
+Elapsed time: 0.203449
+packed ORAM init 12/313
+Elapsed time: 0.212428
+packed ORAM init 13/313
+Elapsed time: 0.218552
+packed ORAM init 14/313
+Elapsed time: 0.224423
+packed ORAM init 15/313
+Elapsed time: 0.230234
+packed ORAM init 16/313
+Elapsed time: 0.236572
+packed ORAM init 17/313
+Elapsed time: 0.248749
+packed ORAM init 18/313
+Elapsed time: 0.254934
+packed ORAM init 19/313
+Elapsed time: 0.262798
+packed ORAM init 20/313
+Elapsed time: 0.281052
+packed ORAM init 21/313
+Elapsed time: 0.287331
+packed ORAM init 22/313
+Elapsed time: 0.293113
+packed ORAM init 23/313
+Elapsed time: 0.299514
+packed ORAM init 24/313
+Elapsed time: 0.312812
+packed ORAM init 25/313
+Elapsed time: 0.319212
+packed ORAM init 26/313
+Elapsed time: 0.325572
+packed ORAM init 27/313
+Elapsed time: 0.331443
+packed ORAM init 28/313
+Elapsed time: 0.338486
+packed ORAM init 29/313
+Elapsed time: 0.3789
+packed ORAM init 30/313
+Elapsed time: 0.386063
+packed ORAM init 31/313
+Elapsed time: 0.392435
+packed ORAM init 32/313
+Elapsed time: 0.39872
+packed ORAM init 33/313
+Elapsed time: 0.404753
+packed ORAM init 34/313
+Elapsed time: 0.414256
+packed ORAM init 35/313
+Elapsed time: 0.427773
+packed ORAM init 36/313
+Elapsed time: 0.433498
+packed ORAM init 37/313
+Elapsed time: 0.44428
+packed ORAM init 38/313
+Elapsed time: 0.450107
+packed ORAM init 39/313
+Elapsed time: 0.456995
+packed ORAM init 40/313
+Elapsed time: 0.466896
+packed ORAM init 41/313
+Elapsed time: 0.473512
+packed ORAM init 42/313
+Elapsed time: 0.480396
+packed ORAM init 43/313
+Elapsed time: 0.486432
+packed ORAM init 44/313
+Elapsed time: 0.496717
+packed ORAM init 45/313
+Elapsed time: 0.503163
+packed ORAM init 46/313
+Elapsed time: 0.514759
+packed ORAM init 47/313
+Elapsed time: 0.521188
+packed ORAM init 48/313
+Elapsed time: 0.533855
+packed ORAM init 49/313
+Elapsed time: 0.54736
+packed ORAM init 50/313
+Elapsed time: 0.55442
+packed ORAM init 51/313
+Elapsed time: 0.561298
+packed ORAM init 52/313
+Elapsed time: 0.575271
+packed ORAM init 53/313
+Elapsed time: 0.593539
+packed ORAM init 54/313
+Elapsed time: 0.606995
+packed ORAM init 55/313
+Elapsed time: 0.61388
+packed ORAM init 56/313
+Elapsed time: 0.627419
+packed ORAM init 57/313
+Elapsed time: 0.633015
+packed ORAM init 58/313
+Elapsed time: 0.646906
+packed ORAM init 59/313
+Elapsed time: 0.693801
+packed ORAM init 60/313
+Elapsed time: 0.699886
+packed ORAM init 61/313
+Elapsed time: 0.719612
+packed ORAM init 62/313
+Elapsed time: 0.725942
+packed ORAM init 63/313
+Elapsed time: 0.733999
+packed ORAM init 64/313
+Elapsed time: 0.742266
+packed ORAM init 65/313
+Elapsed time: 0.753595
+packed ORAM init 66/313
+Elapsed time: 0.759837
+packed ORAM init 67/313
+Elapsed time: 0.783222
+packed ORAM init 68/313
+Elapsed time: 0.789446
+packed ORAM init 69/313
+Elapsed time: 0.795347
+packed ORAM init 70/313
+Elapsed time: 0.801657
+packed ORAM init 71/313
+Elapsed time: 0.808117
+packed ORAM init 72/313
+Elapsed time: 0.824181
+packed ORAM init 73/313
+Elapsed time: 0.831732
+packed ORAM init 74/313
+Elapsed time: 0.838175
+packed ORAM init 75/313
+Elapsed time: 0.844377
+packed ORAM init 76/313
+Elapsed time: 0.850254
+packed ORAM init 77/313
+Elapsed time: 0.856537
+packed ORAM init 78/313
+Elapsed time: 0.863
+packed ORAM init 79/313
+Elapsed time: 0.869356
+packed ORAM init 80/313
+Elapsed time: 0.875801
+packed ORAM init 81/313
+Elapsed time: 0.881551
+packed ORAM init 82/313
+Elapsed time: 0.888213
+packed ORAM init 83/313
+Elapsed time: 0.894565
+packed ORAM init 84/313
+Elapsed time: 0.900418
+packed ORAM init 85/313
+Elapsed time: 0.906778
+packed ORAM init 86/313
+Elapsed time: 0.912568
+packed ORAM init 87/313
+Elapsed time: 0.923508
+packed ORAM init 88/313
+Elapsed time: 0.930046
+packed ORAM init 89/313
+Elapsed time: 0.943791
+packed ORAM init 90/313
+Elapsed time: 0.987418
+packed ORAM init 91/313
+Elapsed time: 0.997244
+packed ORAM init 92/313
+Elapsed time: 1.0101
+packed ORAM init 93/313
+Elapsed time: 1.02035
+packed ORAM init 94/313
+Elapsed time: 1.03024
+packed ORAM init 95/313
+Elapsed time: 1.05756
+packed ORAM init 96/313
+Elapsed time: 1.06857
+packed ORAM init 97/313
+Elapsed time: 1.07973
+packed ORAM init 98/313
+Elapsed time: 1.08615
+packed ORAM init 99/313
+Elapsed time: 1.09253
+packed ORAM init 100/313
+Elapsed time: 1.10042
+packed ORAM init 101/313
+Elapsed time: 1.10617
+packed ORAM init 102/313
+Elapsed time: 1.11247
+packed ORAM init 103/313
+Elapsed time: 1.11805
+packed ORAM init 104/313
+Elapsed time: 1.12894
+packed ORAM init 105/313
+Elapsed time: 1.13506
+packed ORAM init 106/313
+Elapsed time: 1.14804
+packed ORAM init 107/313
+Elapsed time: 1.15414
+packed ORAM init 108/313
+Elapsed time: 1.16064
+packed ORAM init 109/313
+Elapsed time: 1.16678
+packed ORAM init 110/313
+Elapsed time: 1.17364
+packed ORAM init 111/313
+Elapsed time: 1.17922
+packed ORAM init 112/313
+Elapsed time: 1.19291
+packed ORAM init 113/313
+Elapsed time: 1.1991
+packed ORAM init 114/313
+Elapsed time: 1.20483
+packed ORAM init 115/313
+Elapsed time: 1.21419
+packed ORAM init 116/313
+Elapsed time: 1.22066
+packed ORAM init 117/313
+Elapsed time: 1.2273
+packed ORAM init 118/313
+Elapsed time: 1.24031
+packed ORAM init 119/313
+Elapsed time: 1.24847
+packed ORAM init 120/313
+Elapsed time: 1.30462
+packed ORAM init 121/313
+Elapsed time: 1.31295
+packed ORAM init 122/313
+Elapsed time: 1.31944
+packed ORAM init 123/313
+Elapsed time: 1.32566
+packed ORAM init 124/313
+Elapsed time: 1.33161
+packed ORAM init 125/313
+Elapsed time: 1.33768
+packed ORAM init 126/313
+Elapsed time: 1.34394
+packed ORAM init 127/313
+Elapsed time: 1.35011
+packed ORAM init 128/313
+Elapsed time: 1.35954
+packed ORAM init 129/313
+Elapsed time: 1.36521
+packed ORAM init 130/313
+Elapsed time: 1.37357
+packed ORAM init 131/313
+Elapsed time: 1.38742
+packed ORAM init 132/313
+Elapsed time: 1.4083
+packed ORAM init 133/313
+Elapsed time: 1.41413
+packed ORAM init 134/313
+Elapsed time: 1.42341
+packed ORAM init 135/313
+Elapsed time: 1.42969
+packed ORAM init 136/313
+Elapsed time: 1.43597
+packed ORAM init 137/313
+Elapsed time: 1.45081
+packed ORAM init 138/313
+Elapsed time: 1.46411
+packed ORAM init 139/313
+Elapsed time: 1.47111
+packed ORAM init 140/313
+Elapsed time: 1.47744
+packed ORAM init 141/313
+Elapsed time: 1.48309
+packed ORAM init 142/313
+Elapsed time: 1.49314
+packed ORAM init 143/313
+Elapsed time: 1.49883
+packed ORAM init 144/313
+Elapsed time: 1.50495
+packed ORAM init 145/313
+Elapsed time: 1.5111
+packed ORAM init 146/313
+Elapsed time: 1.52759
+packed ORAM init 147/313
+Elapsed time: 1.53397
+packed ORAM init 148/313
+Elapsed time: 1.55248
+packed ORAM init 149/313
+Elapsed time: 1.55888
+packed ORAM init 150/313
+Elapsed time: 1.60202
+packed ORAM init 151/313
+Elapsed time: 1.61411
+packed ORAM init 152/313
+Elapsed time: 1.62041
+packed ORAM init 153/313
+Elapsed time: 1.62664
+packed ORAM init 154/313
+Elapsed time: 1.63242
+packed ORAM init 155/313
+Elapsed time: 1.63875
+packed ORAM init 156/313
+Elapsed time: 1.65894
+packed ORAM init 157/313
+Elapsed time: 1.66651
+packed ORAM init 158/313
+Elapsed time: 1.67922
+packed ORAM init 159/313
+Elapsed time: 1.69021
+packed ORAM init 160/313
+Elapsed time: 1.70263
+packed ORAM init 161/313
+Elapsed time: 1.70922
+packed ORAM init 162/313
+Elapsed time: 1.71609
+packed ORAM init 163/313
+Elapsed time: 1.73029
+packed ORAM init 164/313
+Elapsed time: 1.75926
+packed ORAM init 165/313
+Elapsed time: 1.76581
+packed ORAM init 166/313
+Elapsed time: 1.7722
+packed ORAM init 167/313
+Elapsed time: 1.77871
+packed ORAM init 168/313
+Elapsed time: 1.78539
+packed ORAM init 169/313
+Elapsed time: 1.79163
+packed ORAM init 170/313
+Elapsed time: 1.79874
+packed ORAM init 171/313
+Elapsed time: 1.80528
+packed ORAM init 172/313
+Elapsed time: 1.82977
+packed ORAM init 173/313
+Elapsed time: 1.84993
+packed ORAM init 174/313
+Elapsed time: 1.85675
+packed ORAM init 175/313
+Elapsed time: 1.86328
+packed ORAM init 176/313
+Elapsed time: 1.87712
+packed ORAM init 177/313
+Elapsed time: 1.88367
+packed ORAM init 178/313
+Elapsed time: 1.89024
+packed ORAM init 179/313
+Elapsed time: 1.89634
+packed ORAM init 180/313
+Elapsed time: 1.90238
+packed ORAM init 181/313
+Elapsed time: 1.94817
+packed ORAM init 182/313
+Elapsed time: 1.95481
+packed ORAM init 183/313
+Elapsed time: 1.96217
+packed ORAM init 184/313
+Elapsed time: 1.97741
+packed ORAM init 185/313
+Elapsed time: 1.9871
+packed ORAM init 186/313
+Elapsed time: 1.99382
+packed ORAM init 187/313
+Elapsed time: 2.00674
+packed ORAM init 188/313
+Elapsed time: 2.01763
+packed ORAM init 189/313
+Elapsed time: 2.02396
+packed ORAM init 190/313
+Elapsed time: 2.03056
+packed ORAM init 191/313
+Elapsed time: 2.03811
+packed ORAM init 192/313
+Elapsed time: 2.04483
+packed ORAM init 193/313
+Elapsed time: 2.05132
+packed ORAM init 194/313
+Elapsed time: 2.06774
+packed ORAM init 195/313
+Elapsed time: 2.07758
+packed ORAM init 196/313
+Elapsed time: 2.08392
+packed ORAM init 197/313
+Elapsed time: 2.09026
+packed ORAM init 198/313
+Elapsed time: 2.10486
+packed ORAM init 199/313
+Elapsed time: 2.11106
+packed ORAM init 200/313
+Elapsed time: 2.11753
+packed ORAM init 201/313
+Elapsed time: 2.12768
+packed ORAM init 202/313
+Elapsed time: 2.13364
+packed ORAM init 203/313
+Elapsed time: 2.14
+packed ORAM init 204/313
+Elapsed time: 2.14787
+packed ORAM init 205/313
+Elapsed time: 2.15391
+packed ORAM init 206/313
+Elapsed time: 2.16027
+packed ORAM init 207/313
+Elapsed time: 2.16608
+packed ORAM init 208/313
+Elapsed time: 2.18712
+packed ORAM init 209/313
+Elapsed time: 2.19289
+packed ORAM init 210/313
+Elapsed time: 2.19921
+packed ORAM init 211/313
+Elapsed time: 2.23682
+packed ORAM init 212/313
+Elapsed time: 2.24271
+packed ORAM init 213/313
+Elapsed time: 2.24914
+packed ORAM init 214/313
+Elapsed time: 2.2651
+packed ORAM init 215/313
+Elapsed time: 2.27088
+packed ORAM init 216/313
+Elapsed time: 2.27711
+packed ORAM init 217/313
+Elapsed time: 2.28378
+packed ORAM init 218/313
+Elapsed time: 2.2947
+packed ORAM init 219/313
+Elapsed time: 2.30405
+packed ORAM init 220/313
+Elapsed time: 2.31022
+packed ORAM init 221/313
+Elapsed time: 2.32083
+packed ORAM init 222/313
+Elapsed time: 2.32712
+packed ORAM init 223/313
+Elapsed time: 2.33407
+packed ORAM init 224/313
+Elapsed time: 2.34046
+packed ORAM init 225/313
+Elapsed time: 2.34667
+packed ORAM init 226/313
+Elapsed time: 2.35245
+packed ORAM init 227/313
+Elapsed time: 2.35878
+packed ORAM init 228/313
+Elapsed time: 2.3651
+packed ORAM init 229/313
+Elapsed time: 2.37148
+packed ORAM init 230/313
+Elapsed time: 2.37784
+packed ORAM init 231/313
+Elapsed time: 2.38422
+packed ORAM init 232/313
+Elapsed time: 2.39026
+packed ORAM init 233/313
+Elapsed time: 2.39641
+packed ORAM init 234/313
+Elapsed time: 2.42218
+packed ORAM init 235/313
+Elapsed time: 2.42872
+packed ORAM init 236/313
+Elapsed time: 2.43529
+packed ORAM init 237/313
+Elapsed time: 2.44186
+packed ORAM init 238/313
+Elapsed time: 2.4529
+packed ORAM init 239/313
+Elapsed time: 2.46002
+packed ORAM init 240/313
+Elapsed time: 2.46654
+packed ORAM init 241/313
+Elapsed time: 2.47364
+packed ORAM init 242/313
+Elapsed time: 2.51331
+packed ORAM init 243/313
+Elapsed time: 2.52057
+packed ORAM init 244/313
+Elapsed time: 2.53077
+packed ORAM init 245/313
+Elapsed time: 2.54064
+packed ORAM init 246/313
+Elapsed time: 2.55982
+packed ORAM init 247/313
+Elapsed time: 2.56819
+packed ORAM init 248/313
+Elapsed time: 2.57967
+packed ORAM init 249/313
+Elapsed time: 2.58932
+packed ORAM init 250/313
+Elapsed time: 2.60125
+packed ORAM init 251/313
+Elapsed time: 2.60745
+packed ORAM init 252/313
+Elapsed time: 2.62093
+packed ORAM init 253/313
+Elapsed time: 2.62764
+packed ORAM init 254/313
+Elapsed time: 2.64166
+packed ORAM init 255/313
+Elapsed time: 2.65751
+packed ORAM init 256/313
+Elapsed time: 2.67939
+packed ORAM init 257/313
+Elapsed time: 2.69977
+packed ORAM init 258/313
+Elapsed time: 2.73017
+packed ORAM init 259/313
+Elapsed time: 2.73677
+packed ORAM init 260/313
+Elapsed time: 2.75106
+packed ORAM init 261/313
+Elapsed time: 2.75728
+packed ORAM init 262/313
+Elapsed time: 2.76354
+packed ORAM init 263/313
+Elapsed time: 2.77013
+packed ORAM init 264/313
+Elapsed time: 2.77669
+packed ORAM init 265/313
+Elapsed time: 2.78319
+packed ORAM init 266/313
+Elapsed time: 2.78938
+packed ORAM init 267/313
+Elapsed time: 2.79926
+packed ORAM init 268/313
+Elapsed time: 2.80641
+packed ORAM init 269/313
+Elapsed time: 2.81299
+packed ORAM init 270/313
+Elapsed time: 2.81949
+packed ORAM init 271/313
+Elapsed time: 2.82604
+packed ORAM init 272/313
+Elapsed time: 2.86934
+packed ORAM init 273/313
+Elapsed time: 2.88471
+packed ORAM init 274/313
+Elapsed time: 2.89106
+packed ORAM init 275/313
+Elapsed time: 2.90485
+packed ORAM init 276/313
+Elapsed time: 2.9111
+packed ORAM init 277/313
+Elapsed time: 2.92713
+packed ORAM init 278/313
+Elapsed time: 2.9332
+packed ORAM init 279/313
+Elapsed time: 2.94608
+packed ORAM init 280/313
+Elapsed time: 2.95179
+packed ORAM init 281/313
+Elapsed time: 2.9649
+packed ORAM init 282/313
+Elapsed time: 2.97115
+packed ORAM init 283/313
+Elapsed time: 2.97825
+packed ORAM init 284/313
+Elapsed time: 2.98462
+packed ORAM init 285/313
+Elapsed time: 2.9912
+packed ORAM init 286/313
+Elapsed time: 2.99696
+packed ORAM init 287/313
+Elapsed time: 3.00324
+packed ORAM init 288/313
+Elapsed time: 3.01015
+packed ORAM init 289/313
+Elapsed time: 3.01644
+packed ORAM init 290/313
+Elapsed time: 3.02228
+packed ORAM init 291/313
+Elapsed time: 3.02827
+packed ORAM init 292/313
+Elapsed time: 3.0342
+packed ORAM init 293/313
+Elapsed time: 3.04661
+packed ORAM init 294/313
+Elapsed time: 3.05225
+packed ORAM init 295/313
+Elapsed time: 3.06647
+packed ORAM init 296/313
+Elapsed time: 3.07279
+packed ORAM init 297/313
+Elapsed time: 3.07913
+packed ORAM init 298/313
+Elapsed time: 3.08505
+packed ORAM init 299/313
+Elapsed time: 3.09125
+packed ORAM init 300/313
+Elapsed time: 3.09714
+packed ORAM init 301/313
+Elapsed time: 3.10317
+packed ORAM init 302/313
+Elapsed time: 3.14537
+packed ORAM init 303/313
+Elapsed time: 3.15173
+packed ORAM init 304/313
+Elapsed time: 3.15784
+packed ORAM init 305/313
+Elapsed time: 3.16422
+packed ORAM init 306/313
+Elapsed time: 3.17113
+packed ORAM init 307/313
+Elapsed time: 3.18057
+packed ORAM init 308/313
+Elapsed time: 3.18677
+packed ORAM init 309/313
+Elapsed time: 3.20032
+packed ORAM init 310/313
+Elapsed time: 3.20677
+packed ORAM init 311/313
+Elapsed time: 3.21299
+packed ORAM init 312/313
+packed ORAM init done
+1
+Compiler: ./compile.py -R 64 oram_tutorial
+	5685 bits of replicated Z2^64 left
+	8348 bits of replicated Z2^64 left
+Significant amount of unused bits of replicated Z2^64 distorting the benchmark. For more accurate benchmarks, consider reducing the batch size with --batch-size.
+	8348 bits of replicated Z2^64 left
+Significant amount of unused bits of replicated Z2^64 distorting the benchmark. For more accurate benchmarks, consider reducing the batch size with --batch-size.
+	8348 bits of replicated Z2^64 left
+Significant amount of unused bits of replicated Z2^64 distorting the benchmark. For more accurate benchmarks, consider reducing the batch size with --batch-size.
+	8348 bits of replicated Z2^64 left
+Significant amount of unused bits of replicated Z2^64 distorting the benchmark. For more accurate benchmarks, consider reducing the batch size with --batch-size.
+	8348 bits of replicated Z2^64 left
+Significant amount of unused bits of replicated Z2^64 distorting the benchmark. For more accurate benchmarks, consider reducing the batch size with --batch-size.
+	6696 bits of replicated Z2^64 left
+Significant amount of unused bits of replicated Z2^64 distorting the benchmark. For more accurate benchmarks, consider reducing the batch size with --batch-size.
+	6696 bits of replicated Z2^64 left
+Significant amount of unused bits of replicated Z2^64 distorting the benchmark. For more accurate benchmarks, consider reducing the batch size with --batch-size.
+	6696 bits of replicated Z2^64 left
+Significant amount of unused bits of replicated Z2^64 distorting the benchmark. For more accurate benchmarks, consider reducing the batch size with --batch-size.
+9 threads spent a total of 3.43775 seconds (45.2621 MB, 21560 rounds) on the online phase, 0.743039 seconds (9.69476 MB, 206 rounds) on the preprocessing/offline phase, and 30.3528 seconds idling.
+Join timer: 0 3830.27
+Finish timer: 0.00292094
+Join timer: 1 40.6602
+Finish timer: 0.00292094
+Join timer: 2 16.1453
+Finish timer: 0.00292094
+Join timer: 3 0.082406
+Finish timer: 0.00292094
+Join timer: 4 0.001502
+Finish timer: 0.00292094
+Join timer: 5 0.571542
+Finish timer: 0.00292094
+Join timer: 6 0.43117
+Finish timer: 0.00292094
+Join timer: 7 0.182677
+Finish timer: 0.00292094
+Join timer: 8 0.20389
+Finish timer: 0.00292094
+Communication details (rounds in parallel threads counted double):
+Broadcasting 0.048847 MB in 1846 rounds, taking 0.493318 seconds
+Passing around 54.8588 MB in 19866 rounds, taking 2.44787 seconds
+Receiving directly 0.000432 MB in 27 rounds, taking 0.00134107 seconds
+Sending directly 0.000432 MB in 27 rounds, taking 0.000710177 seconds
+CPU time = 1.75257 (overall core time)
+The following benchmarks are including preprocessing (offline phase).
+Time = 3.83324 seconds 
+Time1 = 0.007996 ms (0 MB)
+Data sent = 54.9569 MB in ~21766 rounds (party 0 only)
+Global data sent = 164.871 MB (all parties)
+Actual cost of program:
+  Type int
+        122487           Bits
+This program might benefit from some protocol options.
+Consider adding the following at the beginning of your code:
+	program.use_split(3)
+This virtual machine was compiled with GCC. Recompile with 'CXX = clang++' in 'CONFIG.mine' for optimal performance.
+Command line: ./ps-rep-ring-party.x --ip-file-name /HOST -p 0 -v oram_tutorial

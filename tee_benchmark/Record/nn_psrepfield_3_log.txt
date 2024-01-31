@@ -1,0 +1,30 @@
+Using statistical security parameter 40
+No modulus found in /Player-Data//3-Mp-128/Params-Data, generating 128-bit prime
+Current working directory: "/root/MP-SPDZ"
+Starting timer 1 at 0 (0 MB, 0 rounds) after 1.3658e-05
+Stopped timer 1 at 22.5047 (154.961 MB, 22899 rounds)
+guess 9
+Compiler: ./compile.py benchmark_net
+	5822 bits of malicious replicated gfp left
+Spent 20.9602 seconds (61.0724 MB, 21814 rounds) on the online phase and 1.55197 seconds (94.427 MB, 1127 rounds) on the preprocessing/offline phase.
+Join timer: 0 22512.2
+Finish timer: 0.00109089
+Communication details:
+Broadcasting 0.208224 MB in 7197 rounds, taking 8.0488 seconds
+Passing around 146.066 MB in 15603 rounds, taking 12.0067 seconds
+Receiving directly 8.65254 MB in 55 rounds, taking 0.0410301 seconds
+Sending directly 9.01667 MB in 86 rounds, taking 0.00541612 seconds
+CPU time = 3.15388
+The following benchmarks are including preprocessing (offline phase).
+Time = 22.5134 seconds 
+Time1 = 22504.7 ms (154.961 MB)
+Data sent = 155.499 MB in ~22941 rounds (party 0 only)
+Global data sent = 465.597 MB (all parties)
+Actual cost of program:
+  Type int
+       1604178           Bits
+This program might benefit from some protocol options.
+Consider adding the following at the beginning of your code:
+	program.use_edabit(True)
+This virtual machine was compiled with GCC. Recompile with 'CXX = clang++' in 'CONFIG.mine' for optimal performance.
+Command line: ./ps-rep-field-party.x --ip-file-name /HOST -p 0 -v benchmark_net

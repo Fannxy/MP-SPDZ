@@ -1,0 +1,4 @@
+Using statistical security parameter 40
+No modulus found in /Player-Data//2-Dp-128/Params-Data, generating 128-bit prime
+Current working directory: "/root/MP-SPDZ"
+Starting timer 1 at 0 (0 MB, 0 rounds) after 1.2354e-05

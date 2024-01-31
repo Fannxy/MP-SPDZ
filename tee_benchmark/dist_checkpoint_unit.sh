@@ -47,7 +47,7 @@ if [ ${comptype} == 6 ]; then
 	ssh -i $HOME/.ssh/id_ed25519 -p 1234 root@$host "PATH=$PATH ; rm -r $HOME/MP-SPDZ/occlum_workspace/image/Programs ; rm -r $HOME/MP-SPDZ/occlum_workspace/image/Player-Data ; cp -r $HOME/MP-SPDZ/Programs $HOME/MP-SPDZ/occlum_workspace/image/ ; cp -r $HOME/MP-SPDZ/Player-Data $HOME/MP-SPDZ/occlum_workspace/image/ ; cd $HOME/MP-SPDZ/occlum_workspace && occlum build"
     done
 
-    for period in 1 5 10 20 50 100
+    for period in 50 100 200 500 1000
     do
         logFile=${logFolder}/${func}_${prot}_${comptype}_${period}_log.txt
         echo "logFile = $logFile"
@@ -64,6 +64,36 @@ if [ ${comptype} == 6 ]; then
             fi
             if [ ${parties[$prot]} == 3 ]; then
                 ssh -i $HOME/.ssh/id_ed25519 -p 1234 root@${remoteHosts[$i]} "PATH=$PATH ; cd $HOME/MP-SPDZ/occlum_workspace && occlum run /bin/${protocol[$prot]} -A $period --ip-file-name /HOST -p $i -v ${benchmark[$func]} >${logFile} 2>&1"
+            fi
+            }&
+            i=$(( i + 1 ))
+        done
+        wait;
+    done
+else
+    for host in ${remoteHosts[*]}
+    do
+        echo "handle Player-Data and Programs"
+        ssh -i $HOME/.ssh/id_ed25519 -p 1234 root@$host "rm -r /Programs ; cp -r $HOME/MP-SPDZ/Programs / ; rm -r /Player-Data ; cp -r $HOME/MP-SPDZ/Player-Data /"
+    done
+
+    for period in 50 100 200 500 1000
+    do
+        logFile=${logFolder}/${func}_${prot}_${comptype}_${period}_log.txt
+        echo "logFile = $logFile"
+        i=0
+        for host in ${remoteHosts[*]}
+        do
+
+            if [ $i == 2 -a ${parties[$prot]} == 2 ]; then
+                break
+            fi
+            {
+            if [ ${parties[$prot]} == 2 ]; then
+                ssh -i $HOME/.ssh/id_ed25519 -p 1234 root@${remoteHosts[$i]} "cd $HOME/MP-SPDZ && ./${protocol[$prot]} -N 2 -e --ip-file-name /HOST -p $i -v ${benchmark[$func]} >${logFile} 2>&1"
+            fi
+            if [ ${parties[$prot]} == 3 ]; then
+                ssh -i $HOME/.ssh/id_ed25519 -p 1234 root@${remoteHosts[$i]} "cd $HOME/MP-SPDZ && ./${protocol[$prot]} --ip-file-name /HOST -p $i -v ${benchmark[$func]} >${logFile} 2>&1"
             fi
             }&
             i=$(( i + 1 ))

@@ -1,0 +1,8 @@
+Using statistical security parameter 40
+Trying to run 64-bit computation
+terminate called after throwing an instance of 'std::runtime_error'
+  what():  no inverses
+Using statistical security parameter 40
+Trying to run 64-bit computation
+terminate called after throwing an instance of 'std::runtime_error'
+  what():  no inverses

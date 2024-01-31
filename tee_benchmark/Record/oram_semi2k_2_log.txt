@@ -1,0 +1,4 @@
+Using statistical security parameter 40
+Trying to run 64-bit computation
+terminate called after throwing an instance of 'terminate called recursively
+terminate called recursively

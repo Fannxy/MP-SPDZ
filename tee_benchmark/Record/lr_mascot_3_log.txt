@@ -1,0 +1,6 @@
+Using statistical security parameter 40
+No modulus found in /Player-Data//2-p-128/Params-Data, generating 128-bit prime
+Current working directory: "/root/MP-SPDZ"
+Current working directory: "/root/MP-SPDZ"
+Using SGD
+done with epoch 0done with epoch 1done with epoch 2done with epoch 3done with epoch 4done with epoch 5done with epoch 6done with epoch 7done with epoch 8done with epoch 9

@@ -1,0 +1,6 @@
+Using statistical security parameter 40
+Trying to run 64-bit computation
+	328 triples of Z2^64 left
+	583 dabits of Z2^64 left
+The following benchmarks are including preprocessing (offline phase).
+Time = 38.6042 seconds 

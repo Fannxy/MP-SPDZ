@@ -1,0 +1,8 @@
+Using statistical security parameter 40
+Trying to run 64-bit computation
+	514 triples of Z2^64 left
+Significant amount of unused triples of Z2^64 distorting the benchmark. For more accurate benchmarks, consider reducing the batch size with --batch-size.
+	236 dabits of Z2^64 left
+Significant amount of unused dabits of Z2^64 distorting the benchmark. For more accurate benchmarks, consider reducing the batch size with --batch-size.
+The following benchmarks are including preprocessing (offline phase).
+Time = 0.169774 seconds 

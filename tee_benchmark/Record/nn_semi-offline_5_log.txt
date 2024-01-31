@@ -1,0 +1,6 @@
+Using statistical security parameter 40
+Writing to file in /Player-Data//2-Dp-128/
+	761 triples of gfp left
+	425 dabits of gfp left
+The following benchmarks are including preprocessing (offline phase).
+Time = 119.519 seconds 

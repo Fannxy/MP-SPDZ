@@ -1,0 +1,25 @@
+Using statistical security parameter 40
+Trying to run 64-bit computation
+Current working directory: "/root/MP-SPDZ"
+Compiler: ./compile.py -R 64 sigmoid
+Spent 0.0105245 seconds (0.223374 MB, 16 rounds) on the online phase and 0.0148698 seconds (0.163476 MB, 14 rounds) on the preprocessing/offline phase.
+Join timer: 0 25.3963
+Finish timer: 0.000364534
+Communication details:
+Broadcasting 0.000251 MB in 9 rounds, taking 0.00124504 seconds
+Passing around 0.3863 MB in 15 rounds, taking 0.0108334 seconds
+Receiving directly 4.8e-05 MB in 3 rounds, taking 0.000357945 seconds
+Sending directly 4.8e-05 MB in 3 rounds, taking 3.6676e-05 seconds
+CPU time = 0.0146494
+The following benchmarks are including preprocessing (offline phase).
+Time = 0.0258324 seconds 
+Data sent = 0.38685 MB in ~30 rounds (party 0 only)
+Global data sent = 1.16055 MB (all parties)
+Actual cost of program:
+  Type int
+          3200           Bits
+This program might benefit from some protocol options.
+Consider adding the following at the beginning of your code:
+	program.use_split(3)
+This virtual machine was compiled with GCC. Recompile with 'CXX = clang++' in 'CONFIG.mine' for optimal performance.
+Command line: ./ps-rep-ring-party.x --ip-file-name /HOST -p 0 -v sigmoid

@@ -1,0 +1,23 @@
+Using statistical security parameter 40
+base OT time: 0MS
+Writing to file in /Player-Data//2-Dp-128/
+base OT time: 10MS
+Multiply time: 142MS
+base OT time: 6MS
+Multiply time: 126MS
+base OT time: 6MS
+Multiply time: 125MS
+base OT time: 6MS
+Multiply time: 125MS
+base OT time: 5MS
+Multiply time: 124MS
+base OT time: 6MS
+Multiply time: 125MS
+base OT time: 6MS
+Multiply time: 124MS
+	882 triples of gfp left
+Significant amount of unused triples of gfp distorting the benchmark. For more accurate benchmarks, consider reducing the batch size with --batch-size.
+	920 dabits of gfp left
+Significant amount of unused dabits of gfp distorting the benchmark. For more accurate benchmarks, consider reducing the batch size with --batch-size.
+The following benchmarks are including preprocessing (offline phase).
+Time = 0.910272 seconds 

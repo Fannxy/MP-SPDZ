@@ -1,0 +1,34 @@
+Using statistical security parameter 40
+Trying to run 64-bit computation
+Current working directory: "/root/MP-SPDZ"
+Starting timer 1 at 0 (0 MB, 0 rounds) after 1.0597e-05
+Stopped timer 1 at 80.8933 (670.178 MB, 30912 rounds)
+guess 3
+Compiler: ./compile.py -R 64 -A benchmark_net
+	503 triples of Z2^64 left
+	888 dabits of Z2^64 left
+Spent 1.50706 seconds (20.2696 MB, 26862 rounds) on the online phase and 79.3939 seconds (649.938 MB, 4082 rounds) on the preprocessing/offline phase.
+Join timer: 0 80900.9
+Finish timer: 0.00687609
+Communication details:
+Exchanging one-to-one 643.609 MB in 2520 rounds, taking 0.752935 seconds
+Receiving directly 20.2696 MB in 13431 rounds, taking 1.16857 seconds
+Receiving one-to-one 15.7785 MB in 781 rounds, taking 0.11293 seconds
+Sending directly 20.2696 MB in 13431 rounds, taking 0.169362 seconds
+Sending one-to-one 6.32906 MB in 781 rounds, taking 0.0129295 seconds
+CPU time = 81.2126
+The following benchmarks are including preprocessing (offline phase).
+Time = 80.9079 seconds 
+Time1 = 80893.3 ms (670.178 MB)
+Data sent = 670.208 MB in ~30944 rounds (party 0 only)
+Global data sent = 1349.87 MB (all parties)
+Actual cost of program:
+  Type int
+       1256497        Triples
+        786568           Bits
+This program might benefit from some protocol options.
+Consider adding the following at the beginning of your code:
+	program.use_trunc_pr = True
+	program.use_split(2)
+This virtual machine was compiled with GCC. Recompile with 'CXX = clang++' in 'CONFIG.mine' for optimal performance.
+Command line: ./semi2k-party.x -N 2 -e --ip-file-name /HOST -p 0 -v benchmark_net

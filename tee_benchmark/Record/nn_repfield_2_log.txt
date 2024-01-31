@@ -1,0 +1,30 @@
+Using statistical security parameter 40
+No modulus found in /Player-Data//3-Rp-128/Params-Data, generating 128-bit prime
+Current working directory: "/"
+Starting timer 1 at 0 (0 MB, 0 rounds) after 3.0618e-05
+Stopped timer 1 at 2.57313 (35.495 MB, 12347 rounds)
+guess 9
+Compiler: ./compile.py benchmark_net
+	3502 dabits of replicated gfp left
+Spent 1.86085 seconds (10.3062 MB, 11742 rounds) on the online phase and 0.729349 seconds (25.7254 MB, 640 rounds) on the preprocessing/offline phase.
+Join timer: 0 2590.09
+Finish timer: 0.0293094
+Communication details:
+Passing around 9.76957 MB in 11708 rounds, taking 1.38451 seconds
+Receiving directly 25.738 MB in 321 rounds, taking 0.179028 seconds
+Sending directly 26.2621 MB in 353 rounds, taking 0.0576853 seconds
+CPU time = 3.1334
+The following benchmarks are including preprocessing (offline phase).
+Time = 2.61967 seconds 
+Time1 = 2573.13 ms (35.495 MB)
+Data sent = 36.0317 MB in ~12382 rounds (party 0 only)
+Global data sent = 107.034 MB (all parties)
+Actual cost of program:
+  Type int
+       1604178           Bits
+This program might benefit from some protocol options.
+Consider adding the following at the beginning of your code:
+	program.use_trunc_pr = True
+	program.use_edabit(True)
+This virtual machine was compiled with GCC. Recompile with 'CXX = clang++' in 'CONFIG.mine' for optimal performance.
+Command line: replicated-field-party.x --ip-file-name /HOST -p 0 -v benchmark_net

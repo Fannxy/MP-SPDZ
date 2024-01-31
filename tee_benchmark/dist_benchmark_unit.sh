@@ -58,7 +58,7 @@ done
 logFile=${logFolder}/${func}_${prot}_${comptype}_log.txt
 echo "logFile = $logFile"
 
-if [ ${comptype} == 1 -o ${comptype} == 3 ]; then
+if [ ${comptype} == 1 -o ${comptype} == 3 -o ${comptype} == 7 ]; then
     echo "without TEE"
     for host in ${remoteHosts[*]}
     do

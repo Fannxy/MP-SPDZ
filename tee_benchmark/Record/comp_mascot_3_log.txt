@@ -1,0 +1,30 @@
+Using statistical security parameter 40
+No modulus found in /Player-Data//2-p-128/Params-Data, generating 128-bit prime
+Current working directory: "/root/MP-SPDZ"
+comp res = [0, 0, 0, 0, 0, 0, 1, 1, 1, 1]
+Compiler: ./compile.py comp
+Spent 0.0242257 seconds (0.018368 MB, 31 rounds) on the online phase and 0.240578 seconds (24.8138 MB, 88 rounds) on the preprocessing/offline phase.
+Join timer: 0 264.804
+Finish timer: 0.00291694
+Communication details:
+Broadcasting 0.00076 MB in 29 rounds, taking 0.0272035 seconds
+Exchanging one-to-one 20.8078 MB in 20 rounds, taking 0.0145503 seconds
+Receiving directly 0.06128 MB in 11 rounds, taking 0.00148103 seconds
+Receiving one-to-one 3.96232 MB in 24 rounds, taking 0 seconds
+Sending directly 0.06128 MB in 11 rounds, taking 0.000174604 seconds
+Sending one-to-one 3.96232 MB in 24 rounds, taking 0 seconds
+CPU time = 0.225649
+The following benchmarks are including preprocessing (offline phase).
+Time = 0.267819 seconds 
+Data sent = 24.8322 MB in ~119 rounds (party 0 only)
+Global data sent = 49.6644 MB (all parties)
+Actual cost of program:
+  Type int
+           550        Triples
+           720           Bits
+This program might benefit from some protocol options.
+Consider adding the following at the beginning of your code:
+	program.use_edabit(True)
+This virtual machine was compiled with GCC. Recompile with 'CXX = clang++' in 'CONFIG.mine' for optimal performance.
+Coordination took 0.000242828 seconds
+Command line: ./mascot-party.x -N 2 -e --ip-file-name /HOST -p 0 -v comp

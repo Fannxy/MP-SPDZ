@@ -1,0 +1,38 @@
+Using statistical security parameter 40
+No modulus found in /Player-Data//2-p-128/Params-Data, generating 128-bit prime
+Current working directory: "/root/MP-SPDZ"
+Starting timer 1 at 0 (0 MB, 0 rounds) after 2.2473e-05
+Stopped timer 1 at 453.813 (55654.6 MB, 102750 rounds)
+guess 9
+Compiler: ./compile.py benchmark_net
+	852 triples of SPDZ gfp left
+	822 bits of SPDZ gfp left
+Spent 2.99809 seconds (41.1028 MB, 33659 rounds) on the online phase and 451.646 seconds (55696 MB, 69248 rounds) on the preprocessing/offline phase.
+Join timer: 0 454644
+Finish timer: 0.00907078
+Communication details:
+Broadcasting 0.803724 MB in 27207 rounds, taking 3.70979 seconds
+Exchanging one-to-one 46727.2 MB in 17120 rounds, taking 30.4176 seconds
+Receiving directly 137.213 MB in 17861 rounds, taking 3.51065 seconds
+Receiving one-to-one 8809.84 MB in 11425 rounds, taking 0.100114 seconds
+Sending directly 137.2 MB in 17827 rounds, taking 0.281789 seconds
+Sending one-to-one 8871.28 MB in 11428 rounds, taking 0.0601584 seconds
+Sending to all 0.536672 MB in 34 rounds, taking 0.000625702 seconds
+Sending/receiving 8e-05 MB in 5 rounds, taking 0.000307977 seconds
+CPU time = 452.694
+The following benchmarks are including preprocessing (offline phase).
+Time = 454.653 seconds 
+Time1 = 453813 ms (55654.6 MB)
+Data sent = 55737.1 MB in ~102907 rounds (party 0 only)
+Global data sent = 111412 MB (all parties)
+Actual cost of program:
+  Type int
+       1246148        Triples
+       1604178           Bits
+         34326   Input tuples (33542 784)
+This program might benefit from some protocol options.
+Consider adding the following at the beginning of your code:
+	program.use_edabit(True)
+This virtual machine was compiled with GCC. Recompile with 'CXX = clang++' in 'CONFIG.mine' for optimal performance.
+Coordination took 0.406638 seconds
+Command line: ./mascot-party.x -N 2 -e --ip-file-name /HOST -p 0 -v benchmark_net
