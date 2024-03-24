@@ -20,13 +20,14 @@ int AndJob::run()
 	int i_gate = 0;
 	for (size_t i = start; i < end; i += 4)
 	{
-		GC::Secret<EvalRegister>& dest = S[args[i + 1]];
 		for (int j = 0; j < args[i]; j++)
 		{
 			i_gate++;
 			gate->init_inputs(gate_id + i_gate,
 					ProgramParty::s().get_n_parties());
-			dest.get_reg(j).eval(S[args[i + 2]].get_reg(j),
+			int dl = GC::Clear::N_BITS;
+			GC::Secret<EvalRegister>& dest = S[args[i + 1] + j / dl];
+			dest.get_reg(j % dl).eval(S[args[i + 2] + j / dl].get_reg(j % dl),
 					S[args[i + 3]].get_reg(0), *gate,
 					ProgramParty::s().get_id(), (char*) prf_output, 0, 0, 0);
 			gate++;
