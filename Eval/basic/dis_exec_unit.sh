@@ -1,9 +1,11 @@
 task=$1; protocol=$2; logFolder=$3; logFile=$4; party=$5;
 
-logTmp=${logFolder}/tmp.txt
+logTmp=/dev/null
 
-if [ ! -d ${logFolder} ]; then
-    mkdir ${logFolder};
+if [ ${party} == 0 ]; then
+    if [ ! -d ${logFolder} ]; then
+        mkdir ${logFolder};
+    fi
 fi
 wait;
 
@@ -12,9 +14,9 @@ if [ ${party} == 0 ]; then
 fi
 
 if [ ${party} == 0 ]; then
-    ulimit -n 65536; ./${protocol} ${task} -p ${party} -ip HOST >> ${logFile} 2>&1;
+    ulimit -n 65536; ./${protocol} ${task} -p ${party} -ip HOST -v >> ${logFile} 2>&1;
 else
-    ulimit -n 65536; ./${protocol} ${task} -p ${party} -ip HOST >> ${logTmp};
+    ulimit -n 65536; ./${protocol} ${task} -p ${party} -ip HOST -v >> ${logTmp};
 fi
 wait;
 

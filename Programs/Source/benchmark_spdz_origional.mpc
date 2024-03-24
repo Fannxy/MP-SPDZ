@@ -1,0 +1,40 @@
+"""Using the inherent functions in mp-spdz for baseline.
+"""
+from oram import OptimalORAM
+
+# set parameters: for, opt, parallel
+task, N, M, REPEAT, n_parallel = str(program.args[1]), int(program.args[2]), int(program.args[3]), int(program.args[4]), int(program.args[5])
+
+# set task configs.
+program.use_split(3)
+program.use_trunc_pr = True
+sfix.set_precision(16)
+
+# generate test data
+X = Array(M, sfix)
+Y = Array(N, sint)
+res = Array(N, sfix)
+
+@for_range_opt(N)
+def _(i):
+    Y[i] = sint(i % 2**14)
+    
+@for_range_multithread(64, None, M)
+def _(i):
+    X[i] = sfix(i % 2**14)
+
+
+if(task == "cipher_index"):
+    start_timer(1)
+    
+    # oram construction.
+    XORAM = OptimalORAM(M)
+    for i in range(M):
+        XORAM[i] = X[i] # copy X to XORAM
+    stop_timer(1)
+    
+    # access elements in XORAM.
+    start_timer(2)
+    for i in range(N):
+        res[i] = XORAM[Y[i]]
+    stop_timer(2)

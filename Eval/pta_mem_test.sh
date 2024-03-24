@@ -62,7 +62,7 @@ for task in ${task_list[*]}; do
             memlog=${monitorFolder}-exec-${task}-N=${N}-M=${M}-c=${parallel};
             ./Eval/control/mem_monitor.sh ${memlog} &
             monitor_id=$!
-            $exec_perf stat -e cache-misses,cache-references ./Eval/basic/dis_exec.sh ${sourceFile}-${task}-${N}-${M}-${REPEAT}-${parallel} ${protocol} ${recordFolder} ${elog}
+            ./Eval/basic/dis_exec.sh ${sourceFile}-${task}-${N}-${M}-${REPEAT}-${parallel} ${protocol} ${recordFolder} ${elog}
             kill ${monitor_id};
         done;
     done;

@@ -94,7 +94,6 @@ for task in ${task_list[*]}; do
     for parallel in ${parallel_list[*]}; do
         for M in ${M_list[*]}; do
             elog=${logFile}-multithread-${task}-n=${N}-m=${M}-k=1-R=${REPEAT}-c=${parallel};
-            # ./Eval/basic/local_exec.sh ${sourceFile}-multithread-${N}-${M}-${REPEAT}-${parallel} ${protocol} ${logFolder} ${elog}
             ./Eval/basic/dis_exec.sh ${sourceFile}-${task}-${N}-${M}-${REPEAT}-${parallel} ${protocol} ${recordFolder} ${elog}
             wait;
         done;
