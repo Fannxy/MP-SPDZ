@@ -1,6 +1,9 @@
 """Using the inherent functions in mp-spdz for baseline.
 """
 from oram import OptimalORAM
+from sorting import *
+from util import max
+from ml import argmax
 
 # set parameters: for, opt, parallel
 task, N, M, REPEAT, n_parallel = str(program.args[1]), int(program.args[2]), int(program.args[3]), int(program.args[4]), int(program.args[5])
@@ -8,33 +11,59 @@ task, N, M, REPEAT, n_parallel = str(program.args[1]), int(program.args[2]), int
 # set task configs.
 program.use_split(3)
 program.use_trunc_pr = True
-sfix.set_precision(16)
+program.use_edabit(True)
 
 # generate test data
 X = Array(M, sfix)
 Y = Array(N, sint)
 res = Array(N, sfix)
 
+start_timer(1)
 @for_range_opt(N)
 def _(i):
     Y[i] = sint(i % 2**14)
     
 @for_range_multithread(64, None, M)
 def _(i):
-    X[i] = sfix(i % 2**14)
+    X[i] = sint(i % 2**14)
+stop_timer(1)
 
 
 if(task == "cipher_index"):
-    start_timer(1)
-    
+    start_timer(99)
     # oram construction.
     XORAM = OptimalORAM(M)
-    for i in range(M):
-        XORAM[i] = X[i] # copy X to XORAM
-    stop_timer(1)
-    
+    XORAM.batch_init(X)
+    stop_timer(99)
+
     # access elements in XORAM.
-    start_timer(2)
+    start_timer(98)
     for i in range(N):
-        res[i] = XORAM[Y[i]]
-    stop_timer(2)
+        res[i] = XORAM[sint(1)]
+    stop_timer(98)
+
+
+if(task == "sort"):
+    start_timer(1)
+    radix_sort(X, X)
+    stop_timer(1)
+
+if(task == "max"):
+    start_timer(1)
+    res[0] = max(X)
+    stop_timer(1)
+
+if(task == "average"):
+    start_timer(1)
+    res[0] = sum(X) / M
+    stop_timer(1)
+
+if(task == "metric"):
+    start_timer(1)
+    res[0] = argmax(X)
+    stop_timer(1)
+
+if(task == "new_search"):
+    start_timer(1)
+    res[0] = argmax(X)
+    stop_timer(1)
