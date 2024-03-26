@@ -55,7 +55,7 @@ if(task == "max"):
 
 if(task == "average"):
     start_timer(2)
-    res[0] = (X.get_vector().sum()) / M
+    res[0] = X.get_vector().sum()
     stop_timer(2)
 
 if(task == "metric"):

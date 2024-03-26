@@ -29,7 +29,7 @@ echo "MOD = -DRING_SIZE=${ringsize[$task]}" > config.mine
 
 
 declare -A MLists
-MLists["cipher_index"]="1048576 16777216 268435456 1073741824"
+MLists["cipher_index"]="1048576"
 MLists["max"]="1024 4096 16384 32768"
 MLists["average"]="1048576 16777216 268435456 1073741824"
 MLists["metric"]="1048576 16777216 268435456 1073741824"
@@ -63,7 +63,7 @@ for ((i=0; i<param_len; i++)); do
     # if [ -f ${bc_file} ]; then
     #     continue
     # fi
-    python compile.py -R 256 -l ${sourceFile} ${task} $N $M $REPEAT $parallel > ${clog} 2>&1 &
+    python compile.py -R ${ringsize[$task]} -l ${sourceFile} ${task} $N $M $REPEAT $parallel > ${clog} 2>&1 &
     wait;
 done;
 
