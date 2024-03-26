@@ -1257,7 +1257,7 @@ class TreeORAM(AbstractORAM):
         depth = log2(m)
         leaves = self.value_type.Array(m)
         indexed_values = \
-            self.value_type.Matrix(m, len(util.tuplify(values[0])) + 1)
+            self.value_type.Matrix(m, len(values[0]) + 1)
 
         # assign indices 0, ..., m-1
         @for_range(m)
@@ -1265,8 +1265,7 @@ class TreeORAM(AbstractORAM):
             value = values[i]
             index = MemValue(self.value_type.hard_conv(i))
             new_value = [MemValue(self.value_type.hard_conv(v)) \
-                         for v in (value if isinstance(value, (tuple, list)) \
-                                       else (value,))]
+                         for v in value]
             indexed_values[i] = [index] + new_value
 
         entries = sint.Matrix(self.bucket_size * 2 ** self.D,
