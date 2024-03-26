@@ -65,7 +65,7 @@ def tgl_select_for_parallel(tars, keys, vals, parallel=1):
 
 def tgl_average_for_parallel(arr, parallel=1):
     
-    m, n = len(arr)7, 1
+    m, n = len(arr), 1
     res = Array(n, sfix)
     res[0] = sfix(0)
         

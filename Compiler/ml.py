@@ -160,6 +160,18 @@ def argmax(x):
         return comp.if_else(a[0], b[0]), comp.if_else(a[1], b[1])
     return tree_reduce(op, enumerate(x))[0]
 
+def argmax_multithread(x, indices):
+    """ Compute index of maximum element in parallel.
+
+    :param x: iterable
+    :returns: sint or 0 if :py:obj:`x` has length 1
+    """
+    def op1(a, b, c, d):
+        comp = (a < b)
+        return comp.if_else(a, b), comp.if_else(c, d)
+    
+    return tree_reduce_multithread_type(256, op1, x.get_vector(0, x.length), indices.get_vector(0, x.length), sfix)[0]
+
 def softmax(x):
     """ Softmax.
 

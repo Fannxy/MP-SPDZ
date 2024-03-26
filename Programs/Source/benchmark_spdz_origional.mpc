@@ -3,7 +3,7 @@
 from oram import OptimalORAM
 from sorting import *
 from util import max
-from ml import argmax
+from ml import argmax, argmax_multithread
 
 # set parameters: for, opt, parallel
 task, N, M, REPEAT, n_parallel = str(program.args[1]), int(program.args[2]), int(program.args[3]), int(program.args[4]), int(program.args[5])
@@ -15,13 +15,13 @@ program.use_edabit(True)
 
 # generate test data
 X = Array(M, sfix)
-Y = Array(N, sint)
+Y = Array(N, sfix)
 res = Array(N, sfix)
 
 start_timer(1)
 @for_range_opt(N)
 def _(i):
-    Y[i] = sint(i % 2**14)
+    Y[i] = sfix(i % 2**14)
     
 @for_range_multithread(64, None, M)
 def _(i):
@@ -44,26 +44,33 @@ if(task == "cipher_index"):
 
 
 if(task == "sort"):
-    start_timer(1)
+    start_timer(2)
     radix_sort(X, X)
-    stop_timer(1)
+    stop_timer(2)
 
 if(task == "max"):
-    start_timer(1)
+    start_timer(2)
     res[0] = max(X)
-    stop_timer(1)
+    stop_timer(2)
 
 if(task == "average"):
-    start_timer(1)
-    res[0] = sum(X) / M
-    stop_timer(1)
+    start_timer(2)
+    res[0] = (X.get_vector().sum()) / M
+    stop_timer(2)
 
 if(task == "metric"):
-    start_timer(1)
-    res[0] = argmax(X)
+    start_timer(1)  
+    indices = Array(M, sint)
+    @for_range_multithread(64, None, M)
+    def _(i):
+        indices[i] = sint(i)
     stop_timer(1)
 
+    start_timer(2)
+    res[0] = argmax_multithread(X, indices)
+    stop_timer(2)
+
 if(task == "new_search"):
-    start_timer(1)
+    start_timer(2)
     res[0] = argmax(X)
-    stop_timer(1)
+    stop_timer(2)
