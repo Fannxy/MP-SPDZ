@@ -50,7 +50,8 @@ if(task == "sort"):
 
 if(task == "max"):
     start_timer(2)
-    res[0] = max(X)
+    # res[0] = max(X)
+    res[0] = max_multithread(X)
     stop_timer(2)
 
 if(task == "average"):

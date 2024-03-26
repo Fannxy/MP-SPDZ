@@ -25,14 +25,16 @@ ringsize["cipher_index"]=256;
 ringsize["max"]=64;
 ringsize["average"]=64;
 ringsize["metric"]=64;
+ringsize["sort"]=64;
 echo "MOD = -DRING_SIZE=${ringsize[$task]}" > config.mine
 
 
 declare -A MLists
 MLists["cipher_index"]="1048576"
-MLists["max"]="1024 4096 16384 32768"
+MLists["max"]="1048576 16777216 268435456 1073741824"
 MLists["average"]="1048576 16777216 268435456 1073741824"
 MLists["metric"]="1048576 16777216 268435456 1073741824"
+MLists["sort"]="1024 4096 16384 32768"
 
 
 # M_list=(${MLists[$task]})

@@ -1205,6 +1205,9 @@ def tree_reduce_multithread(n_threads, function, vector):
         left = (left + 1) // 2
     return inputs[0]
 
+def max_multithread(x, y=None, n_threads=256):
+    if y is None:
+        return tree_reduce_multithread(n_threads, lambda x, y: x.max(y), x)
 
 def tree_reduce_multithread_type(n_threads, function, vector1, vector2, stype):
     """ Round-efficient reduction in several threads. The following code
