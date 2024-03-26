@@ -394,6 +394,8 @@ class Compiler:
         If options.merge_opens is set to True, will attempt to merge any
         parallelisable open instructions."""
         print("Compiling file", self.prog.infile)
+        self.prog.sint = self.sint
+        self.prog.sfix = self.sfix
 
         with open(self.prog.infile, "r") as f:
             changed = False
@@ -604,11 +606,15 @@ class Compiler:
             party0 = hostnames[0].split('@')[1]
         else:
             party0 = hostnames[0]
+        if 'rep' not in vm and 'yao' not in vm:
+            N = ['-N', str(len(connections))]
+        else:
+            N = []
         for i in range(len(connections)):
             run = lambda i: connections[i].run(
                 "cd %s; ./%s -p %d %s -h %s -pn %d %s" % \
                 (destinations[i], vm, i, self.prog.name, party0, port,
-                 ' '.join(args)))
+                 ' '.join(args + N)))
             threads.append(threading.Thread(target=run, args=(i,)))
         for thread in threads:
             thread.start()

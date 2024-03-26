@@ -620,7 +620,7 @@ class _secret_structure(_structure):
                 content = numpy.array(content)
                 if issubclass(cls, _fix):
                     min_k = \
-                        math.ceil(math.log(abs(content).max(), 2)) + cls.f + 1
+                        math.ceil(math.log(abs(content).max() or 1, 2)) + cls.f + 1
                     if cls.k < min_k:
                         raise CompilerError(
                             "data outside fixed-point range, "

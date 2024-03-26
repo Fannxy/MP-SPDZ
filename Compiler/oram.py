@@ -1284,7 +1284,7 @@ class TreeORAM(AbstractORAM):
                 self.value_type.hard_conv(False), value_type=self.value_type)
         
         # save unsorted leaves for position map
-        unsorted_leaves = [MemValue(self.value_type(leaf)) for leaf in leaves]
+        unsorted_leaves = Array.create_from(leaves)
         leaves.sort()
 
         bucket_sz = 0
@@ -1387,7 +1387,7 @@ class TreeORAM(AbstractORAM):
             bucket.bucket.ram[bucket_sizes[leaf]] = Entry(entries[k])
             bucket_sizes[leaf] += 1
 
-        self.index.batch_init([leaf.read() for leaf in unsorted_leaves])
+        self.index.batch_init(unsorted_leaves)
 
     def check(self, index=None):
         if debug:
