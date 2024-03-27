@@ -1,4 +1,4 @@
-# # synchronized with other machines once.
+# synchronized with other machines once.
 # cd ..
 # scp -r ./MP-SPDZ/Programs spdz1:~/MP-SPDZ/ &
 # scp -r ./MP-SPDZ/Programs spdz2:~/MP-SPDZ
@@ -9,7 +9,8 @@
 # wait;
 
 # execute the commands.
-task_list=("average" "cipher_index" "metric" "max")
+# task_list=("average" "cipher_index" "metric" "max")
+task_list=("max" "average" "metric" "cipher_index" "sort")
 
 for task in ${task_list[@]}; do
     ./Eval/spdz_benchmark_unit.sh ${task}

@@ -2,6 +2,7 @@ task=$1
 
 logFolder=./Record/benchmark_spdz_origional/
 clogFolder=./Record/bso_compile/
+mlogFolder=./Record/monitor/
 clogFile=${clogFolder}compile_log
 sourceFile=benchmark_spdz_origional
 protocol=replicated-ring-party.x
@@ -17,6 +18,10 @@ if [ ! -d ${clogFolder} ]; then
     mkdir ${clogFolder};
 fi
 
+if [ ! -d ${mlogFolder} ]; then
+    mkdir ${mlogFolder};
+fi
+
 parallel_list=(1 1 1 1)
 N_list=(1 1 1 1)
 
@@ -25,14 +30,16 @@ ringsize["cipher_index"]=256;
 ringsize["max"]=64;
 ringsize["average"]=64;
 ringsize["metric"]=64;
-echo "MOD = -DRING_SIZE=${ringsize[$task]}" > CONFIG.mine
+ringsize["sort"]=64;
+echo "MOD = -DRING_SIZE=${ringsize[$task]}" > config.mine
 
 
 declare -A MLists
 MLists["cipher_index"]="1048576"
-MLists["max"]="1024 4096 16384 32768"
+MLists["max"]="1048576 16777216 268435456 1073741824"
 MLists["average"]="1048576 16777216 268435456 1073741824"
 MLists["metric"]="1048576 16777216 268435456 1073741824"
+MLists["sort"]="1024 4096 16384 32768"
 
 
 # M_list=(${MLists[$task]})
@@ -103,11 +110,26 @@ fi
 for ((i=0; i<$param_len; i++)); do
     M=${M_list[i]}; N=${N_list[i]}; parallel=${parallel_list[i]};
     recordFolder=${logFolder}Record_${task}
+    monitorFolder=${mlogFolder}Monitor_${task}
     logFile=${recordFolder}/Record-bso-baseline
     if [ ! -d ${recordFolder} ]; then
         mkdir ${recordFolder};
     fi
+    if [ ! -d ${monitorFolder} ]; then
+        mkdir ${monitorFolder};
+    fi
     elog=${logFile}-${task}-n=${N}-m=${M}-k=1-R=${REPEAT}-c=${parallel};
+
+    resource_monitor_log=${monitorFolder}/${task}-n=${N}-m=${M}-k=1-R=${REPEAT}-c=${parallel}.resource
+    bandwidth_monitor_log=${monitorFolder}/${task}-n=${N}-m=${M}-k=1-R=${REPEAT}-c=${parallel}.bandwidth
+
+    ./Eval/control/cpu_monitor.sh ${resource_monitor_log} ${protocol} &
+    utilization_pid=$!
+    ./Eval/control/bandwidth_monitor.sh ${bandwidth_monitor_log} ${protocol} &
+    bandwidth_pid=$!
+
     ./Eval/basic/dis_exec.sh ${sourceFile}-${task}-${N}-${M}-${REPEAT}-${parallel} ${protocol} ${recordFolder} ${elog}  
-    wait;
+
+    kill ${utilization_pid}
+    kill ${bandwidth_pid}
 done;
