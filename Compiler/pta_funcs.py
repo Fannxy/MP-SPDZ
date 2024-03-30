@@ -1,20 +1,7 @@
 from Compiler.types import sfix
 from Compiler.library import *
 
-
 MAX_TREE_REDUCE = 2**28
-
-def tgl_cipher_index_for(arr, indices):
-    m, n = len(arr), len(indices)
-    res = sfix.Array(n)
-    @for_range_opt(n)
-    def _(i):
-        res[i] = sfix(0)
-        @for_range_opt(m)
-        def _(j):
-            res[i] = res[i] + (arr[j] * (indices[i] == j))
-    return res
-
 
 def tgl_cipher_index(arr, indices, parallel=1):
     
@@ -62,10 +49,8 @@ def tgl_average(arr, parallel=1):
     
     m, n = len(arr), 1
     res = Array(n, sfix)
-    res[0] = sfix(0)
-    res = tree_reduce_multithread(parallel, lambda x, y: x+y, arr)
-        
-    return res
+    # res = tree_reduce_multithread(parallel, lambda x, y: x+y, arr.get_vector(0, m))
+    return tree_reduce_multithread(parallel, lambda x, y: x+y, arr.get_vector(0, m))
 
 
 def tgl_search(tars, keys, vals, parallel=1):

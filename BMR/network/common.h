@@ -16,7 +16,8 @@
 # echo 'net.core.wmem_max=12582912' >> /etc/sysctl.conf
 # echo 'net.core.rmem_max=12582912' >> /etc/sysctl.conf
 */
-const int NETWORK_BUFFER_SIZE = 20000000;
+// const int NETWORK_BUFFER_SIZE = 20000000;
+const int NETWORK_BUFFER_SIZE = 2147483647;
 
 typedef struct {
 	std::string ip;

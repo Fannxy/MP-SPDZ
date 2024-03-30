@@ -19,10 +19,12 @@ Y = Array(N, sfix)
 def _(i):
     Y[i] = sfix(i % 2**14)
 
-@for_range_multithread(64, None, M)
+@for_range_multithread(n_parallel, None, M)
 def _(i):
     X[i] = sfix(i % 2**14)
-start_timer(2)
+stop_timer(2)
+
+print_ln("success generate data!")
 
 if(task == "cipher_index"):
     start_timer(1)
