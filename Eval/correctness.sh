@@ -28,9 +28,9 @@ for parallel in ${parallel_list[*]}; do
     for M in ${M_list[*]}; do
         clog=${clogFile}-multithread-${N}-${M}-${REPEAT}-${parallel};
         bc_file=./Programs/Schedules/${sourceFile}-multithread-${N}-${M}-${REPEAT}-${parallel}.sch
-        if [ -f ${bc_file} ]; then
-            continue
-        fi
+        # if [ -f ${bc_file} ]; then
+        #     continue
+        # fi
         python compile.py -l -R 64 -Z 3 ${sourceFile} multithread $N $M $REPEAT $parallel >> ${clog} 2>&1 &
     done;
     wait;

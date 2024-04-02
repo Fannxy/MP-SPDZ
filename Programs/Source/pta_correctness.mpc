@@ -1,6 +1,7 @@
 """Benchmark for spdz-style parallelization.
 """
 import pta_funcs as pta
+from sorting import radix_sort
 
 # set parameters: for, opt, parallel
 strategy, N, M, REPEAT, n_parallel = str(program.args[1]), int(program.args[2]), int(program.args[3]), int(program.args[4]), int(program.args[5])
@@ -8,8 +9,10 @@ strategy, N, M, REPEAT, n_parallel = str(program.args[1]), int(program.args[2]),
 # set task configs.
 sfix.set_precision(16)
 
+plain_x = [2**10 - (i % 2**10) for i in range(M)]
+
 # generate test data
-X = Array.create_from([sfix(i % 2**14) for i in range(M)])
+X = Array.create_from([sint(item) for item in plain_x])
 Y = Array.create_from([sint(i % 2**14) for i in range(N)])
 
 print_ln("cipher index")
@@ -41,32 +44,37 @@ print_ln("test res = %s", test_res.reveal())
 
 
 print_ln("sum")
-real_res = sfix(sum([i % 2**14 for i in range(M)]))
+real_res = sint(sum([sint(item) for item in plain_x]))
 test_res = pta.tgl_average(X, n_parallel)
+spdz_res = X.get_vector().sum()
 print_ln("real res = %s", real_res.reveal())
 print_ln("test res = %s", test_res.reveal())
 
 
 def argmin(X):
     def op(a, b):
-        comp = (a[1] < b[1])
+        comp = ((a[1] * a[1]) < (b[1] * b[1]))
         return comp.if_else(a[0], b[0]), comp.if_else(a[1], b[1])
     return tree_reduce(op, enumerate(X))
 
-zeros = Array.create_from([sfix(0) for i in range(1)])
+zeros = Array.create_from([sint(0) for i in range(1)])
 
 print_ln("bio_metric")
-real_res, real_ind = argmin(X*X)
+real_ind, real_res = argmin(X*X)
 test_res, test_ind = pta.tgl_bio_metric(zeros, X, n_parallel)
+spdz_res = pta.bio_metric(X, zeros)   
 print_ln("real res = %s", real_res.reveal())
 print_ln("real ind = %s", real_ind.reveal())
 print_ln("test res = %s", test_res.reveal())
 print_ln("test ind = %s", test_ind.reveal())
+print_ln("spdz res = %s", spdz_res.reveal())
 
 
 print_ln("sort")
-testX = Array.create_from([sfix(i % 2**14) for i in range(M-1, -1, -1)])
-real_res = Array.create_from([sfix(i % 2**14) for i in range(M)])
+testX = Array.create_from([sint(i % 2**14) for i in range(M-1, -1, -1)])
+real_res = Array.create_from([sint(i % 2**14) for i in range(M)])
 test_res = pta.tgl_sort(testX, n_parallel)
+spdz_res = radix_sort(testX, testX)
 print_ln("real res = %s", real_res.reveal())
 print_ln("test res = %s", test_res.reveal())
+print_ln("spdz res = %s", testX.reveal())
