@@ -1,0 +1,1 @@
+python ./PtA_deploy/spdz_task_execution.py --tgl

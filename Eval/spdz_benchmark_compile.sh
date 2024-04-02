@@ -1,0 +1,1 @@
+python ./PtA_deploy/spdz_task_execution.py --compile_spdz --root_foler "/home/tsingj_ubuntu/fanxy/MP-SPDZ/"
