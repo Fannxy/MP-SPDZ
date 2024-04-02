@@ -1,14 +1,22 @@
 task=$1
+BuildFlag=$2
+CompileOnly=$3
 
-logFolder=./Record/benchmark_spdz_tgl/
-clogFolder=./Record/tgl_compile/
+USER_FOLDER=/home/tsingj_ubuntu/fanxy/MP-SPDZ
+
+if [ -z "$4" ]; then
+    MainServer=False
+else
+    MainServer=$4
+fi
+
+logFolder=${USER_FOLDER}/Record/benchmark_spdz_tgl/
+clogFolder=${USER_FOLDER}/Record/tgl_compile/
 clogFile=${clogFolder}compile_log
-instructFolder=./Record/tgl_instruct/
+instructFolder=${USER_FOLDER}/Record/tgl_instruct/
 sourceFile=pta_baseline
 protocol=replicated-ring-party.x
 
-BuildFlag=False
-CompileOnly=True
 
 if [ ! -d ${logFolder} ]; then
     mkdir ${logFolder};
@@ -37,21 +45,24 @@ read -a M_list <<< ${MLists[$task]}
 param_len=${#M_list[@]}
 
 if [ $BuildFlag = True ]; then
-    
-    # cd ..
-    # scp -r ./MP-SPDZ/CONFIG.mine spdz1:~/MP-SPDZ/ &
-    # scp -r ./MP-SPDZ/CONFIG.mine spdz2:~/MP-SPDZ
-    # wait;
-    # cd ./MP-SPDZ/;
-
-    make -j 8 replicated-ring-party.x &
-    # ssh spdz1 "cd ./MP-SPDZ/; make -j 8 replicated-ring-party.x" &
-    # ssh spdz2 "cd ./MP-SPDZ/; make -j 8 replicated-ring-party.x" &
-    # wait;
-
+    if [ $MainServer = True ]; then
+        scp -r  ${USER_FOLDER}/CONFIG.mine spdz1:~/MP-SPDZ/ &
+        scp -r  ${USER_FOLDER}/CONFIG.mine spdz2:~/MP-SPDZ
+        wait;
+        cd ${USER_FOLDER}/;
+        make -j 8 replicated-ring-party.x &
+        ssh spdz1 "cd ./MP-SPDZ/; make -j 8 replicated-ring-party.x" &
+        ssh spdz2 "cd ./MP-SPDZ/; make -j 8 replicated-ring-party.x" &
+        wait;
+        ./Eval/control/setup_ssl.sh;
+    else
+        cd ${USER_FOLDER}/;
+        make -j 8 replicated-ring-party.x
+    fi
 fi
 
 # compile the baseline functions.
+cd ${USER_FOLDER}/;
 for ((i=0; i<param_len; i++)); do
     for ((j=0; j<${#parallel_list[@]}; j++)); do
         M=${M_list[i]}; N=${N_list[i]};
@@ -69,3 +80,5 @@ done;
 if [ $CompileOnly = True ]; then
     exit 0
 fi
+
+# execute the benchmark.

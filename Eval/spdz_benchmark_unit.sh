@@ -1,14 +1,25 @@
 task=$1
+BuildFlag=$2
+CompileOnly=$3
+
+if [ -z "$4" ]; then
+    MainServer=False
+else
+    MainServer=$4
+fi
+
+USER_FOLDER=/home/tsingj_ubuntu/fanxy/MP-SPDZ
+
+cd ${USER_FOLDER}/;
 
 logFolder=./Record/benchmark_spdz_origional/
 clogFolder=./Record/bso_compile/
 mlogFolder=./Record/monitor/
 clogFile=${clogFolder}compile_log
+instructFolder=./Record/bso_instruct/
 sourceFile=benchmark_spdz_origional
 protocol=replicated-ring-party.x
 
-BuildFlag=True
-CompileOnly=False
 
 if [ ! -d ${logFolder} ]; then
     mkdir ${logFolder};
@@ -20,6 +31,10 @@ fi
 
 if [ ! -d ${mlogFolder} ]; then
     mkdir ${mlogFolder};
+fi
+
+if [ ! -d ${instructFolder} ]; then
+    mkdir ${instructFolder};
 fi
 
 parallel_list=(1 1 1 1)
@@ -48,34 +63,39 @@ param_len=${#M_list[@]}
 REPEAT=1
 
 if [ $BuildFlag = True ]; then
-    
-    cd ..
-    scp -r ./MP-SPDZ/CONFIG.mine spdz1:~/MP-SPDZ/ &
-    scp -r ./MP-SPDZ/CONFIG.mine spdz2:~/MP-SPDZ
-    wait;
-    cd ./MP-SPDZ/;
 
-    make -j 8 replicated-ring-party.x &
-    ssh spdz1 "cd ./MP-SPDZ/; make -j 8 replicated-ring-party.x" & >> /dev/null
-    ssh spdz2 "cd ./MP-SPDZ/; make -j 8 replicated-ring-party.x" & >> /dev/null
-    wait;
+    if [ $MainServer = True ]; then
+        scp -r  ${USER_FOLDER}/CONFIG.mine spdz1:~/MP-SPDZ/ &
+        scp -r  ${USER_FOLDER}/CONFIG.mine spdz2:~/MP-SPDZ
+        wait;
+        cd ${USER_FOLDER}/;
+        make -j 8 replicated-ring-party.x &
+        ssh spdz1 "cd ./MP-SPDZ/; make -j 8 replicated-ring-party.x" &
+        ssh spdz2 "cd ./MP-SPDZ/; make -j 8 replicated-ring-party.x" &
+        wait;
+        ./Eval/control/setup_ssl.sh;
+    else
+        cd ${USER_FOLDER}/;
+        make -j 8 replicated-ring-party.x
+    fi
 fi
 
-# # compile the baseline functions.
-# for ((i=0; i<param_len; i++)); do
-#     M=${M_list[i]}; N=${N_list[i]}; parallel=${parallel_list[i]};
-#     clog=${clogFile}-${task}-${N}-${M}-${REPEAT}-${parallel};
-#     bc_file=./Programs/Schedules/${sourceFile}-${task}-${N}-${M}-${REPEAT}-${parallel}.sch 
-#     if [ -f ${bc_file} ]; then
-#         continue
-#     fi
-#     python compile.py -R ${ringsize[$task]} -l ${sourceFile} ${task} $N $M $REPEAT $parallel > ${clog} 2>&1 &
-#     wait;
-# done;
+# compile the baseline functions.
+cd ${USER_FOLDER}/;
+for ((i=0; i<param_len; i++)); do
+    M=${M_list[i]}; N=${N_list[i]}; parallel=${parallel_list[i]};
+    clog=${clogFile}-${task}-${N}-${M}-${REPEAT}-${parallel};
+    bc_file=./Programs/Schedules/${sourceFile}-${task}-${N}-${M}-${REPEAT}-${parallel}.sch 
+    # if [ -f ${bc_file} ]; then
+    #     continue
+    # fi
+    python compile.py -R ${ringsize[$task]} -l -v -a ${instructFolder}instruct ${sourceFile} ${task} $N $M $REPEAT $parallel > ${clog} 2>&1 &
+    wait;
+done;
 
-# if [ $CompileOnly = True ]; then
-#     exit;
-# fi
+if [ $CompileOnly = True ]; then
+    exit;
+fi
 
 # # distributed run
 # for ((i=0; i<param_len; i++)); do
@@ -107,29 +127,29 @@ fi
 
 
 # execute.
-for ((i=0; i<$param_len; i++)); do
-    M=${M_list[i]}; N=${N_list[i]}; parallel=${parallel_list[i]};
-    recordFolder=${logFolder}Record_${task}
-    monitorFolder=${mlogFolder}Monitor_${task}
-    logFile=${recordFolder}/Record-bso-baseline
-    if [ ! -d ${recordFolder} ]; then
-        mkdir ${recordFolder};
-    fi
-    if [ ! -d ${monitorFolder} ]; then
-        mkdir ${monitorFolder};
-    fi
-    elog=${logFile}-${task}-n=${N}-m=${M}-k=1-R=${REPEAT}-c=${parallel};
+# for ((i=0; i<$param_len; i++)); do
+#     M=${M_list[i]}; N=${N_list[i]}; parallel=${parallel_list[i]};
+#     recordFolder=${logFolder}Record_${task}
+#     monitorFolder=${mlogFolder}Monitor_${task}
+#     logFile=${recordFolder}/Record-bso-baseline
+#     if [ ! -d ${recordFolder} ]; then
+#         mkdir ${recordFolder};
+#     fi
+#     if [ ! -d ${monitorFolder} ]; then
+#         mkdir ${monitorFolder};
+#     fi
+#     elog=${logFile}-${task}-n=${N}-m=${M}-k=1-R=${REPEAT}-c=${parallel};
 
-    resource_monitor_log=${monitorFolder}/${task}-n=${N}-m=${M}-k=1-R=${REPEAT}-c=${parallel}.resource
-    bandwidth_monitor_log=${monitorFolder}/${task}-n=${N}-m=${M}-k=1-R=${REPEAT}-c=${parallel}.bandwidth
+#     resource_monitor_log=${monitorFolder}/${task}-n=${N}-m=${M}-k=1-R=${REPEAT}-c=${parallel}.resource
+#     bandwidth_monitor_log=${monitorFolder}/${task}-n=${N}-m=${M}-k=1-R=${REPEAT}-c=${parallel}.bandwidth
 
-    ./Eval/control/cpu_monitor.sh ${resource_monitor_log} ${protocol} &
-    utilization_pid=$!
-    ./Eval/control/bandwidth_monitor.sh ${bandwidth_monitor_log} ${protocol} &
-    bandwidth_pid=$!
+#     ./Eval/control/cpu_monitor.sh ${resource_monitor_log} ${protocol} &
+#     utilization_pid=$!
+#     ./Eval/control/bandwidth_monitor.sh ${bandwidth_monitor_log} ${protocol} &
+#     bandwidth_pid=$!
 
-    ./Eval/basic/dis_exec.sh ${sourceFile}-${task}-${N}-${M}-${REPEAT}-${parallel} ${protocol} ${recordFolder} ${elog}  
+#     ./Eval/basic/dis_exec.sh ${sourceFile}-${task}-${N}-${M}-${REPEAT}-${parallel} ${protocol} ${recordFolder} ${elog}  
 
-    kill ${utilization_pid}
-    kill ${bandwidth_pid}
-done;
+#     kill ${utilization_pid}
+#     kill ${bandwidth_pid}
+# done;

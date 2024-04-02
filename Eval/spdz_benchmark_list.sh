@@ -9,7 +9,6 @@
 # wait;
 
 # execute the commands.
-# task_list=("average" "cipher_index" "metric" "max")
 task_list=("max" "average" "metric" "cipher_index" "sort")
 
 for task in ${task_list[@]}; do
