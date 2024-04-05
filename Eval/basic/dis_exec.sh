@@ -1,3 +1,5 @@
+#!/bin/bash
+
 task=$1; protocol=$2; logFolder=$3; logFile=$4
 
 echo -e "Test $1 using protocol $2"

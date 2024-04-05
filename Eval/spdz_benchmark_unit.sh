@@ -46,7 +46,7 @@ ringsize["max"]=64;
 ringsize["average"]=64;
 ringsize["metric"]=64;
 ringsize["sort"]=64;
-echo "MOD = -DRING_SIZE=${ringsize[$task]}" > config.mine
+echo "MOD = -DRING_SIZE=${ringsize[$task]}" > CONFIG.mine
 
 
 declare -A MLists
