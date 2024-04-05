@@ -1,3 +1,5 @@
+#!/bin/bash
+
 BuildFlag=$1
 CompileOnly=$2
 task_list=("max" "average" "metric" "cipher_index" "sort")

@@ -4,6 +4,7 @@ from oram import OptimalORAM
 from sorting import *
 from util import max
 from ml import argmax, argmax_multithread
+import pta_funcs as pta
 
 # set parameters: for, opt, parallel
 task, N, M, REPEAT, n_parallel = str(program.args[1]), int(program.args[2]), int(program.args[3]), int(program.args[4]), int(program.args[5])
@@ -14,16 +15,21 @@ program.use_trunc_pr = True
 program.use_edabit(True)
 
 # generate test data
-X = Array(M, sfix)
-Y = Array(N, sfix)
-res = Array(N, sfix)
+X = Array(M, sint)
+Y = Array(N, sint)
+res = Array(N, sint)
 
 start_timer(1)
-@for_range_opt(N)
-def _(i):
-    Y[i] = sfix(i % 2**14)
+if(N == 1):
+    @for_range_opt(N)
+    def _(i):
+        Y[i] = sfix(i % 2**14)
+else:
+    @for_range_multithread(min(N, 256), None, N)
+    def _(i):
+        Y[i] = sfix(i % 2**14)
     
-@for_range_multithread(64, None, M)
+@for_range_multithread(256, None, M)
 def _(i):
     X[i] = sint(i % 2**14)
 stop_timer(1)
@@ -50,7 +56,6 @@ if(task == "sort"):
 
 if(task == "max"):
     start_timer(2)
-    # res[0] = max(X)
     res[0] = max_multithread(X)
     stop_timer(2)
 
@@ -60,15 +65,8 @@ if(task == "average"):
     stop_timer(2)
 
 if(task == "metric"):
-    start_timer(1)  
-    indices = Array(M, sint)
-    @for_range_multithread(64, None, M)
-    def _(i):
-        indices[i] = sint(i)
-    stop_timer(1)
-
     start_timer(2)
-    res[0] = argmax_multithread(X, indices)
+    pta.bio_metric(X, Y, 256)
     stop_timer(2)
 
 if(task == "new_search"):
