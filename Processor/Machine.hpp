@@ -449,11 +449,14 @@ pair<DataPositions, NamedCommStats> Machine<sint, sgf2n>::stop_threads()
 template<class sint, class sgf2n>
 void Machine<sint, sgf2n>::run(const string& progname)
 {
+  timer[0].start({});
   prepare(progname);
+  cerr << "Time = " << timer[0].elapsed() << " seconds " << endl;
+  return;
 
   Timer proc_timer(CLOCK_PROCESS_CPUTIME_ID);
   proc_timer.start();
-  timer[0].start({});
+  // timer[0].start({});
   // clock_t timeMainStart = clock();
   // run main tape
   run_tape(0, 0, 0, N.num_players());
