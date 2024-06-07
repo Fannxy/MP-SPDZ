@@ -324,7 +324,6 @@ void Processor<T>::andrsvec(const vector<int>& args)
         int n_args = (*it++ - 3) / 2;
         int size = *it++;
         int base = *(it + n_args);
-        assert(n_args <= N_BITS);
         for (int i = 0; i < size; i += 1)
         {
             if (i % N_BITS == 0)
@@ -459,6 +458,19 @@ template <class T>
 void Processor<T>::print_float_prec(int n)
 {
     out << setprecision(n);
+}
+
+template<class T>
+void Processor<T>::incint(const BaseInstruction& instruction)
+{
+    auto dest = &I[instruction.get_r(0)];
+    auto base = I[instruction.get_r(1)];
+    auto& start = instruction.get_start();
+    for (int i = 0; i < instruction.get_size(); i++)
+    {
+        int inc = (i / start[0]) % start[1];
+        *dest++ = base + inc * int(instruction.get_n());
+    }
 }
 
 } /* namespace GC */

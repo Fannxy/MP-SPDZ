@@ -620,7 +620,7 @@ class _secret_structure(_structure):
                 content = numpy.array(content)
                 if issubclass(cls, _fix):
                     min_k = \
-                        math.ceil(math.log(abs(content).max(), 2)) + cls.f + 1
+                        math.ceil(math.log(abs(content).max() or 1, 2)) + cls.f + 1
                     if cls.k < min_k:
                         raise CompilerError(
                             "data outside fixed-point range, "
@@ -849,6 +849,17 @@ class _arithmetic_register(_register):
         if program.options.garbled:
             raise CompilerError('functionality only available in arithmetic circuits')
         super(_arithmetic_register, self).__init__(*args, **kwargs)
+
+    @classmethod
+    def get_type(cls, length):
+        return cls
+
+    @staticmethod
+    def two_power(n, size=None):
+        return floatingpoint.two_power(n)
+
+    def Norm(self, k, f, kappa=None, simplex_flag=False):
+        return library.Norm(self, k, f, kappa=kappa, simplex_flag=simplex_flag)
 
 class _clear(_arithmetic_register):
     """ Clear domain-dependent type. """
@@ -1268,12 +1279,20 @@ class cint(_clear, _int):
         :param other: cint/regint/int """
         return self >> other
 
+    def round(self, k, m, kappa=None, nearest=None, signed=False):
+        if signed:
+            self += 2 ** (k - 1)
+        res = self >> m
+        if signed:
+            res -= 2 ** (k - m - 1)
+        return res
+
     @read_mem_value
     def greater_than(self, other, bit_length=None):
         return self > other
 
     @vectorize
-    def bit_decompose(self, bit_length=None):
+    def bit_decompose(self, bit_length=None, kappa=None, maybe_mixed=None):
         """ Clear bit decomposition.
 
         :param bit_length: number of bits (default is global bit length)
@@ -2340,6 +2359,10 @@ class _secret(_arithmetic_register, _secret_structure):
     def raw_mod2m(self, m):
         return self - (self.raw_right_shift(m) << m)
 
+    @set_instruction_type
+    @vectorize
+    def output(self):
+        print_reg_plains(self)
 
 class sint(_secret, _int):
     """
@@ -2874,9 +2897,6 @@ class sint(_secret, _int):
                 return floatingpoint.Trunc(self, k, m, kappa)
             return self.TruncPr(k, m, kappa, signed=signed)
 
-    def Norm(self, k, f, kappa=None, simplex_flag=False):
-        return library.Norm(self, k, f, kappa, simplex_flag)
-
     def __truediv__(self, other):
         """ Secret fixed-point division.
 
@@ -2919,10 +2939,6 @@ class sint(_secret, _int):
     def trunc_zeros(self, n_zeros, bit_length=None, signed=True):
         bit_length = bit_length or program.bit_length
         return comparison.TruncZeros(self, bit_length, n_zeros, signed)
-
-    @staticmethod
-    def two_power(n, size=None):
-        return floatingpoint.two_power(n)
 
     def split_to_n_summands(self, length, n):
         comparison.require_ring_size(length, 'splitting')
@@ -3090,10 +3106,6 @@ class sint(_secret, _int):
         concats(res, *args)
         return res
 
-    @vectorize
-    def output(self):
-        print_reg_plains(self)
-
 class sintbit(sint):
     """ :py:class:`sint` holding a bit, supporting binary operations
     (``&, |, ^``). """
@@ -3180,10 +3192,6 @@ class sgf2n(_secret, _gf2n):
     clear_type = cgf2n
     reg_type = 'sg'
     long_one = staticmethod(lambda: 1)
-
-    @classmethod
-    def get_type(cls, length):
-        return cls
 
     @classmethod
     def get_raw_input_from(cls, player):
@@ -4238,6 +4246,9 @@ class cfix(_number, _structure):
         floatoutput(player, self.v, cint(-self.f), cint(0), cint(0))
         reset_global_vector_size()
 
+    def link(self, other):
+        self.v.link(other.v)
+
 class _single(_number, _secret_structure):
     """ Representation as single integer preserving the order """
     """ E.g. fixed-point numbers """
@@ -4680,13 +4691,9 @@ class _fix(_single):
         other = self.coerce(other)
         assert self.k == other.k
         assert self.f == other.f
-        if isinstance(other, _fix):
+        if isinstance(other, (_fix, cfix)):
             v = library.FPDiv(self.v, other.v, self.k, self.f, self.kappa,
                               nearest=self.round_nearest)
-        elif isinstance(other, cfix):
-            v = library.sint_cint_division(self.v, other.v, self.k, self.f,
-                                           self.kappa,
-                                           nearest=self.round_nearest)
         else:
             raise TypeError('Incompatible fixed point types in division')
         return self._new(v, k=self.k, f=self.f)
@@ -4773,14 +4780,22 @@ class sfix(_fix):
         return cls._new(cls.int_type.get_raw_input_from(player))
 
     @vectorized_classmethod
-    def get_random(cls, lower, upper, symmetric=True):
+    def get_random(cls, lower, upper, symmetric=True, public_randomness=False):
         """ Uniform secret random number around centre of bounds.
         Actual range can be smaller but never larger.
 
         :param lower: float
         :param upper: float
+        :param symmetric: symmetric distribution at higher cost
+        :param public_randomness: use public randomness (avoids preprocessing)
         :param size: vector size (int, default 1)
         """
+        if public_randomness:
+            get_random_int = regint.get_random
+            get_random_bit = lambda: regint.get_random(1)
+        else:
+            get_random_int = cls.int_type.get_random_int
+            get_random_bit = cls.int_type.get_random_bit
         f = cls.f
         k = cls.k
         log_range = int(math.log(upper - lower, 2))
@@ -4793,7 +4808,7 @@ class sfix(_fix):
         average = lower + 0.5 * (upper - lower)
         lower = average - 0.5 * real_range
         upper = average + 0.5 * real_range
-        r = cls._new(cls.int_type.get_random_int(n_bits)) * factor + lower
+        r = cls._new(get_random_int(n_bits)) * factor + lower
         if symmetric:
             lowest = math.floor(lower * 2 ** cls.f) / 2 ** cls.f
             highest = math.ceil(upper * 2 ** cls.f) / 2 ** cls.f
@@ -4801,7 +4816,7 @@ class sfix(_fix):
                 print('randomness range [%f,%f], '
                       'fringes half the probability' % \
                       (lowest, highest))
-            return cls.int_type.get_random_bit().if_else(r, -r + 2 * average)
+            return get_random_bit().if_else(r, -r + 2 * average)
         else:
             if program.verbose:
                 print('randomness range [%f,%f], %d bits' % \
@@ -5759,6 +5774,8 @@ class Array(_vectorizable):
         if isinstance(index, (_secret, _single)):
             raise CompilerError('need cleartext index')
         key = str(index), size or 1
+        if not util.is_constant(index):
+            index = regint.conv(index)
         if self.length is not None:
             from .GC.types import cbits
             if isinstance(index, int):
@@ -5767,9 +5784,9 @@ class Array(_vectorizable):
                     raise IndexError('index %s, length %s' % \
                                          (str(index), str(self.length)))
             elif self.check_indices and not isinstance(index, cbits):
-                library.runtime_error_if(regint.conv(index) >= self.length,
-                                         'overflow: %s/%s',
-                                         index, self.length)
+                library.runtime_error_if(
+                    (index >= self.length).bit_or(index < 0),
+                    'overflow: %s/%s', index, self.length)
         if (program.curr_block, key) not in self.address_cache:
             n = self.value_type.n_elements()
             length = self.length
@@ -5946,14 +5963,18 @@ class Array(_vectorizable):
             n_threads = None
         if n_threads is not None:
             self.address = MemValue.if_necessary(self.address)
-        @library.multithread(n_threads, self.length)
+        @library.multithread(n_threads, self.length, max_size=program.budget)
         def _(base, size):
             if use_vector:
                 self.assign_vector(self.value_type(value, size=size), base)
             else:
-                @library.for_range_opt(size)
-                def _(i):
-                    self[base + i] = mem_value
+                v = mem_value.read()
+                if isinstance(v, sint):
+                    self.assign_vector(v.expand_to_vector(size), base=base)
+                else:
+                    @library.for_range_opt(size)
+                    def _(i):
+                        self[base + i] = mem_value
         return self
 
     def get_vector(self, base=0, size=None):
@@ -6070,9 +6091,15 @@ class Array(_vectorizable):
         :returns: destination for final position, -1 for eof reached,
              or -2 for file not found (regint)
         """
-        stop, shares = self.value_type.read_from_file(start, len(self))
-        self.assign(shares)
-        return stop
+        start = regint(start)
+        res = MemValue(0)
+        @library.multithread(None, len(self), max_size=program.budget)
+        def _(base, size):
+            stop, shares = self.value_type.read_from_file(start, size)
+            self.assign(shares, base=base)
+            start.iadd(size)
+            res.write(stop)
+        return res
 
     def write_to_file(self, position=None):
         """ Write shares of integer representation to
@@ -6082,7 +6109,14 @@ class Array(_vectorizable):
         :param position: start position (int/regint/cint),
             defaults to end of file
         """
-        self.value_type.write_to_file(list(self), position)
+        if position is not None:
+            position = regint(position)
+        @library.multithread(None, len(self), max_size=program.budget)
+        def _(base, size):
+            self.value_type.write_to_file(self.get_vector(base=base, size=size),
+                                          position)
+            if position is not None:
+                position.iadd(size)
 
     def read_from_socket(self, socket, debug=False):
         """ Read content from socket. """
@@ -6406,7 +6440,7 @@ class SubMultiArray(_vectorizable):
         assert vector.size <= self.total_size()
         self.value_type.conv(vector).store_in_mem(self.address + base)
 
-    def assign(self, other):
+    def assign(self, other, base=0):
         """ Assign container to content. Not implemented for floating-point.
 
         :param other: container of matching size and type """
@@ -6416,7 +6450,7 @@ class SubMultiArray(_vectorizable):
             self.assign_vector(other.get_vector())
         except:
             for i, x in enumerate(other):
-                self[i].assign(x)
+                self[base + i].assign(x)
 
     def get_part_vector(self, base=0, size=None):
         """ Vector from range of the first dimension, including all
@@ -6459,7 +6493,7 @@ class SubMultiArray(_vectorizable):
 
     def get_part_size(self):
         assert self.value_type.n_elements() == 1
-        return reduce(operator.mul, self.sizes[1:])
+        return reduce(operator.mul, self.sizes[1:]) * self.value_type.mem_size()
 
     def get_slice_addresses(self, slice, part_size=None):
         part_size = part_size or self.get_part_size()
@@ -6634,11 +6668,17 @@ class SubMultiArray(_vectorizable):
         if is_zero(other):
             return self
         assert self.sizes == other.sizes
-        if len(self.sizes) == 2:
-            res = Matrix(self.sizes[0], self.sizes[1], self.value_type)
+        return self.from_vector(
+            self.sizes, self.get_vector() + other.get_vector())
+
+    @staticmethod
+    def from_vector(sizes, vector):
+        value_type = type(vector)
+        if len(sizes) == 2:
+            res = Matrix(sizes[0], sizes[1], value_type)
         else:
-            res = MultiArray(self.sizes, self.value_type)
-        res.assign_vector(self.get_vector() + other.get_vector())
+            res = MultiArray(sizes, value_type)
+        res.assign_vector(vector)
         return res
 
     __radd__ = __add__
@@ -6651,12 +6691,8 @@ class SubMultiArray(_vectorizable):
         if is_zero(other):
             return self
         assert self.sizes == other.sizes
-        if len(self.sizes) == 2:
-            res = Matrix(self.sizes[0], self.sizes[1], self.value_type)
-        else:
-            res = MultiArray(self.sizes, self.value_type)
-        res.assign_vector(self.get_vector() - other.get_vector())
-        return res
+        return self.from_vector(
+            self.sizes, self.get_vector() - other.get_vector())
 
     def iadd(self, other):
         """ Element-wise addition in place.
@@ -6960,7 +6996,8 @@ class SubMultiArray(_vectorizable):
         :param index: regint/cint/int
         """
         assert self.value_type.n_elements() == 1
-        addresses = regint.inc(self.sizes[0], self.address + index,
+        addresses = regint.inc(self.sizes[0], self.address + \
+                               index * self.value_type.mem_size(),
                                self.get_part_size())
         return self.value_type.load_mem(addresses)
 
@@ -6971,7 +7008,8 @@ class SubMultiArray(_vectorizable):
         :param vector: short enought vector of compatible type
         """
         assert self.value_type.n_elements() == 1
-        addresses = regint.inc(self.sizes[0], self.address + index,
+        addresses = regint.inc(self.sizes[0], self.address + \
+                               index * self.value_type.mem_size(),
                                self.get_part_size())
         self.value_type.conv(vector).store_in_mem(addresses)
 
@@ -7054,16 +7092,15 @@ class SubMultiArray(_vectorizable):
         :param n_bits: number of bits in keys (default: global bit length)
 
         """
-        if program.options.binary:
-            assert key_indices is None
-            assert len(self.sizes) == 2
-            library.loopy_odd_even_merge_sort(self)
-            return
         if key_indices is None:
             key_indices = (0,) * (len(self.sizes) - 1)
         if len(key_indices) != len(self.sizes) - 1:
             raise CompilerError('length of key_indices has to be one less '
                                 'than the dimension')
+        if program.options.binary:
+            assert len(self.sizes) == 2
+            library.loopy_odd_even_merge_sort(self, key_indices=key_indices)
+            return
         key_indices = (None,) + util.tuplify(key_indices)
         from . import sorting
         keys = self.get_vector_by_indices(*key_indices)

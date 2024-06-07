@@ -10,6 +10,7 @@ circuit. See :ref:`protocol-pairs` for the exact protocols.
 
 from Compiler.types import MemValue, read_mem_value, regint, Array, cint
 from Compiler.types import _bitint, _number, _fix, _structure, _bit, _vec, sint, sintbit
+from Compiler.types import vectorized_classmethod
 from Compiler.program import Tape, Program
 from Compiler.exceptions import *
 from Compiler import util, oram, floatingpoint, library
@@ -349,11 +350,14 @@ class cbits(bits):
         else:
             return self.clear_op(other, None, inst.xorcbi, operator.xor)
     def _and(self, other):
-        return NotImplemented
+        try:
+            return cbits.get_type(self.n)(regint(self) & regint(other))
+        except CompilerError:
+            return NotImplemented
     __radd__ = __add__
     def __mul__(self, other):
         if isinstance(other, cbits):
-            return NotImplemented
+            return cbits.get_type(self.n)(regint(self) * regint(other))
         else:
             try:
                 res = cbits.get_type(min(self.max_length,
@@ -385,8 +389,11 @@ class cbits(bits):
         inst.cond_print_strb(self, string)
     def output_if(self, cond):
         if Program.prog.options.binary:
-            raise CompilerError('conditional output not supported')
-        cint(self).output_if(cond)
+            @library.if_(cond)
+            def _():
+                self.print_reg_plain()
+        else:
+            cint(self).output_if(cond)
     def reveal(self):
         return self
     def to_regint(self, dest=None):
@@ -535,6 +542,13 @@ class sbits(bits):
     def __mul__(self, other):
         if isinstance(other, int):
             return self.mul_int(other)
+        elif isinstance(other, cint):
+            try:
+                other = cbits.get_type(self.unit)(regint(other))
+            except CompilerError:
+                return NotImplemented
+            if self.n == 1:
+                return self.bit_compose([self] * self.unit) & other
         try:
             if (self.n, other.n) == (1, 1):
                 return self & other
@@ -766,16 +780,18 @@ class sbitvec(_vec, _bit):
                         self.v = sbits.get_type(n)(other).bit_decompose()
                     assert len(self.v) == n
                     assert size is None or size == self.v[0].n
-            @classmethod
-            def load_mem(cls, address, size=None):
+            @vectorized_classmethod
+            def load_mem(cls, address):
+                size = instructions_base.get_global_vector_size()
                 if size not in (None, 1):
                     assert isinstance(address, int) or len(address) == 1
                     sb = sbits.get_type(size)
                     return cls.from_vec(sb.bit_compose(
                         sbit.load_mem(address + i + j * n) for j in range(size))
                                         for i in range(n))
-                if not isinstance(address, int) and len(address) == n:
-                    return cls.from_vec(sbit.load_mem(x) for x in address)
+                if not isinstance(address, int):
+                    v = [sbit.load_mem(x, size=n).v[0] for x in address]
+                    return cls(v)
                 else:
                     return cls.from_vec(sbit.load_mem(address + i)
                                         for i in range(n))
@@ -785,10 +801,12 @@ class sbitvec(_vec, _bit):
                     if not util.is_constant(x):
                         size = max(size, x.n)
                 v = [sbits.get_type(size).conv(x) for x in self.v]
-                if not isinstance(address, int) and len(address) == n:
-                    assert max_n == 1
+                if not isinstance(address, int) and len(address) != 1:
+                    v = self.elements()
+                    assert len(v) == len(address)
                     for x, y in zip(v, address):
-                        x.store_in_mem(y)
+                        for i, xx in enumerate(x.bit_decompose(n)):
+                            xx.store_in_mem(y + i)
                 else:
                     assert isinstance(address, int) or len(address) == 1
                     for i in range(n):
@@ -854,9 +872,9 @@ class sbitvec(_vec, _bit):
                     backup = prog.use_edabit()
                     prog.use_edabit(True)
                     from Compiler.floatingpoint import BitDecFieldRaw
-                    self.v = BitDecFieldRaw(elements,
-                                            input_length or prog.bit_length,
-                                            length, prog.security)
+                    self.v = BitDecFieldRaw(
+                        elements, max(length, input_length or prog.bit_length),
+                        length, prog.security)
                     prog.use_edabit(backup)
                     return
                 l = int(Program.prog.options.ring)
@@ -1130,7 +1148,7 @@ class DynamicArray(Array):
         else:
             cbits.conv(value).store_in_dynamic_mem(address)
 
-sbits.dynamic_array = DynamicArray
+sbits.dynamic_array = Array
 cbits.dynamic_array = Array
 
 def _complement_two_extend(bits, k):
@@ -1342,7 +1360,10 @@ class sbitintvec(sbitvec, _bitint, _number, _sbitintbase):
             return other * self.v[0]
         elif isinstance(other, sbitfixvec):
             return NotImplemented
-        my_bits, other_bits = self.expand(other, False)
+        try:
+            my_bits, other_bits = self.expand(other, False)
+        except:
+            return NotImplemented
         m = float('inf')
         uniform = True
         for x in itertools.chain(my_bits, other_bits):
@@ -1406,6 +1427,8 @@ class cbitfix(object):
     conv = staticmethod(lambda x: x)
     load_mem = classmethod(lambda cls, *args: cls._new(cbits.load_mem(*args)))
     store_in_mem = lambda self, *args: self.v.store_in_mem(*args)
+    mem_size = staticmethod(lambda *args: 1)
+    size = 1
     @classmethod
     def _new(cls, value):
         if isinstance(value, list):

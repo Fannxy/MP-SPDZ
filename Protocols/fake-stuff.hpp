@@ -93,7 +93,7 @@ void make_vector_share(T* Sa,const U& a,int N,const V& key,PRNG& G)
     Sa[i].resize_regs(length);
   for (int j = 0; j < length; j++)
     {
-      typename T::part_type shares[N];
+      vector<typename T::part_type> shares(N);
       make_share(shares, typename T::part_type::clear(a.get_bit(j)), N, key, G);
       for (int i = 0; i < N; i++)
         Sa[i].get_reg(j) = shares[i];

@@ -112,6 +112,8 @@ public:
     void print_str(int n);
     void print_float(const vector<int>& args);
     void print_float_prec(int n);
+
+    void incint(const BaseInstruction& instruction);
 };
 
 template <class T>

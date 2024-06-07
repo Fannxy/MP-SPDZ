@@ -109,6 +109,7 @@
     X(SUBINT, I0 = PI1 - PI2) \
     X(MULINT, I0 = PI1 * PI2) \
     X(DIVINT, I0 = PI1 / PI2) \
+    X(INCINT, PROC.incint(instruction)) \
     X(JMP, PROC.PC += IMM) \
     X(JMPNZ, if (I0 != 0) PROC.PC += IMM) \
     X(JMPEQZ, if (I0 == 0) PROC.PC += IMM) \

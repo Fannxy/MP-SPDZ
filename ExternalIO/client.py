@@ -32,7 +32,7 @@ def set_keepalive_osx(sock, after_idle_sec=1, interval_sec=3, max_fails=5):
 
 class Client:
     def __init__(self, hostnames, port_base, my_client_id):
-        ctx = ssl.SSLContext()
+        ctx = ssl.SSLContext(ssl.PROTOCOL_TLSv1_2)
         name = 'C%d' % my_client_id
         prefix = 'Player-Data/%s' % name
         ctx.load_cert_chain(certfile=prefix + '.pem', keyfile=prefix + '.key')
@@ -139,7 +139,7 @@ class octetStream:
         self.ptr = 0
 
     def store(self, value):
-        self.buf += struct.pack('<i', value)
+        self.buf += struct.pack('<q', value)
 
     def get_int(self, length):
         buf = self.consume(length)

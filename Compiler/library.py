@@ -3,7 +3,7 @@ This module defines functions directly available in high-level programs,
 in particularly providing flow control and output.
 """
 
-from Compiler.types import cint,sint,cfix,sfix,sfloat,MPCThread,Array,MemValue,cgf2n,sgf2n,_number,_mem,_register,regint,Matrix,_types, cfloat, _single, localint, personal, copy_doc, _vec, SubMultiArray
+from Compiler.types import cint,sint,cfix,sfix,sfloat,MPCThread,Array,MemValue,cgf2n,sgf2n,_number,_mem,_register,regint,Matrix,_types, cfloat, _single, localint, personal, copy_doc, _vec, SubMultiArray, _secret
 from Compiler.instructions import *
 from Compiler.util import tuplify,untuplify,is_zero
 from Compiler.allocator import RegintOptimizer, AllocPool
@@ -94,7 +94,7 @@ def print_str(s, *args, print_secrets=False):
             if isinstance(val, Tape.Register):
                 if val.is_clear:
                     val.print_reg_plain()
-                elif print_secrets and isinstance(val, sint):
+                elif print_secrets and isinstance(val, _secret):
                     val.output()
                 else:
                     raise CompilerError(
@@ -351,7 +351,8 @@ class Function:
         from .types import _types
         get_reg_type = lambda x: \
             regint if isinstance(x, int) else _types.get(x.reg_type, type(x))
-        if len(args) not in self.type_args:
+        key = len(args), get_tape()
+        if key not in self.type_args:
             # first call
             type_args = collections.defaultdict(list)
             for i,arg in enumerate(args):
@@ -371,8 +372,8 @@ class Function:
                         i += util.mem_size(t)
                 return self.function(*(list(compile_args) + runtime_args))
             self.on_first_call(wrapped_function)
-            self.type_args[len(args)] = type_args
-        type_args = self.type_args[len(args)]
+            self.type_args[key] = type_args
+        type_args = self.type_args[key]
         base = instructions.program.malloc(len(type_args), 'ci')
         bases = dict((t, get_program().malloc(len(type_args[t]), t)) \
                          for t in type_args)
@@ -491,10 +492,11 @@ def method_block(function):
             return block(*args)
     return wrapper
 
-def cond_swap(x,y):
+def cond_swap(x, y, key_indices=None):
     from .types import SubMultiArray
     if isinstance(x, (Array, SubMultiArray)):
-        b = x[0] > y[0]
+        assert len(key_indices) == 1
+        b = x[key_indices[0]] > y[key_indices[0]]
         return list(zip(*[b.cond_swap(xx, yy) for xx, yy in zip(x, y)]))
     b = x < y
     if isinstance(x, sfloat):
@@ -563,7 +565,7 @@ def loopy_chunkier_odd_even_merge_sort(a, n=None, max_chunk_size=512, n_threads=
 
 
 def loopy_odd_even_merge_sort(a, sorted_length=1, n_parallel=32,
-                              n_threads=None):
+                              n_threads=None, key_indices=None):
     a_in = a
     if isinstance(a_in, list):
         a = Array.create_from(a)
@@ -591,13 +593,14 @@ def loopy_odd_even_merge_sort(a, sorted_length=1, n_parallel=32,
                         def swap(base, step):
                             if m == len(a):
                                 a[base], a[base + step] = \
-                                    cond_swap(a[base], a[base + step])
+                                    cond_swap(a[base], a[base + step],
+                                              key_indices=key_indices)
                             else:
                                 # ignore values outside range
                                 go = base + step < len(a)
                                 x = a.maybe_get(go, base)
                                 y = a.maybe_get(go, base + step)
-                                tmp = cond_swap(x, y)
+                                tmp = cond_swap(x, y, key_indices=key_indices)
                                 for i, idx in enumerate((base, base + step)):
                                     a.maybe_set(go, idx, tmp[i])
                         if k == 2:
@@ -1102,7 +1105,7 @@ def map_reduce(n_threads, n_parallel, n_loops, initializer, reducer, \
         prog.free_later()
         prog.prevent_breaks = prevent_breaks
         if len(state):
-            if thread_rounds:
+            if not util.is_zero(thread_rounds):
                 for i in range(n_threads - remainder):
                     state = reducer(Array(len(state), state_type, \
                                               args[remainder + i][1]), state)
@@ -1841,7 +1844,7 @@ def Norm(b, k, f, kappa, simplex_flag=False):
     # For simplex, we can get rid of computing abs(b)
     temp = None
     if simplex_flag == False:
-        temp = comparison.LessThanZero(b, k, kappa)
+        temp = b.less_than(0, k)
     elif simplex_flag == True:
         temp = cint(0)
 
@@ -1857,7 +1860,7 @@ def Norm(b, k, f, kappa, simplex_flag=False):
         z[i] = suffixes[i] - suffixes[i+1]
     z[k - 1] = suffixes[k-1]
 
-    acc = sint.bit_compose(reversed(z))
+    acc = b.bit_compose(reversed(z))
 
     part_reciprocal = absolute_val * acc
     signed_acc = sign * acc

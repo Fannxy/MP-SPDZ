@@ -170,9 +170,10 @@ public:
             throw runtime_error("no human-readable input");
         else
         {
-            char buf[size()];
+            char* buf = new char[size()];
             is.read(buf, size());
             assign(buf);
+            delete[] buf;
         }
     }
 

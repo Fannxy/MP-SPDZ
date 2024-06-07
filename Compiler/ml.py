@@ -1355,6 +1355,7 @@ class BatchNorm(Layer):
         else:
             print('Precise square root inverse in batch normalization')
             self.InvertSqrt = lambda x: 1 / mpc_math.sqrt(x)
+        self.is_trained = False
 
     def __repr__(self):
         return '%s(%s, approx=%s)' % \
@@ -1372,11 +1373,12 @@ class BatchNorm(Layer):
         @for_range_opt_multithread(self.n_threads,
                                    [len(batch), self.X.sizes[1]])
         def _(i, j):
-            tmp = self.weights[:] * (self.X[i][j][:] - self.mu[:]) * factor[:]
+            tmp = self.weights[:] * (self.X[i][j][:] - mu[:]) * factor[:]
             self.Y[i][j][:] = self.bias[:] + tmp
 
     def forward(self, batch, training=False):
-        if training:
+        if training or not self.is_trained:
+            self.is_trained = True
             d = self.X.sizes[1]
             d_in = self.X.sizes[2]
             s = sfix.Array(d_in)
@@ -2965,11 +2967,11 @@ def apply_padding(input_shape, kernel_size, strides, padding):
     if isinstance(padding, int):
         padding = [padding, padding]
     if isinstance(padding, (tuple, list)):
-        input_shape = [x + sum(padding) for x in input_shape]
+        input_shape = [input_shape[i] + 2*padding[i] for i in range(len(input_shape))]
         padding = 'valid'
     if padding.lower() == 'valid':
-        res = (input_shape[0] - kernel_size[0] + 1) // strides[0], \
-            (input_shape[1] - kernel_size[1] + 1) // strides[1],
+        res = (input_shape[0] - kernel_size[0]) // strides[0] + 1, \
+            (input_shape[1] - kernel_size[1]) // strides[1] + 1,
         assert min(res) > 0, (input_shape, kernel_size, strides, padding)
         return res
     elif padding.lower() == 'same':
@@ -3264,6 +3266,12 @@ def layers_from_torch(sequence, data_input_shape, batch_size, input_via=None,
             pass
         elif name == 'BatchNorm2d':
             layers.append(BatchNorm(layers[-1].Y.sizes))
+            if input_via is not None:
+                layers[-1].epsilon = item.eps
+                layers[-1].weights = sfix.input_tensor_via(input_via,
+                                                           item.weight.detach())
+                layers[-1].bias = sfix.input_tensor_via(input_via,
+                                                        item.bias.detach())
         elif name == 'Dropout':
             layers.append(Dropout(input_shape[0], mul(layers[-1].Y.sizes[1:]),
                                   alpha=item.p))
@@ -3286,6 +3294,7 @@ class OneLayerSGD:
         self.n_epochs = n_epochs
         self.batch_size = batch_size
         self.program = program
+        Layer.back_batch_size = max(Layer.back_batch_size, batch_size)
 
     def fit(self, X_train, y_train):
         """ Train classifier.

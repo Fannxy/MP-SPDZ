@@ -375,7 +375,7 @@ def BitLTC1(u, a, b, kappa):
     pre_input.reverse()
     if use_inv:
         if instructions_base.get_global_vector_size() == 1:
-            PreMulC_with_inverses_and_vectors(p, pre_input)
+            PreMulC_with_inverses(p, pre_input)
         else:
             if do_precomp:
                 PreMulC_with_inverses(p, pre_input)
@@ -542,6 +542,7 @@ def PreMulC_with_inverses(p, a):
     w[1][0] = r[0][0]
     for i in range(k):
         muls(t[0][i], w[1][i], a[i])
+    for i in range(k):
         asm_open(True, m[i], t[0][i])
     PreMulC_end(p, a, c, m, z)
 

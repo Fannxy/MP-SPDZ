@@ -1257,7 +1257,7 @@ class TreeORAM(AbstractORAM):
         depth = log2(m)
         leaves = self.value_type.Array(m)
         indexed_values = \
-            self.value_type.Matrix(m, len(util.tuplify(values[0])) + 1)
+            self.value_type.Matrix(m, len(values[0]) + 1)
 
         # assign indices 0, ..., m-1
         @for_range(m)
@@ -1265,8 +1265,7 @@ class TreeORAM(AbstractORAM):
             value = values[i]
             index = MemValue(self.value_type.hard_conv(i))
             new_value = [MemValue(self.value_type.hard_conv(v)) \
-                         for v in (value if isinstance(value, (tuple, list)) \
-                                       else (value,))]
+                         for v in value]
             indexed_values[i] = [index] + new_value
 
         entries = sint.Matrix(self.bucket_size * 2 ** self.D,
@@ -1284,7 +1283,7 @@ class TreeORAM(AbstractORAM):
                 self.value_type.hard_conv(False), value_type=self.value_type)
         
         # save unsorted leaves for position map
-        unsorted_leaves = [MemValue(self.value_type(leaf)) for leaf in leaves]
+        unsorted_leaves = Array.create_from(leaves)
         leaves.sort()
 
         bucket_sz = 0
@@ -1387,7 +1386,7 @@ class TreeORAM(AbstractORAM):
             bucket.bucket.ram[bucket_sizes[leaf]] = Entry(entries[k])
             bucket_sizes[leaf] += 1
 
-        self.index.batch_init([leaf.read() for leaf in unsorted_leaves])
+        self.index.batch_init(unsorted_leaves)
 
     def check(self, index=None):
         if debug:

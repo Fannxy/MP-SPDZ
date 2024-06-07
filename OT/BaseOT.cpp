@@ -357,7 +357,8 @@ void BaseOT::exec_base(bool new_receiver_inputs)
     if (ot_role & RECEIVER)
     {
         // Receive A
-        os[1].get_bytes((octet *)receiver.S_pack, len);
+        len = sizeof(receiver.S_pack);
+        os[1].get_bytes((octet*) receiver.S_pack, len);
         if (len != HASHBYTES)
         {
             cerr << "Received invalid length in base OT\n";
@@ -420,7 +421,8 @@ void BaseOT::exec_base(bool new_receiver_inputs)
         if (ot_role & SENDER)
         {
             // Receive B
-            os[1].get_bytes((octet *)Rs_pack[1], len);
+            len = sizeof(Rs_pack[1]);
+            os[1].get_bytes((octet*) Rs_pack[1], len);
             if (len != sizeof(Rs_pack[1]))
             {
                 cerr << "Received invalid length in base OT\n";

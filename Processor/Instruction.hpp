@@ -146,6 +146,7 @@ void BaseInstruction::parse_operands(istream& s, int pos, int file_pos)
       case JMPI:
       case GBIT:
       case GPRINTREGPLAIN:
+      case GPRINTREGPLAINS:
       case JOIN_TAPE:
       case PUSHINT:
       case POPINT:
@@ -1182,6 +1183,9 @@ inline void Instruction::execute(Processor<sint, sgf2n>& Proc) const
         return;
       case PRINTREGPLAINS:
         Proc.out << Proc.read_Sp(r[0]);
+        return;
+      case GPRINTREGPLAINS:
+        Proc.out << Proc.read_S2(r[0]);
         return;
       case CONDPRINTPLAIN:
         if (not Proc.read_Cp(r[0]).is_zero())

@@ -1641,6 +1641,7 @@ class print_reg_plain(base.IOInstruction):
     code = base.opcodes['PRINTREGPLAIN']
     arg_format = ['c']
 
+@base.gf2n
 class print_reg_plains(base.IOInstruction):
     """ Output secret register.
 
