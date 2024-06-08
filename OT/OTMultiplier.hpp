@@ -296,7 +296,8 @@ void OTMultiplier<W>::multiplyForTriples()
             }
         }
 
-#ifndef DISABLE_MAC_CHECK
+#ifndef TEE_RANDOM_OT
+	// skip hash, may have bug to fix
         rot_ext.hash_outputs(aBits.size(), baseSenderOutputs,
                 baseReceiverOutput, corr_hash);
 #endif
