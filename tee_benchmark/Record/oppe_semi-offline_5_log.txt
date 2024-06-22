@@ -1,8 +1,0 @@
-Using statistical security parameter 40
-Writing to file in /Player-Data//2-Dp-128/
-	882 triples of gfp left
-Significant amount of unused triples of gfp distorting the benchmark. For more accurate benchmarks, consider reducing the batch size with --batch-size.
-	920 dabits of gfp left
-Significant amount of unused dabits of gfp distorting the benchmark. For more accurate benchmarks, consider reducing the batch size with --batch-size.
-The following benchmarks are including preprocessing (offline phase).
-Time = 0.82117 seconds 

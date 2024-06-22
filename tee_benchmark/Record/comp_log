@@ -1,62 +1,18 @@
 Default bit length for compilation: 64
 Default security parameter for compilation: 40
-Compiling file Programs/Source/breast_logistic.mpc
-Writing binary data to Player-Data/Input-Binary-P0-0
-Setting learning rate to 0.01
-Using SGD
-Initializing dense weights in [-0.439941,0.439941]
-Writing to Programs/Bytecode/breast_logistic-multithread-1.bc
-213 runs per epoch
-Writing to Programs/Bytecode/breast_logistic-multithread-3.bc
-Writing to Programs/Bytecode/breast_logistic-multithread-4.bc
-Writing to Programs/Bytecode/breast_logistic-multithread-5.bc
-Retaining 2765 instructions
-Retaining 2279 instructions
-Writing to Programs/Bytecode/breast_logistic-multithread-11.bc
-Retaining 2765 instructions
-Retaining 1097 instructions
-Writing to Programs/Bytecode/breast_logistic-multithread-13.bc
-Writing to Programs/Bytecode/breast_logistic-multithread-14.bc
-Writing to Programs/Bytecode/breast_logistic-multithread-15.bc
-Initializing dense weights in [-0.439941,0.439941]
-Writing to Programs/Bytecode/breast_logistic-multithread-17.bc
-Writing to Programs/Bytecode/breast_logistic-multithread-18.bc
-Writing to Programs/Bytecode/breast_logistic-multithread-19.bc
-Setting learning rate to 0.01
-Using SGD
-Initializing dense weights in [-0.439941,0.439941]
-Writing to Programs/Bytecode/breast_logistic-multithread-20.bc
-213 runs per epoch
-Writing to Programs/Bytecode/breast_logistic-multithread-21.bc
-Writing to Programs/Bytecode/breast_logistic-multithread-22.bc
-Writing to Programs/Bytecode/breast_logistic-multithread-23.bc
-Retaining 2765 instructions
-Retaining 2279 instructions
-Writing to Programs/Bytecode/breast_logistic-multithread-24.bc
-Retaining 2765 instructions
-Retaining 1097 instructions
-Writing to Programs/Bytecode/breast_logistic-multithread-25.bc
-Writing to Programs/Bytecode/breast_logistic-multithread-26.bc
-Writing to Programs/Bytecode/breast_logistic-multithread-27.bc
-use test set
-Writing to Programs/Bytecode/breast_logistic-multithread-28.bc
-Writing to Programs/Bytecode/breast_logistic-multithread-29.bc
-Compiled 100000 lines at Wed Jan 31 12:40:07 2024
-Initializing dense weights in [-0.439941,0.439941]
-Writing to Programs/Bytecode/breast_logistic-multithread-30.bc
-Writing to Programs/Bytecode/breast_logistic-multithread-31.bc
-Writing to Programs/Bytecode/breast_logistic-multithread-32.bc
-WARNING: Order of memory instructions not preserved, errors possible
-Writing to Programs/Schedules/breast_logistic.sch
-Writing to Programs/Bytecode/breast_logistic-0.bc
-Hash: fd1ae284597814ef9be3265ca21479a24b06582e761d5a4cd37ef6907b9b3559
+Compiling file Programs/Source/benchmark_net.mpc
+WARNING: Order of memory instructions not preserved due to long vector, errors possible
+Writing to Programs/Schedules/benchmark_net.sch
+Writing to Programs/Bytecode/benchmark_net-0.bc
+Hash: 472714d00c2f436f5b783c7603347f3eb445e429bd43b75f2adc297cfb2249cb
 Program requires at most:
-       17639 integer inputs from player 0
-     2547021 integer opens
-   229942198 integer bits
-    23280530 integer triples
-        9940 matrix multiplications (2x30 * 30x1)
-        8520 matrix multiplications (30x2 * 2x1)
-           2 matrix multiplications (143x30 * 30x1)
-          20 matrix multiplications (1x30 * 30x1)
-      181913 virtual machine rounds
+       33542 integer inputs from player 0
+         784 integer inputs from player 1
+     1246148 integer triples
+           1 matrix multiplications (1x256 * 256x100)
+           1 matrix multiplications (1x100 * 100x10)
+       20700 integer opens
+          16 matrix multiplications (1x25 * 25x576)
+     1604178 integer bits
+          16 matrix multiplications (1x400 * 400x64)
+        3385 virtual machine rounds

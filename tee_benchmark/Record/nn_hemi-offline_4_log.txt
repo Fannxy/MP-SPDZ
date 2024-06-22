@@ -1,8 +1,0 @@
-Using statistical security parameter 40
-Generating parameters for security 0 and field size ~2^128 because no suitable material from a previous run was found (IO-Error : not enough data)
-Ciphertext length: 356 (6 limbs)
-Writing to file in /Player-Data//2-Dp-128/
-	7137 triples of gfp left
-	425 bits of gfp left
-The following benchmarks are including preprocessing (offline phase).
-Time = 20.1414 seconds 

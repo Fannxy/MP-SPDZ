@@ -1,6 +1,0 @@
-Using statistical security parameter 40
-Trying to run 64-bit computation
-Current working directory: "/root/MP-SPDZ"
-Current working directory: "/root/MP-SPDZ"
-Using SGD
-done with epoch 0
