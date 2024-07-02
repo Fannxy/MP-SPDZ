@@ -28,9 +28,9 @@ sed -i "s/\"kernel_space_heap_size\": \"32MB\",/\"kernel_space_heap_size\": \"12
 sed -i "s/\"kernel_space_stack_size\": \"1MB\",/\"kernel_space_stack_size\": \"32MB\",/g" Occlum.json
 sed -i "s/\"user_space_size\": \"300MB\",/\"user_space_size\": \"16GB\",/g" Occlum.json
 sed -i "s/\"max_num_of_threads\": 32/\"max_num_of_threads\": 1024/g" Occlum.json
-sed -i "s/\"default_stack_size\": \"4MB\",/\"default_stack_size\": \"512KB\",/g" Occlum.json
-sed -i "s/\"default_heap_size\": \"32MB\",/\"default_heap_size\": \"16MB\",/g" Occlum.json
-sed -i "s/\"default_mmap_size\": \"100MB\"/\"default_mmap_size\": \"32MB\"/g" Occlum.json
+sed -i "s/\"default_stack_size\": \"4MB\",/\"default_stack_size\": \"8MB\",/g" Occlum.json
+sed -i "s/\"default_heap_size\": \"32MB\",/\"default_heap_size\": \"64MB\",/g" Occlum.json
+sed -i "s/\"default_mmap_size\": \"100MB\"/\"default_mmap_size\": \"256MB\"/g" Occlum.json
 sed -i "s/\"debuggable\": true,/\"debuggable\": false,/g" Occlum.json
 echo -e "nameserver 8.8.8.8\nnameserver 8.8.4.4" > image/etc/resolv.conf
 echo -e "hosts: files dns" > image/etc/nsswitch.conf
