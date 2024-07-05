@@ -59,7 +59,7 @@ DEPS := $(wildcard */*.d */*/*.d)
 .SECONDARY: $(OBJS)
 
 
-all: arithmetic binary gen_input online offline externalIO bmr ecdsa
+all: arithmetic binary gen_input online offline externalIO bmr ecdsa ecdh
 vm: arithmetic binary
 
 .PHONY: doc
@@ -133,6 +133,9 @@ sy: sy-rep-field-party.x sy-rep-ring-party.x sy-shamir-party.x
 
 ecdsa: $(patsubst ECDSA/%.cpp,%.x,$(wildcard ECDSA/*-ecdsa-party.cpp)) Fake-ECDSA.x
 ecdsa-static: static-dir $(patsubst ECDSA/%.cpp,static/%.x,$(wildcard ECDSA/*-ecdsa-party.cpp))
+
+ecdh: 
+	$(MAKE) --no-print-directory -C DiffieHellmanLibrary
 
 $(LIBRELEASE): Protocols/MalRepRingOptions.o $(PROCESSOR) $(COMMONOBJS) $(TINIER) $(GC)
 	$(AR) -csr $@ $^

@@ -20,6 +20,8 @@
 #include "Networking/data.h"
 #include "Networking/sockets.h"
 #include "Tools/avx_memcpy.h"
+#include "sgx_tseal.h"
+#include "sgx_tcrypto.h"
 
 #include <string.h>
 #include <vector>
@@ -404,6 +406,35 @@ inline char octetStream::get_bit()
 template<class T>
 inline void octetStream::Send(T socket_num) const
 {
+  sgx_status_t ret = SGX_SUCCESS;
+  sgx_aes_gcm_128bit_key_t p_key[16] = { 0x0, 0x1, 0x2, 0x3, 0x4, 0x5, 0x6, 0x7, 0x8, 0x9, 0xa, 0xb, 0xc, 0xd, 0xe, 0xf };
+  uint8_t *p_src = get_data();
+  uint32_t src_len = len;
+  uint8_t p_dst[len];
+  uint8_t p_iv[12] = { 0x0, 0x1, 0x2, 0x3, 0x4, 0x5, 0x6, 0x7, 0x8, 0x9, 0xa, 0xb };
+  uint32_t iv_len = 12;
+  sgx_aes_gcm_128bit_tag_t p_out_mac[16];
+
+  ret = sgx_rijndael128GCM_encrypt(p_key, p_src,
+                                        src_len,
+                                        p_dst,
+                                        p_iv, iv_len, NULL, 0,
+		  p_out_mac);
+
+  if (SGX_SUCCESS != ret) {
+    throw runtime_error("fail to invoke SGX API: encrypt");
+  }
+
+  ret = sgx_rijndael128GCM_decrypt(p_key, p_dst,
+                                        src_len,
+                                        p_src,
+                                        p_iv, iv_len, NULL, 0,
+                  p_out_mac);
+
+  if (SGX_SUCCESS != ret) {
+    throw runtime_error("fail to invoke SGX API: decrypt");
+  }
+
   send(socket_num,len,LENGTH_SIZE);
   send(socket_num, get_data(), len);
 }

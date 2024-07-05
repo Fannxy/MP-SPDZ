@@ -10,6 +10,9 @@ GDEBUG = -g
 USE_NTL = 1
 # the following options are affected when using TEE
 OCCLUM = 1
+SGX_SDK = /opt/intel/sgxsdk
+CUR_DIR := $(shell dirname $(realpath $(lastword $(MAKEFILE_LIST))))
+OPENSSL ?= $(CUR_DIR)/deps/openssl
 PREP_DIR = '-DPREP_DIR="/Player-Data/"' # set this to your preferred local storage directory
 SSL_DIR = '-DSSL_DIR="/Player-Data/"' # directory to store SSL keys
 # set 1 to enable TEE-OT and TEE-OPE
@@ -86,11 +89,11 @@ endif
 
 LDLIBS = -lgmpxx -lgmp -lsodium $(MY_LDLIBS)
 LDLIBS += $(BREW_LDLIBS)
-LDLIBS +=  -Wl,-rpath -Wl,$(CURDIR)/local/lib -L$(CURDIR)/local/lib
-LDLIBS += -lboost_system -lssl -lcrypto
+LDLIBS +=  -Wl,-rpath -Wl,$(CURDIR)/local/lib -L$(CURDIR)/local/lib -L$(OPENSSL) -L$(CUR_DIR)/DiffieHellmanLibrary
+LDLIBS += -lboost_system -lssl -lcrypto -lecdh
 LDLIBS += -lboost_filesystem -lboost_iostreams
 
-CFLAGS += -I./local/include
+CFLAGS += -I./local/include -I$(SGX_SDK)/include -I./Include
 
 ifeq ($(USE_NTL),1)
 CFLAGS += -DUSE_NTL
