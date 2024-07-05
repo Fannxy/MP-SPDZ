@@ -12,12 +12,6 @@ cp -r MP-SPDZ/Programs /
 rm -r /Player-Data
 cp -r MP-SPDZ/Player-Data /
 cd MP-SPDZ
-cp ../demos/hello_c/hello.yaml .
-sed -i "s/hello_world/hemi-offline.x/g" hello.yaml
-for filename in replicated-ring-party.x replicated-field-party.x ps-rep-ring-party.x ps-rep-field-party.x shamir-party.x malicious-shamir-party.x semi2k-party.x semi-party.x spdz2k-party.x mascot-party.x hemi-party.x lowgear-party.x soho-party.x highgear-party.x semi-offline.x semi2k-offline.x 
-do
-        sed -i -e '$a\ \ \ \ \ \ \ \ - ..\/'"$filename"'' hello.yaml
-done
 mkdir occlum_workspace && cd occlum_workspace
 occlum init && rm -rf image
 copy_bom -f ../hello.yaml --root image --include-dir /opt/occlum/etc/template

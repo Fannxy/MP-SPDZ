@@ -1,0 +1,28 @@
+includes:
+  - base.yaml
+targets:
+  - target: /bin
+    copy:
+      - files:
+        - ../hemi-offline.x
+        - ../replicated-ring-party.x
+        - ../replicated-field-party.x
+        - ../ps-rep-ring-party.x
+        - ../ps-rep-field-party.x
+        - ../shamir-party.x
+        - ../malicious-shamir-party.x
+        - ../semi2k-party.x
+        - ../semi-party.x
+        - ../spdz2k-party.x
+        - ../mascot-party.x
+        - ../hemi-party.x
+        - ../lowgear-party.x
+        - ../soho-party.x
+        - ../highgear-party.x
+        - ../semi-offline.x
+        - ../semi2k-offline.x
+  - target: /lib
+    copy:
+      - files:
+        - ../DiffieHellmanLibrary/libecdh.so
+
