@@ -4,8 +4,10 @@ OPENSSL ?= $(CUR_DIR)/../deps/openssl
 SGX_SDK ?= /opt/intel/sgxsdk
 
 OBJS = sgx_ecc256.o  sgx_cmac128.o sgx_sha256_msg.o crypto_aes_gcm.o
-CC = occlum-gcc
-CXX = occlum-g++
+#CC = occlum-gcc
+#CXX = occlum-g++
+CC = gcc
+CXX = g++
 CFLAGS =  -I$(OPENSSL)/include -L$(OPENSSL) -lcrypto -fPIC
 SOFLAGS = -shared  $(CFLAGS)
 CFLAGS += -I$(SGX_SDK)/include -Iinclude
