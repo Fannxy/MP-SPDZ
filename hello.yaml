@@ -25,4 +25,5 @@ targets:
     copy:
       - files:
         - ../DiffieHellmanLibrary/libecdh.so
+        - ../libSPDZ.so
 
