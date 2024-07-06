@@ -28,11 +28,11 @@ sed -i "s/\"default_mmap_size\": \"100MB\"/\"default_mmap_size\": \"256MB\"/g" O
 sed -i "s/\"debuggable\": true,/\"debuggable\": false,/g" Occlum.json
 echo -e "nameserver 8.8.8.8\nnameserver 8.8.4.4" > image/etc/resolv.conf
 echo -e "hosts: files dns" > image/etc/nsswitch.conf
-mkdir -p image/root/MP-SPDZ/local/lib
-cp ../libFHE.so image/root/MP-SPDZ/ 
-cp ../libSPDZ.so image/root/MP-SPDZ/
-cp ../local/lib/libboost_filesystem.so.1.83.0 image/root/MP-SPDZ/local/lib/
-cp ../local/lib/libboost_iostreams.so.1.83.0 image/root/MP-SPDZ/local/lib/
+#mkdir -p image/root/MP-SPDZ/local/lib
+#cp ../libFHE.so image/root/MP-SPDZ/ 
+#cp ../libSPDZ.so image/root/MP-SPDZ/
+#cp ../local/lib/libboost_filesystem.so.1.83.0 image/root/MP-SPDZ/local/lib/
+#cp ../local/lib/libboost_iostreams.so.1.83.0 image/root/MP-SPDZ/local/lib/
 cp /lib/x86_64-linux-gnu/{libnss_dns.so.2,libnss_files.so.2,libresolv.so.2} image/opt/occlum/glibc/lib
 
 occlum build
