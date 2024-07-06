@@ -20,7 +20,8 @@
 #include "Networking/data.h"
 #include "Networking/sockets.h"
 #include "Tools/avx_memcpy.h"
-#include "sgx_tseal.h"
+#include "sgx_defs.h"
+#include "sgx_error.h"
 #include "sgx_tcrypto.h"
 
 #include <string.h>

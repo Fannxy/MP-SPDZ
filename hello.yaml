@@ -21,8 +21,4 @@ targets:
         - ../highgear-party.x
         - ../semi-offline.x
         - ../semi2k-offline.x
-  - target: /lib
-    copy:
-      - files:
-        - ../DiffieHellmanLibrary/libecdh.so
 
