@@ -1,10 +1,8 @@
-#func_list=(comp oppe oram lr nn)
-func_list=(comp oppe oram nn)
-#passive_list=(semi2k semi repring repfield shamir hemi soho)
-passive_list=(semi2k semi shamir hemi soho)
+func_list=(comp oppe oram lr nn)
+passive_list=(semi2k semi repring repfield shamir hemi soho)
 
 cd $HOME/MP-SPDZ
-for n in 3 5 7 9; do
+for n in 3; do
 for func in ${func_list[*]}; do
     for prot in ${passive_list[*]}; do
         echo "run semi-honest protocol without TEE: $prot $func"
@@ -13,12 +11,11 @@ for func in ${func_list[*]}; do
 	./tee_benchmark/clean_port.sh
     done;
 done;
-done;
+done
 
-#active_list=(spdz2k mascot psrepring psrepfield malicious-shamir lowgear highgear)
-active_list=(spdz2k mascot malicious-shamir lowgear highgear)
+active_list=(spdz2k mascot psrepring psrepfield malicious-shamir lowgear highgear)
 
-for n in 3 5 7 9; do
+for n in 3; do
 for func in ${func_list[*]}; do
     for prot in ${active_list[*]}; do
         ./tee_benchmark/clean_port.sh
@@ -29,8 +26,7 @@ for func in ${func_list[*]}; do
 done;
 done;
 
-
-for n in 3 5 7 9; do
+for n in 3; do
 for func in ${func_list[*]}; do
     for prot in ${passive_list[*]}; do
         ./tee_benchmark/clean_port.sh
@@ -39,8 +35,9 @@ for func in ${func_list[*]}; do
         ./tee_benchmark/clean_port.sh    
     done;
 done;
-done;
+done
 
+#for n in 2; do
 #for func in ${func_list[*]}; do
 #    for prot in ${passive_list[*]}; do
 #        ./tee_benchmark/clean_port.sh
@@ -49,19 +46,21 @@ done;
 #        ./tee_benchmark/clean_port.sh
 #    done;
 #done;
-
-exit;
+#done
 
 offline_list=(semi2k-offline semi-offline hemi-offline)
-for func in ${func_list[*]}; do
-    for prot in ${offline_list[*]}; do
-	./tee_benchmark/clean_port.sh
-        echo "run offline protocol without optimization: $prot $func"
-        ./tee_benchmark/dist_benchmark_unit.sh ${prot} ${func} 4 ${n} # offline TEE, without optimization
-        ./tee_benchmark/clean_port.sh
-    done;
-done;
+#for n in 2; do
+#for func in ${func_list[*]}; do
+#    for prot in ${offline_list[*]}; do
+#	./tee_benchmark/clean_port.sh
+#        echo "run offline protocol without optimization: $prot $func"
+#        ./tee_benchmark/dist_benchmark_unit.sh ${prot} ${func} 4 ${n} # offline TEE, without optimization
+#        ./tee_benchmark/clean_port.sh
+#    done;
+#done;
+#done
 
+#for n in 2; do
 #for func in ${func_list[*]}; do
 #    for prot in ${offline_list[*]}; do
 #        echo $prot $func
@@ -70,12 +69,15 @@ done;
 #	./tee_benchmark/clean_port.sh
 #    done;
 #done;
+#done
 
-for func in ${func_list[*]}; do
-    for prot in ${offline_list[*]}; do
-	./tee_benchmark/clean_port.sh
-        echo "run offline protocol without optimization: $prot $func"
-        ./tee_benchmark/dist_benchmark_unit.sh ${prot} ${func} 7 ${n} # offline, without optimization and TEE
-	./tee_benchmark/clean_port.sh
-    done;
-done;
+#for n in 2; do
+#for func in ${func_list[*]}; do
+#    for prot in ${offline_list[*]}; do
+#	./tee_benchmark/clean_port.sh
+#        echo "run offline protocol without optimization: $prot $func"
+#        ./tee_benchmark/dist_benchmark_unit.sh ${prot} ${func} 7 ${n} # offline, without optimization and TEE
+#	./tee_benchmark/clean_port.sh
+#    done;
+#done;
+#done

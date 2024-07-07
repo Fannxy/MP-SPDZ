@@ -51,11 +51,15 @@ benchmark["comp"]=comp
 benchmark["nn"]=benchmark_net
 
 # local host: 172.31.244.198
-remoteHosts=(172.31.244.198 172.31.244.197 172.31.244.196)
+remoteHosts=(172.31.244.206 172.31.244.213 172.31.244.211)
 
 compileLog=${logFolder}/comp_log
+i=0
 for host in ${remoteHosts[*]}
 do
+    if [ $i == ${parties[$prot]} ]; then
+        break
+    fi
     ssh -i $HOME/.ssh/id_ed25519 -p 1234 root@$host "mkdir -p $logFolder"
     if [ ${modular[$prot]} == "r" ]; then
 	echo "compile -R 64 for $prot $func on host $host"
@@ -65,6 +69,7 @@ do
 	echo "compile for $prot $func on host $host"
         ssh -i $HOME/.ssh/id_ed25519 -p 1234 root@$host "cd $HOME/MP-SPDZ && ./compile.py ${benchmark[$func]} > ${compileLog}"
     fi
+    i=$(( i + 1 ))
 done
 
 logFile=${logFolder}/${func}_${prot}_${comptype}_${n}_log.txt
@@ -72,9 +77,14 @@ echo "logFile = $logFile"
 
 if [ ${comptype} == 1 -o ${comptype} == 3 -o ${comptype} == 7 ]; then
     echo "without TEE"
+    i=0
     for host in ${remoteHosts[*]}
     do
+        if [ $i == ${parties[$prot]} ]; then
+	    break
+	fi
         ssh -i $HOME/.ssh/id_ed25519 -p 1234 root@$host "rm -r /Programs ; cp -r $HOME/MP-SPDZ/Programs / ; rm -r /Player-Data ; cp -r $HOME/MP-SPDZ/Player-Data /"
+	i=$(( i + 1 ))
     done
 
     echo "begin to run"
@@ -89,14 +99,14 @@ if [ ${comptype} == 1 -o ${comptype} == 3 -o ${comptype} == 7 ]; then
 	    echo "run command: ./${protocol[$prot]} --ip-file-name /HOST -p $i -v ${benchmark[$func]} on host $host"
             ssh -i $HOME/.ssh/id_ed25519 -p 1234 root@${remoteHosts[$i]} "cd $HOME/MP-SPDZ && ./${protocol[$prot]} --ip-file-name /HOST -p $i -v ${benchmark[$func]} >${logFile} 2>&1"
     	elif [[ ${protocol[$prot]} == *"shamir"* ]]; then
-	    echo "run command: ./${protocol[$prot]} -N $n -e --ip-file-name /HOST -p $i -v ${benchmark[$func]} on host $host"
-            ssh -i $HOME/.ssh/id_ed25519 -p 1234 root@${remoteHosts[$i]} "cd $HOME/MP-SPDZ && ./${protocol[$prot]} -N $n --ip-file-name /HOST -p $i -v ${benchmark[$func]} >${logFile} 2>&1"
+	    echo "run command: ./${protocol[$prot]} -N ${parties[$prot]} -e --ip-file-name /HOST -p $i -v ${benchmark[$func]} on host $host"
+            ssh -i $HOME/.ssh/id_ed25519 -p 1234 root@${remoteHosts[$i]} "cd $HOME/MP-SPDZ && ./${protocol[$prot]} -N ${parties[$prot]} --ip-file-name /HOST -p $i -v ${benchmark[$func]} >${logFile} 2>&1"
 	elif [[ ${protocol[$prot]} == *"hemi"* ]]; then
-	    echo "run command: ./${protocol[$prot]} -N $n -e --ip-file-name /HOST -p $i -v ${benchmark[$func]} on host $host"
-	    ssh -i $HOME/.ssh/id_ed25519 -p 1234 root@${remoteHosts[$i]} "cd $HOME/MP-SPDZ && ./${protocol[$prot]} -N $n --ip-file-name /HOST -p $i -M -v ${benchmark[$func]} >${logFile} 2>&1"
+	    echo "run command: ./${protocol[$prot]} -N ${parties[$prot]} -e --ip-file-name /HOST -p $i -v ${benchmark[$func]} on host $host"
+	    ssh -i $HOME/.ssh/id_ed25519 -p 1234 root@${remoteHosts[$i]} "cd $HOME/MP-SPDZ && ./${protocol[$prot]} -N ${parties[$prot]} --ip-file-name /HOST -p $i -M -v ${benchmark[$func]} >${logFile} 2>&1"
     	else
-	    echo "run command: ./${protocol[$prot]} -N $n -e --ip-file-name /HOST -p $i -v ${benchmark[$func]} on host $host"
-            ssh -i $HOME/.ssh/id_ed25519 -p 1234 root@${remoteHosts[$i]} "cd $HOME/MP-SPDZ && ./${protocol[$prot]} -N $n -e --ip-file-name /HOST -p $i -v ${benchmark[$func]} >${logFile} 2>&1"
+	    echo "run command: ./${protocol[$prot]} -N ${parties[$prot]} -e --ip-file-name /HOST -p $i -v ${benchmark[$func]} on host $host"
+            ssh -i $HOME/.ssh/id_ed25519 -p 1234 root@${remoteHosts[$i]} "cd $HOME/MP-SPDZ && ./${protocol[$prot]} -N ${parties[$prot]} -e --ip-file-name /HOST -p $i -v ${benchmark[$func]} >${logFile} 2>&1"
         fi
         }&
         i=$(( i + 1 ))
@@ -104,11 +114,16 @@ if [ ${comptype} == 1 -o ${comptype} == 3 -o ${comptype} == 7 ]; then
     wait;
 
 else
+    i=0
     for host in ${remoteHosts[*]}
     do
+	if [ $i == ${parties[$prot]} ]; then
+            break
+        fi
 	{
 	ssh -i $HOME/.ssh/id_ed25519 -p 1234 root@$host "PATH=$PATH ; rm -r $HOME/MP-SPDZ/occlum_workspace/image/Programs ; rm -r $HOME/MP-SPDZ/occlum_workspace/image/Player-Data ; cp -r $HOME/MP-SPDZ/Programs $HOME/MP-SPDZ/occlum_workspace/image/ ; cp -r $HOME/MP-SPDZ/Player-Data $HOME/MP-SPDZ/occlum_workspace/image/ ; cd $HOME/MP-SPDZ/occlum_workspace && occlum build"
 	}&
+        i=$(( i + 1 ))
     done
     wait;
 
@@ -120,13 +135,13 @@ else
         fi
         {
         if [[ ${protocol[$prot]} == *"rep"* ]]; then
-            ssh -i $HOME/.ssh/id_ed25519 -p 1234 root@${remoteHosts[$i]} "PATH=$PATH ; cd $HOME/MP-SPDZ/occlum_workspace && occlum run /bin/${protocol[$prot]} --ip-file-name /HOST -p $i -v ${benchmark[$func]} >${logFile} 2>&1"
+            ssh -i $HOME/.ssh/id_ed25519 -p 1234 root@${remoteHosts[$i]} "PATH=$PATH ; cd $HOME/MP-SPDZ/occlum_workspace && occlum run /bin/${protocol[$prot]} --ip-file-name /HOST -p $i -u -v ${benchmark[$func]} >${logFile} 2>&1"
     	elif [[ ${protocol[$prot]} == *"shamir"* ]]; then
-	    ssh -i $HOME/.ssh/id_ed25519 -p 1234 root@${remoteHosts[$i]} "PATH=$PATH ; cd $HOME/MP-SPDZ/occlum_workspace && occlum run /bin/${protocol[$prot]} -N $n --ip-file-name /HOST -p $i -v ${benchmark[$func]} >${logFile} 2>&1"
+	    ssh -i $HOME/.ssh/id_ed25519 -p 1234 root@${remoteHosts[$i]} "PATH=$PATH ; cd $HOME/MP-SPDZ/occlum_workspace && occlum run /bin/${protocol[$prot]} -N ${parties[$prot]} --ip-file-name /HOST -p $i -u -v ${benchmark[$func]} >${logFile} 2>&1"
 	elif [[ ${protocol[$prot]} == *"hemi"* ]]; then
-	    ssh -i $HOME/.ssh/id_ed25519 -p 1234 root@${remoteHosts[$i]} "PATH=$PATH ; cd $HOME/MP-SPDZ/occlum_workspace && occlum run /bin/${protocol[$prot]} -N $n --ip-file-name /HOST -p $i -M -v ${benchmark[$func]} >${logFile} 2>&1"
+	    ssh -i $HOME/.ssh/id_ed25519 -p 1234 root@${remoteHosts[$i]} "PATH=$PATH ; cd $HOME/MP-SPDZ/occlum_workspace && occlum run /bin/${protocol[$prot]} -N ${parties[$prot]} --ip-file-name /HOST -p $i -M -v ${benchmark[$func]} >${logFile} 2>&1"
     	else
-            ssh -i $HOME/.ssh/id_ed25519 -p 1234 root@${remoteHosts[$i]} "PATH=$PATH ; cd $HOME/MP-SPDZ/occlum_workspace && occlum run /bin/${protocol[$prot]} -N $n -e --ip-file-name /HOST -p $i -v ${benchmark[$func]} >${logFile} 2>&1"
+            ssh -i $HOME/.ssh/id_ed25519 -p 1234 root@${remoteHosts[$i]} "PATH=$PATH ; cd $HOME/MP-SPDZ/occlum_workspace && occlum run /bin/${protocol[$prot]} -N ${parties[$prot]} --ip-file-name /HOST -p $i -v ${benchmark[$func]} >${logFile} 2>&1"
 
 	fi
         }&
