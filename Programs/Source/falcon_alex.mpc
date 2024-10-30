@@ -78,11 +78,15 @@ test_samples = MultiArray([10000, 32, 32, 3], sfix)
 test_labels = MultiArray([10000, 10], sint)
 
 if 'no_acc' not in program.args:
-    training_labels.input_from(0)
-    training_samples.input_from(0)
+    # training_labels.input_from(0)
+    # training_samples.input_from(0)
 
-    test_labels.input_from(0)
-    test_samples.input_from(0)
+    # test_labels.input_from(0)
+    # test_samples.input_from(0)
+    training_labels.assign_all(0)
+    training_samples.assign_all(0)
+    test_labels.assign_all(0)
+    test_samples.assign_all(0)
 
 model = tf.keras.models.Sequential(AlexNet)
 

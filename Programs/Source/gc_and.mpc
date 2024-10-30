@@ -6,11 +6,11 @@ import random
 n = 4096
 m = 1
 
-if len(program.args) > 1:
-    n = int(program.args[1])
+# if len(program.args) > 1:
+#     n = int(program.args[1])
 
-if len(program.args) > 2:
-    m = int(program.args[2])
+# if len(program.args) > 2:
+#     m = int(program.args[2])
 
 pack = min(n, 50)
 n = (n + pack - 1) // pack

@@ -7,20 +7,25 @@ n_bits = 64
 full_t = sbits.get_type(64)
 sbits.n = n_bits
 
-if len(program.args) > 1:
-    n_batches = int(program.args[1])
-else:
-    n_batches = 78
+# if len(program.args) > 1:
+#     n_batches = int(program.args[1])
+# else:
+#     n_batches = 78
 
-if len(program.args) > 2:
-    m_batches = int(program.args[2])
-else:
-    m_batches = n_batches
+# if len(program.args) > 2:
+#     m_batches = int(program.args[2])
+# else:
+#     m_batches = n_batches
 
-if len(program.args) > 3:
-    n_threads = int(program.args[3])
-else:
-    n_threads = n_batches
+# if len(program.args) > 3:
+#     n_threads = int(program.args[3])
+# else:
+#     n_threads = n_batches
+
+n_batches = 78
+m_batches = n_batches
+n_threads = n_batches
+
 
 batch_size = 64
 n = n_batches * batch_size
@@ -35,10 +40,12 @@ threshold = MemValue(t(10))
 
 for i in range(n):
     for j in range(l):
-        a[i][j] = full_t.get_input_from(0)
+        # a[i][j] = full_t.get_input_from(0)
+        a[i][j].assign_all(0)
 for i in range(m):
     for j in range(l):
-        b[i][j] = full_t.get_input_from(1)
+        # b[i][j] = full_t.get_input_from(1)
+        b[i][j].assign_all(0)
 
 # test, create match between a[0] and b[1] but no match for a[1]
 a.assign_all(0)

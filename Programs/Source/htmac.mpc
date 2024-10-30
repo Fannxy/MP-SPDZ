@@ -38,9 +38,27 @@ from random import randint
 import sys
 program.bit_length = 128
 
-n_parallel = int(program.args[1])
-n_total = int(program.args[2])
-nmessages = int(program.args[3])
+# n_parallel = int(program.args[1])
+# n_total = int(program.args[2])
+# nmessages = int(program.args[3])
+# try:
+#     n_parallel = int(program.args[1])
+# except:
+#     n_parallel = 2
+
+# try:
+#     n_total = int(program.args[2])
+# except:
+#     n_total = 8
+
+# try:
+#     nmessages = int(program.args[3])
+# except:
+#     nmessages = 10
+
+n_parallel = 2
+n_total = 8
+nmessages = 10
 
 use_mimc_prf = True
 # Use just one PRF

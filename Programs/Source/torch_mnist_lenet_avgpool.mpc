@@ -38,12 +38,26 @@ outputs = net(inputs)
 
 from Compiler import ml
 
-ml.set_n_threads(int(program.args[2]))
+# ml.set_n_threads(int(program.args[2]))
+# try:
+#     n_threads=int(program.args[2])
+# except:
+n_threads=4
+
+# try:
+#     epochs = int(program.args[1])
+# except:
+epochs = 4
+
+ml.set_n_threads(n_threads)
 
 layers = ml.layers_from_torch(net, data[0][1].shape, 128)
 layers[0].X = data[0][1]
 layers[-1].Y = data[0][0]
 
 optimizer = ml.SGD(layers)
-optimizer.run_by_args(program, int(program.args[1]), 128,
+# optimizer.run_by_args(program, int(program.args[1]), 128,
+#                       data[1][1], data[1][0])
+
+optimizer.run_by_args(program, epochs, 128,
                       data[1][1], data[1][0])

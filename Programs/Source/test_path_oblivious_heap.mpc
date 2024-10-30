@@ -2,6 +2,7 @@ from Compiler import library as lib, path_oblivious_heap as poh, util
 from Compiler.path_oram import OptimalORAM, RecursivePathORAM
 from Compiler import dijkstra
 from Compiler.types import sint
+from typing import Union
 
 ### SETUP ###
 
@@ -25,7 +26,8 @@ poh.DEBUG = True
 timer_offset = 1000  # Hopefully run timers in an unused range
 
 
-def start_fancy_timer(id: int | None = None) -> int:
+# def start_fancy_timer(id: int | None = None) -> int:
+def start_fancy_timer(id: Union[int, None] = None) -> int:
     global timer_offset
     _id = id if id is not None else timer_offset
     lib.start_timer(_id)

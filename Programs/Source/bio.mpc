@@ -1,19 +1,30 @@
 program.use_edabit(True)
 program.set_bit_length(32)
 
-n = int(program.args[1])
-n_threads = None
+# n = int(program.args[1])
+# try:
+#     n = int(program.args[1])
+# except:
+#     n = 1048576
 
-try:
-    n_threads = int(program.args[2])
-except:
-    pass
+n = 16384
+n_threads = 4
 
+# try:
+#     n_threads = int(program.args[2])
+# except:
+#     pass
+
+#db = MultiArray([n, 4], sint)
+#sample = sint.Array(4)
+
+# db = MultiArray([[sint(0) for _ in range(4)] for _ in range(n)], sint)
 db = MultiArray([n, 4], sint)
-sample = sint.Array(4)
+db.assign_all(0)
+sample = Array.create_from([sint(0) for _ in range(4)])
 
-db.input_from(0)
-sample.input_from(1)
+#db.input_from(0)
+#sample.input_from(1)
 
 def match(db_entry, sample):
     return sum(x * x for x in (a - b for a, b in zip(db_entry, sample)))

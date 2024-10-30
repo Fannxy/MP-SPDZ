@@ -30,25 +30,25 @@ else:
 n_examples = N
 n_features = 28 ** 2
 
-try:
-    n_epochs = int(program.args[1])
-except:
-    n_epochs = 100
+# try:
+#     n_epochs = int(program.args[1])
+# except:
+n_epochs = 100
 
-try:
-    batch_size = int(program.args[2])
-except:
-    batch_size = min(N, 128)
+# try:
+#     batch_size = int(program.args[2])
+# except:
+batch_size = min(N, 128)
 
 if 'savemem' in program.args:
     N = batch_size
 else:
     N = min(N, 1000)
 
-try:
-    ml.set_n_threads(int(program.args[3]))
-except:
-    pass
+# try:
+#     ml.set_n_threads(int(program.args[3]))
+# except:
+#     pass
 
 layers = [
     ml.FixConv2d([n_examples, 28, 28, 1], (16, 5, 5, 1), (16,), [N, 24, 24, 16],

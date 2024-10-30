@@ -31,24 +31,24 @@ else:
 n_examples = N
 n_features = 28 ** 2
 
-try:
-    n_epochs = int(program.args[1])
-except:
-    n_epochs = 100
+# try:
+#     n_epochs = int(program.args[1])
+# except:
+n_epochs = 100
 
-try:
-    batch_size = int(program.args[2])
-except:
-    batch_size = N
+# try:
+#     batch_size = int(program.args[2])
+# except:
+batch_size = N
 
 N = min(N, 10000)
 batch_size = min(batch_size, N)
 ml.Layer.back_batch_size = batch_size
 
-try:
-    ml.set_n_threads(int(program.args[3]))
-except:
-    pass
+# try:
+#     ml.set_n_threads(int(program.args[3]))
+# except:
+#     pass
 
 n_inner = 128
 

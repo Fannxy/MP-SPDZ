@@ -30,15 +30,15 @@ else:
 n_examples = N
 n_features = 28 ** 2
 
-try:
-    n_epochs = int(program.args[1])
-except:
-    n_epochs = 100
+# try:
+#     n_epochs = int(program.args[1])
+# except:
+n_epochs = 100
 
-try:
-    batch_size = int(program.args[2])
-except:
-    batch_size = min(N, 128)
+# try:
+#     batch_size = int(program.args[2])
+# except:
+batch_size = min(N, 128)
 
 if 'savemem' in program.args:
     N = batch_size

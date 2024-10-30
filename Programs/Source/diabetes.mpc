@@ -16,10 +16,12 @@ y_test = sfix.input_tensor_via(0, y_test)
 
 from Compiler import ml
 
-try:
-    batch_size = int(program.args[1])
-except:
-    batch_size = 1
+# try:
+#     batch_size = int(program.args[1])
+# except:
+#     batch_size = 1
+
+batch_size = 1
 
 linear = ml.SGDLinear(100, batch_size, program)
 

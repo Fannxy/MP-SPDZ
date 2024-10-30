@@ -1,0 +1,11 @@
+n1 = 1024
+n2 = 1024
+
+# a = Matrix.create_from([[sint(0) for _ in range(n2)] for _ in range(n1)])
+# b = Matrix.create_from([[sint(0) for _ in range(n1)] for _ in range(n2)])
+a = Matrix(n1, n2, sfix)
+b = Matrix(n2, n1, sfix)
+a.assign_all(1)
+b.assign_all(1)
+
+a.dot(b)

@@ -14,20 +14,20 @@ n_examples = 11791
 n_test = 1991
 n_features = 28 ** 2
 
-try:
-    n_epochs = int(program.args[1])
-except:
-    n_epochs = 100
+# try:
+#     n_epochs = int(program.args[1])
+# except:
+n_epochs = 100
 
 N = n_examples
 batch_size = 128
 
 assert batch_size <= N
 
-try:
-    ml.set_n_threads(int(program.args[2]))
-except:
-    pass
+# try:
+#     ml.set_n_threads(int(program.args[2]))
+# except:
+#     pass
 
 n_inner = 128
 
@@ -36,6 +36,9 @@ for arg in program.args:
     m = re.match('(.*)dense', arg)
     if m:
         n_dense_layers = int(m.group(1))
+
+if n_dense_layers is None:
+    n_dense_layers = 16
 
 if n_dense_layers == 1:
     layers = [ml.Dense(N, n_features, 1, activation='id')]

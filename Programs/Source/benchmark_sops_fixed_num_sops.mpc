@@ -18,7 +18,13 @@ class squant2(squant):
 
 
 # 256, 512, 768, 1024
-ln = int(program.args[1])
+# ln = int(program.args[1])
+# try:
+#     ln = int(program.args[1])
+# except:
+#     ln = 1024
+
+ln = 1024
 
 a = Array(ln, squant1)
 b = Array(ln, squant2)

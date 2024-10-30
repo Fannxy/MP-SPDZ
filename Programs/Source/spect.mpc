@@ -18,11 +18,12 @@ train = sint.Array(n_train), sint.Matrix(m, n_train)
 test = sint.Array(n_test), sint.Matrix(m, n_test)
 
 for x in train:
-    x.input_from(0)
+    x.assign_all(0)
 
 if not (debug or combo):
     for x in test:
-        x.input_from(0)
+      #   x.input_from(0)
+      x.assign_all(0)
 
 import decision_tree, util
 
@@ -33,13 +34,18 @@ if 'nearest' in program.args:
 
 sfix.set_precision_from_args(program, True)
 
-try:
-   n_threads = int(program.args[3])
-except:
-   n_threads = None
+# try:
+#    n_threads = int(program.args[3])
+# except:
+n_threads = None
+
+# try:
+#    epoch = int(program.args[1])
+# except:
+epoch = 2
 
 trainer = decision_tree.TreeTrainer(
-    train[1], train[0], int(program.args[1]), binary=int(program.args[2]),
+    train[1], train[0], epoch, None,
     n_threads=n_threads)
 
 if not (debug or combo):

@@ -3,12 +3,12 @@ import random
 import re
 import sys
 
-if len(program.args) < 4:
-   print('Usage: %s <n_negative> <n_positive> <n_features>' % program.args[0],
-         file=sys.stderr)
-   print('Refer to https://github.com/mkskeller/idash-submission for '
-         'scripts to run this benchmark.', file=sys.stderr)
-   exit(1)
+# if len(program.args) < 4:
+#    print('Usage: %s <n_negative> <n_positive> <n_features>' % program.args[0],
+#          file=sys.stderr)
+#    print('Refer to https://github.com/mkskeller/idash-submission for '
+#          'scripts to run this benchmark.', file=sys.stderr)
+#    exit(1)
 
 program.use_trunc_pr = True
 
@@ -18,9 +18,18 @@ sfloat.vlen = sfix.f
 
 n_epochs = 100
 
-n_normal = int(program.args[1])
-n_pos = int(program.args[2])
-n_features = int(program.args[3])
+# n_normal = int(program.args[1])
+# n_pos = int(program.args[2])
+# n_features = int(program.args[3])
+
+# try:
+#    n_normal = int(program.args[1])
+#    n_pos = int(program.args[2])
+#    n_features = int(program.args[3])
+# except:
+n_normal = 1024
+n_pos = 1024
+n_features = 10
 
 if 'approx' in program.args:
    approx = 3
@@ -60,10 +69,13 @@ X_pos = sfix.Matrix(n_pos, n_features)
 def _(i):
     @for_range_opt(n_normal)
     def _(j):
-        X_normal[j][i] = sfix.get_input_from(0)
+      #   X_normal[j][i] = sfix.get_input_from(0)
+      X_normal[j][i] = 0
     @for_range_opt(n_pos)
     def _(j):
-        X_pos[j][i] = sfix.get_input_from(0)
+      #   X_pos[j][i] = sfix.get_input_from(0)
+      # X_pos[j][i].assign_all(0)
+      X_pos[j][i] = 0
 
 dense = ml.Dense(N, n_features, 1)
 layers = [dense, ml.Output(N, approx=approx)]

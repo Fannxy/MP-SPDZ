@@ -1,20 +1,24 @@
 from Compiler.ml import keras
 import Compiler.ml as tf
 
-try:
-    n_epochs = int(program.args[1])
-except (ValueError, IndexError):
-    n_epochs = 20
+# try:
+#     n_epochs = int(program.args[1])
+# except (ValueError, IndexError):
+#     n_epochs = 20
 
-try:
-    batch_size = int(program.args[2])
-except (ValueError, IndexError):
-    batch_size = 128
+# try:
+#     batch_size = int(program.args[2])
+# except (ValueError, IndexError):
+#     batch_size = 128
 
-try:
-    n_threads = int(program.args[3])
-except (ValueError, IndexError):
-    n_threads = 36
+# try:
+#     n_threads = int(program.args[3])
+# except (ValueError, IndexError):
+#     n_threads = 36
+
+n_epochs = 20
+batch_size = 128
+n_threads = 36
 
 #Instantiation
 AlexNet = []
@@ -87,11 +91,16 @@ training_labels = MultiArray([50000, 10], sint)
 test_samples = MultiArray([10000, 32, 32, 3], sfix)
 test_labels = MultiArray([10000, 10], sint)
 
-training_labels.input_from(0)
-training_samples.input_from(0, binary='binary_samples' in program.args)
+# training_labels.input_from(0)
+# training_samples.input_from(0, binary='binary_samples' in program.args)
 
-test_labels.input_from(0)
-test_samples.input_from(0, binary='binary_samples' in program.args)
+# test_labels.input_from(0)
+# test_samples.input_from(0, binary='binary_samples' in program.args)
+
+training_labels.assign_all(0)
+training_labels.assign_all(0)
+test_labels.assign_all(0)
+test_labels.assign_all(0)
 
 model = tf.keras.models.Sequential(AlexNet)
 

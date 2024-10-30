@@ -2,8 +2,20 @@ binary = 'binary' in program.args
 
 program.set_bit_length(32)
 
-n_train = int(program.args[1])
-m = int(program.args[2])
+# n_train = int(program.args[1])
+# m = int(program.args[2])
+# try:
+#         n_train = int(program.args[1])
+# except:
+#         n_train = 1024
+
+# try:
+#         m = int(program.args[2])
+# except:
+#         m = 64
+
+n_train = 1024
+m = 64
 
 try:
         n_levels = int(program.args[3])

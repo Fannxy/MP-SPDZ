@@ -47,10 +47,14 @@ outputs = net(inputs)
 layers = ml.layers_from_torch(net, training_samples.shape, 128)
 
 optimizer = ml.SGD(layers)
+# try:
+#     epochs = int(program.args[1])
+# except:
+epochs = 4
 optimizer.fit(
     training_samples,
     training_labels,
-    epochs=int(program.args[1]),
+    epochs=epochs,
     batch_size=128,
     validation_data=(test_samples, test_labels),
     program=program

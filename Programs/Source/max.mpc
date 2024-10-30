@@ -1,0 +1,8 @@
+from ml import argmax
+
+n = 1024
+
+x = Array(n, sint)
+x.assign_all(1)
+
+y = argmax(x)

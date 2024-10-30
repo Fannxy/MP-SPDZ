@@ -30,15 +30,15 @@ else:
 n_examples = N
 n_features = 28 ** 2
 
-try:
-    n_epochs = int(program.args[1])
-except:
-    n_epochs = 100
+# try:
+#     n_epochs = int(program.args[1])
+# except:
+n_epochs = 100
 
-try:
-    batch_size = int(program.args[2])
-except:
-    batch_size = min(N, 128)
+# try:
+#     batch_size = int(program.args[2])
+# except:
+batch_size = min(N, 128)
 
 assert batch_size <= N
 ml.Layer.back_batch_size = batch_size
@@ -75,24 +75,27 @@ if 'maxpool' in program.args:
 
 n_inner = inner_dim ** 2 * 5
 
-dropout = 'dropout' in program.args
+# dropout = 'dropout' in program.args
+dropout = 'dropout'
+layers += [ml.Dropout(N, n_inner)]
+layers += [ml.Dense(N, n_inner, 10),]
 
-if '1dense' in program.args:
-    if dropout:
-        layers += [ml.Dropout(N, n_inner)]
-    layers += [ml.Dense(N, n_inner, 10),]
-elif '2dense' in program.args:
-    if dropout:
-        layers += [ml.Dropout(N, n_inner)]
-    layers += [
-        ml.Dense(N, n_inner, 100),
-        ml.Relu([N, 100]),
-        ml.Dense(N, 100, 10),
-    ]
-    if dropout or 'dropout1' in program.args:
-        layers.insert(-1, ml.Dropout(N, 100))
-else:
-    raise Exception('need to specify number of dense layers')
+# if '1dense' in program.args:
+#     if dropout:
+#         layers += [ml.Dropout(N, n_inner)]
+#     layers += [ml.Dense(N, n_inner, 10),]
+# elif '2dense' in program.args:
+#     if dropout:
+#         layers += [ml.Dropout(N, n_inner)]
+#     layers += [
+#         ml.Dense(N, n_inner, 100),
+#         ml.Relu([N, 100]),
+#         ml.Dense(N, 100, 10),
+#     ]
+#     if dropout or 'dropout1' in program.args:
+#         layers.insert(-1, ml.Dropout(N, 100))
+# else:
+#     raise Exception('need to specify number of dense layers')
 
 layers += [ml.MultiOutput(N, 10)]
 
@@ -100,10 +103,14 @@ Y = sint.Matrix(n_test, 10)
 X = sfix.Matrix(n_test, n_features)
 
 if not ('no_acc' in program.args and 'no_loss' in program.args):
-    layers[-1].Y.input_from(0)
-    layers[0].X.input_from(0)
-    Y.input_from(0)
-    X.input_from(0)
+    # layers[-1].Y.input_from(0)
+    # layers[0].X.input_from(0)
+    # Y.input_from(0)
+    # X.input_from(0)
+    layers[-1].Y.assign_all(0)
+    layers[0].assign_all(0)
+    Y.assign_all(0)
+    X.assign_all(0)
 
 optim = ml.Optimizer.from_args(program, layers)
 optim.run_by_args(program, n_epochs, batch_size, X, Y)

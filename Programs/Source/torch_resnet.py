@@ -4,10 +4,10 @@ program.options_from_args()
 
 from Compiler import ml
 
-try:
-    ml.set_n_threads(int(program.args[2]))
-except:
-    pass
+# try:
+#     ml.set_n_threads(int(program.args[2]))
+# except:
+#     pass
 
 import torchvision
 import torch

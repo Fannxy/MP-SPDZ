@@ -8,8 +8,14 @@ sfix.round_nearest = True
 sfix.set_precision(16, 31)
 cfix.set_precision(16, 31)
 
-N = int(program.args[1])
-n_features = int(program.args[2])
+# N = int(program.args[1])
+# # n_features = int(program.args[2])
+# try:
+#     N = int(program.args[1])
+#     n_features = int(program.args[2])
+# except:
+N = 1024
+n_features = 10
 
 n_threads = None
 
@@ -36,7 +42,8 @@ print_ln('b=%s W[-1]=%s', dense.b[0].reveal(),
 def _(i):
     @for_range_opt(N)
     def _(j):
-        dense.X[j][0][i] = sfix.get_input_from(0)
+        # dense.X[j][0][i] = sfix.get_input_from(0)
+        dense.X[j][0][i].assign_all(0)
 
 batch = regint.Array(N)
 batch.assign(regint.inc(N))

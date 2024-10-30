@@ -553,7 +553,12 @@ v2_1_224 = [
     (1280, 1001, 'CONV2D')
 ]
 
-network = program.args[1]
+# network = program.args[1]
+# try:
+#     network = program.args[1]
+# except:
+#     network = 'v1_025_128'
+network = 'v1_025_128'
 layers = globals()[network]
 
 # c5.9xlarge has 36 cores

@@ -23,7 +23,13 @@ a.assign_all(0)
 b.assign_all(0)
 
 # 50000, 100000, 150000, 200000
-n = int(program.args[1])
+# n = int(program.args[1])
+# try:
+#     n = int(program.args[1])
+# except:
+#     n = 1048576
+
+n = 1048576
 
 # parallelization for optimization
 @for_range_multithread(n_threads, 1000, n)
