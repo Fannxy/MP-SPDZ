@@ -1,0 +1,6 @@
+n = 1024
+x = Array(n, sint)
+y = Array(n, sint)
+x.assign_all(0)
+y.assign_all(1)
+z = (x > y).if_else(x, y)

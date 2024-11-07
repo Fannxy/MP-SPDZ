@@ -1,0 +1,5 @@
+n = 1024
+x = Array(n, sint)
+x.assign_all(0)
+shuffle = sint.get_secure_shuffle(n)
+x.secure_permute(shuffle)

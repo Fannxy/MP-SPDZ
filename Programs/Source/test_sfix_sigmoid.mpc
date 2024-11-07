@@ -1,0 +1,6 @@
+from ml import sigmoid
+n = 1024
+x = Array(n, sfix)
+x.assign_all(0)
+
+z = sigmoid(x.get_vector())

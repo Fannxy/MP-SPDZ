@@ -1,0 +1,7 @@
+n = 1024
+x = Array(n, sfix)
+y = Array(n, sfix)
+x.assign_all(0)
+y.assign_all(1)
+
+z = (x.get_vector() > y.get_vector()).if_else(x.get_vector(), y.get_vector())

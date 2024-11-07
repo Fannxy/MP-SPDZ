@@ -1,0 +1,6 @@
+from ml import softmax
+
+n = 1024
+x = Array(n, sfix)
+x.assign_all(0)
+z = softmax(x)

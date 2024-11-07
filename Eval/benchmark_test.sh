@@ -1,8 +1,6 @@
 MAIN_FOLDER=/root/RoundRole/MP-SPDZ/
 
-# prot_list_ring=(replicated-ring-party.x ps-rep-ring-party.x semi2k-party.x spdz2k-party.x) 
-# prot_list_ring=(semi2k-party.x spdz2k-party.x)
-prot_list_ring=()
+prot_list_ring=(replicated-ring-party.x ps-rep-ring-party.x semi2k-party.x spdz2k-party.x) 
 prot_list_field=(replicated-field-party.x ps-rep-field-party.x semi-party.x mascot-party.x shamir-party.x atlas-party.x)
 
 declare -A modular
@@ -20,7 +18,7 @@ parties["replicated-field-party.x"]=3; parties["ps-rep-field-party.x"]=3;
 parties["semi-party.x"]=2; parties["mascot-party.x"]=2;
 parties["shamir-party.x"]=3; parties["atlas-party.x"]=3;
 
-mapfile -t target_list < benchmark_functions.txt
+mapfile -t target_list < ./basic_functions.txt
 
 echo "target_list: ${target_list[@]}"
 
@@ -41,16 +39,17 @@ compile_func() {
     else
         echo "$func" >> "$temp_dir/compile_fail-${comptype}_$$.txt"
         echo "Error details:" >> "$temp_dir/compile_fail_$$.txt"
+        ./Eval/compile.sh "$prot" "$func" "$comptype" 2>> "$temp_dir/compile_fail-${comptype}_$$.txt"
     fi
 }
 
 temp_dir=$(mktemp -d)
 
 export -f compile_func
-# parallel -j 8 compile_func ::: "${target_list[@]}" ::: "hold" ::: "r" ::: "$temp_dir"
+parallel -j 8 compile_func ::: "${target_list[@]}" ::: "hold" ::: "r" ::: "$temp_dir"
 
-# cat "$temp_dir"/compile_pass-r_*.txt > $MAIN_FOLDER/compile_pass-r.txt
-# cat "$temp_dir"/compile_fail-r_*.txt > $MAIN_FOLDER/compile_fail-r.txt
+cat "$temp_dir"/compile_pass-r_*.txt > $MAIN_FOLDER/compile_pass-r.txt
+cat "$temp_dir"/compile_fail-r_*.txt > $MAIN_FOLDER/compile_fail-r.txt
 
 
 # export -f compile_func

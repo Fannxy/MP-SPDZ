@@ -1,0 +1,6 @@
+from ml import exp
+n = 1024
+x = Array(n, sfix)
+x.assign_all(0)
+
+z = exp(x)

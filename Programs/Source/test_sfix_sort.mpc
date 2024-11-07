@@ -1,0 +1,7 @@
+from sorting import radix_sort
+
+n = 1024
+x = Array(n, sfix)
+x.assign_all(0)
+
+radix_sort(x, x)
