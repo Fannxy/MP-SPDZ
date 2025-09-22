@@ -137,6 +137,7 @@ enum
     SEDABIT = 0x5A,
     RANDOMS = 0x5B,
     RANDOMFULLS = 0x5D,
+    UNSPLIT = 0x5E,
     // Input
     INPUT = 0x60,
     INPUTFIX = 0xF0,
@@ -269,6 +270,8 @@ enum
     GMULS = 0x1A6,
     GMULRS = 0x1A7,
     GDOTPRODS = 0x1A8,
+    GMATMULS = 0x1AA,
+    GMATMULSM = 0x1AB,
     GSECSHUFFLE = 0x1FA,
     // Data access
     GTRIPLE = 0x150,
@@ -311,6 +314,8 @@ enum
     GRAWOUTPUT = 0x1B7,
     GSTARTPRIVATEOUTPUT = 0x1B8,
     GSTOPPRIVATEOUTPUT = 0x1B9,
+    GWRITEFILESHARE = 0x1BD,
+    GREADFILESHARE = 0x1BE,
     // Commsec ops
     INITSECURESOCKET = 0x1BA,
     RESPSECURESOCKET = 0x1BB
@@ -354,6 +359,8 @@ protected:
   vector<int>  start; // Values for a start/stop open
   string str;
 
+  void bytecode_assert(bool condition) const;
+
 public:
   BaseInstruction() : opcode(0), size(0), n(0) {}
   virtual ~BaseInstruction() {};
@@ -378,6 +385,8 @@ public:
 
   // Returns the maximal register used
   unsigned get_max_reg(int reg_type) const;
+
+  string get_name() const;
 };
 
 class DataPositions;

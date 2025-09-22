@@ -158,11 +158,7 @@ class Processor_Error: public exception
           return msg.c_str();
         }
     };
-class Invalid_Instruction : public Processor_Error
-    {
-      public:
-      Invalid_Instruction(string m) : Processor_Error(m) {}
-    };
+
 class max_mod_sz_too_small : public exception
     {
       string msg;
@@ -193,11 +189,16 @@ public:
 };
 class needs_cleaning : public exception {};
 
-class closed_connection
+class closed_connection : public exception
 {
-    const char* what() const
+    const char* what() const throw()
     {
-        return "connection closed down";
+        return "Connection closed down. "
+            "This is most likely due to a problem on the other side. "
+            "If there's no error message on the other side, it might be "
+            "due to a lack of memory. See "
+            "https://mp-spdz.readthedocs.io/en/latest/troubleshooting.html#crash-without-error-message-killed-or-bad-alloc "
+            "for possible remedies.";
     }
 };
 
@@ -210,9 +211,9 @@ public:
     }
 };
 
-class ran_out
+class ran_out : public exception
 {
-    const char* what() const
+    const char* what() const throw()
     {
         return "insufficient preprocessing";
     }
@@ -271,7 +272,7 @@ public:
 class signature_mismatch : public runtime_error
 {
 public:
-    signature_mismatch(const string& filename);
+    signature_mismatch(const string& filename, bool has_mac = false);
 };
 
 class insufficient_memory : public runtime_error
@@ -302,6 +303,32 @@ class insufficient_shares : public runtime_error
 {
 public:
     insufficient_shares(int expected, int actual, exception& e);
+};
+
+class persistence_error : public runtime_error
+{
+public:
+    persistence_error(const string& error);
+};
+
+class bytecode_error : public runtime_error
+{
+public:
+    bytecode_error(const string& error);
+};
+
+typedef bytecode_error Invalid_Instruction;
+
+class no_dynamic_memory : public runtime_error
+{
+public:
+    no_dynamic_memory();
+};
+
+class field_too_small : public runtime_error
+{
+public:
+    field_too_small(int length, int security);
 };
 
 #endif

@@ -37,6 +37,9 @@ void BaseInstruction::parse(istream& s, int inst_pos)
   size = code >> 10;
   opcode = 0x3FF & code;
   
+  if (s.fail())
+    throw bytecode_error("cannot read opcode");
+
   if (size==0)
     size=1;
 
@@ -141,6 +144,7 @@ void BaseInstruction::parse_operands(istream& s, int pos, int file_pos)
       case PRINTREGPLAIN:
       case PRINTREGPLAINB:
       case PRINTREGPLAINS:
+      case PRINTREGPLAINSB:
       case LDTN:
       case LDARG:
       case STARG:
@@ -187,7 +191,6 @@ void BaseInstruction::parse_operands(istream& s, int pos, int file_pos)
       case SHLCBI:
       case SHRCBI:
       case NOTC:
-      case CONVMODP:
       case GADDCI:
       case GADDSI:
       case GSUBCI:
@@ -212,6 +215,7 @@ void BaseInstruction::parse_operands(istream& s, int pos, int file_pos)
         n = get_int(s);
         break;
       case PICKS:
+      case CONVMODP:
         get_ints(r, s, 3);
         n = get_int(s);
         break;
@@ -286,7 +290,6 @@ void BaseInstruction::parse_operands(istream& s, int pos, int file_pos)
       // instructions with 5 register operands
       case PRINTFLOATPLAIN:
       case PRINTFLOATPLAINB:
-      case APPLYSHUFFLE:
         get_vector(5, start, s);
         break;
       case INCINT:
@@ -321,17 +324,17 @@ void BaseInstruction::parse_operands(istream& s, int pos, int file_pos)
       case RUN_TAPE:
       case CONV2DS:
       case MATMULS:
-        num_var_args = get_int(s);
-        get_vector(num_var_args, start, s);
-        break;
+      case GMATMULS:
+      case APPLYSHUFFLE:
       case MATMULSM:
+      case GMATMULSM:
         num_var_args = get_int(s);
         get_vector(num_var_args, start, s);
         break;
-
       // read from file, input is opcode num_args, 
       //   start_file_posn (read), end_file_posn(write) var1, var2, ...
       case READFILESHARE:
+      case GREADFILESHARE:
       case CALL_TAPE:
         num_var_args = get_int(s) - 2;
         r[0] = get_int(s);
@@ -401,7 +404,9 @@ void BaseInstruction::parse_operands(istream& s, int pos, int file_pos)
       case EDABIT:
       case SEDABIT:
       case WRITEFILESHARE:
+      case GWRITEFILESHARE:
       case CONCATS:
+      case UNSPLIT:
           num_var_args = get_int(s) - 1;
           r[0] = get_int(s);
           get_vector(num_var_args, start, s);
@@ -507,7 +512,7 @@ void BaseInstruction::parse_operands(istream& s, int pos, int file_pos)
       default:
         ostringstream os;
         os << "Invalid instruction " << showbase << hex << opcode << " at " << dec
-            << pos << "/" << hex << file_pos << dec << endl;
+            << pos << "/" << hex << file_pos << dec;
         throw Invalid_Instruction(os.str());
   }
 }
@@ -731,12 +736,13 @@ unsigned BaseInstruction::get_max_reg(int reg_type) const
       int res = 0;
       for (auto it = start.begin(); it < start.end(); it += *it)
       {
-          assert(it + *it <= start.end());
+          bytecode_assert(it + *it <= start.end());
           res = max(res, it[1] + it[2]);
       }
       return res;
   }
   case MULS:
+  case MULRS:
       skip = 4;
       offset = 1;
       size_offset = -1;
@@ -747,14 +753,15 @@ unsigned BaseInstruction::get_max_reg(int reg_type) const
       auto it = start.begin();
       while (it != start.end())
       {
-          assert(it < start.end());
+          bytecode_assert(it < start.end());
           int n = *it;
-          res = max(res, *it++);
+          res = max(res, *++it + size);
           it += n - 1;
       }
       return res;
   }
   case MATMULS:
+  case GMATMULS:
   {
       int res = 0;
       for (auto it = start.begin(); it < start.end(); it += 6)
@@ -765,6 +772,7 @@ unsigned BaseInstruction::get_max_reg(int reg_type) const
       return res;
   }
   case MATMULSM:
+  case GMATMULSM:
   {
       int res = 0;
       for (auto it = start.begin(); it < start.end(); it += 12)
@@ -867,7 +875,7 @@ unsigned BaseInstruction::get_max_reg(int reg_type) const
           int n = *it - n_prefix;
           size = max((long long) size, DIV_CEIL(*(it + 1), 64));
           it += n_prefix;
-          assert(it + n <= start.end());
+          bytecode_assert(it + n <= start.end());
           for (int i = 0; i < n; i++)
               res = max(res, *it++ + size);
       }
@@ -944,20 +952,25 @@ inline void Instruction::execute(Processor<sint, sgf2n>& Proc) const
   switch (opcode)
   {
     case CONVMODP:
-      if (n == 0)
-        {
-          for (int i = 0; i < size; i++)
-            Proc.write_Ci(r[0] + i,
-                Proc.sync(
-                    Integer::convert_unsigned(Proc.read_Cp(r[1] + i)).get()));
-        }
-      else if (n <= 64)
-        for (int i = 0; i < size; i++)
-          Proc.write_Ci(r[0] + i,
-              Proc.sync(Integer(Proc.read_Cp(r[1] + i), n).get()));
-      else
-        throw Processor_Error(to_string(n) + "-bit conversion impossible; "
-            "integer registers only have 64 bits");
+      vector<Integer> values;
+      values.reserve(size);
+      for (int i = 0; i < size; i++)
+      {
+          auto source = Proc.read_Cp(r[1] + i);
+          Integer tmp;
+          if (n == 0)
+              tmp = Integer::convert_unsigned(source);
+          else if (n <= 64)
+              tmp = Integer(source, n);
+          else
+            throw Processor_Error(to_string(n) + "-bit conversion impossible; "
+                "integer registers only have 64 bits");
+          values.push_back(tmp);
+      }
+      if (r[2])
+          Procp.protocol.sync(values, Proc.P);
+      for (int i = 0; i < size; i++)
+          Proc.write_Ci(r[0] + i, values[i].get());
       return;
   }
 
@@ -984,8 +997,8 @@ inline void Instruction::execute(Processor<sint, sgf2n>& Proc) const
           for (auto j = start.begin(); j < start.end(); j += 2)
             {
               auto source = S.begin() + *(j + 1);
-              assert(dest + *j <= S.end());
-              assert(source + *j <= S.end());
+              bytecode_assert(dest + *j <= S.end());
+              bytecode_assert(source + *j <= S.end());
               for (int k = 0; k < *j; k++)
                 *dest++ = *source++;
             }
@@ -1162,14 +1175,21 @@ inline void Instruction::execute(Processor<sint, sgf2n>& Proc) const
       case MATMULS:
         Proc.Procp.matmuls(Proc.Procp.get_S(), *this);
         return;
+      case GMATMULS:
+        Proc.Proc2.matmuls(Proc.Proc2.get_S(), *this);
+        return;
       case MATMULSM:
         Proc.Procp.protocol.matmulsm(Proc.Procp, Proc.machine.Mp.MS, *this);
+        return;
+      case GMATMULSM:
+        Proc.Proc2.protocol.matmulsm(Proc.Proc2, Proc.machine.M2.MS, *this);
         return;
       case CONV2DS:
         Proc.Procp.protocol.conv2ds(Proc.Procp, *this);
         return;
       case TRUNC_PR:
-        Proc.Procp.protocol.trunc_pr(start, size, Proc.Procp);
+        Proc.Procp.protocol.trunc_pr(start, size, Proc.Procp,
+            sint::clear::characteristic_two);
         return;
       case SECSHUFFLE:
         Proc.Procp.secure_shuffle(*this);
@@ -1182,8 +1202,7 @@ inline void Instruction::execute(Processor<sint, sgf2n>& Proc) const
             Proc.machine.shuffle_store));
         return;
       case APPLYSHUFFLE:
-        Proc.Procp.apply_shuffle(*this, Proc.read_Ci(start.at(3)),
-            Proc.machine.shuffle_store);
+        Proc.Procp.apply_shuffle(*this, Proc.machine.shuffle_store);
         return;
       case DELSHUFFLE:
         Proc.machine.shuffle_store.del(Proc.read_Ci(r[0]));
@@ -1371,12 +1390,22 @@ inline void Instruction::execute(Processor<sint, sgf2n>& Proc) const
         break;
       case WRITEFILESHARE:
         // Write shares to file system
-        Proc.write_shares_to_file(Proc.read_Ci(r[0]), start);
-        break;
+        Procp.write_shares_to_file(Proc.read_Ci(r[0]), start, size);
+        return;
       case READFILESHARE:
         // Read shares from file system
-        Proc.read_shares_from_file(Proc.read_Ci(r[0]), r[1], start);
-        break;        
+        Procp.read_shares_from_file(Proc.read_Ci(r[0]), r[1], start, size,
+            Proc);
+        return;
+      case GWRITEFILESHARE:
+        // Write shares to file system
+        Proc2.write_shares_to_file(Proc.read_Ci(r[0]), start, size);
+        return;
+      case GREADFILESHARE:
+        // Read shares from file system
+        Proc2.read_shares_from_file(Proc.read_Ci(r[0]), r[1], start, size,
+            Proc);
+        return;
       case PUBINPUT:
         Proc.get_Cp_ref(r[0]) = Proc.template
             get_input<IntInput<typename sint::clear>>(
@@ -1412,11 +1441,13 @@ inline void Instruction::execute(Processor<sint, sgf2n>& Proc) const
         Procp.protocol.cisc(Procp, *this);
         return;
       default:
-        printf("Case of opcode=0x%x not implemented yet\n",opcode);
         throw invalid_opcode(opcode);
         break;
 #define X(NAME, CODE) case NAME:
         COMBI_INSTRUCTIONS
+#undef X
+#define X(NAME, CODE) case NAME: throw no_dynamic_memory();
+        DYNAMIC_INSTRUCTIONS
 #undef X
 #define X(NAME, PRE, CODE) case NAME:
         ARITHMETIC_INSTRUCTIONS
@@ -1439,6 +1470,26 @@ inline void Instruction::execute(Processor<sint, sgf2n>& Proc) const
 template<class sint, class sgf2n>
 void Program::execute(Processor<sint, sgf2n>& Proc) const
 {
+  if (OnlineOptions::singleton.has_option("throw_exceptions"))
+    execute_with_errors(Proc);
+  else
+    {
+      try
+      {
+          execute_with_errors(Proc);
+      }
+      catch (exception& e)
+      {
+          cerr << "Fatal error at " << name << ":" << Proc.last_PC << " ("
+              << p[Proc.last_PC].get_name() << "): " << e.what() << endl;
+          exit(1);
+      }
+    }
+}
+
+template<class sint, class sgf2n>
+void Program::execute_with_errors(Processor<sint, sgf2n>& Proc) const
+{
   unsigned int size = p.size();
   Proc.PC=0;
 
@@ -1450,8 +1501,11 @@ void Program::execute(Processor<sint, sgf2n>& Proc) const
   auto& processor = Proc.Procb;
   auto& Ci = Proc.get_Ci();
 
+  BaseMachine::program = this;
+
   while (Proc.PC<size)
     {
+      Proc.last_PC = Proc.PC;
       auto& instruction = p[Proc.PC];
       auto& r = instruction.r;
       auto& n = instruction.n;
@@ -1500,6 +1554,15 @@ void Program::execute(Processor<sint, sgf2n>& Proc) const
       Proc.stats[p[PC].get_opcode()] += timer.elapsed() * 1e9;
 #endif
     }
+}
+
+template<class T>
+void Program::mulm_check() const
+{
+  if (T::function_dependent and not OnlineOptions::singleton.has_option("allow_mulm"))
+    throw runtime_error("Mixed multiplication not implemented for function-dependent preprocessing. "
+        "Use '-E <protocol>' during compilation or state "
+            "'program.use_mulm = False' at the beginning of your high-level program.");
 }
 
 template<class T>

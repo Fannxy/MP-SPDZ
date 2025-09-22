@@ -86,8 +86,12 @@ Tree_MAC_Check<T>::~Tree_MAC_Check()
 template<class U>
 void Tree_MAC_Check<U>::init_open(const Player&, int n)
 {
-  macs.reserve(macs.size() + n);
-  vals.reserve(vals.size() + n);
+  if (n > WaitingForCheck())
+    {
+      macs.reserve(macs.size() + n);
+      vals.reserve(vals.size() + n);
+    }
+
   this->secrets.clear();
   this->values.clear();
   this->secrets.reserve(n);
@@ -110,7 +114,11 @@ void Tree_MAC_Check<U>::exchange(const Player& P)
   this->values_opened += this->values.size();
 
   popen_cnt += this->values.size();
-  CheckIfNeeded(P);
+
+  if (OnlineOptions::singleton.has_option("always_check"))
+    Check(P);
+  else
+    CheckIfNeeded(P);
 }
 
 
@@ -141,6 +149,15 @@ void Tree_MAC_Check<U>::AddToCheck(const U& share, const T& value, const Player&
 
 
 template<class U>
+void mac_fail_remove(const Player& P)
+{
+  unlink(
+      mac_filename<typename U::mac_key_type>(
+          get_prep_sub_dir<U>(P.num_players()), P.my_num()).c_str());
+  throw mac_fail();
+}
+
+template<class U>
 void MAC_Check_<U>::Check(const Player& P)
 {
   assert(U::mac_type::invertible);
@@ -151,6 +168,7 @@ void MAC_Check_<U>::Check(const Player& P)
 
   //cerr << "In MAC Check : " << popen_cnt << endl;
 
+  CODE_LOCATION
   auto& vals = this->vals;
   auto& macs = this->macs;
   auto& popen_cnt = this->popen_cnt;
@@ -176,7 +194,7 @@ void MAC_Check_<U>::Check(const Player& P)
             if (&os != &bundle.mine)
               delta += os.get<typename U::mac_type>();
           if (delta != 0)
-            throw mac_fail();
+            mac_fail_remove<U>(P);
         }
     }
   else
@@ -217,7 +235,7 @@ void MAC_Check_<U>::Check(const Player& P)
       for (int i=0; i<P.num_players(); i++)
         { t += tau[i]; }
       if (t != 0)
-        throw mac_fail();
+        mac_fail_remove<U>(P);
     }
 
   vals.erase(vals.begin(), vals.begin() + popen_cnt);
@@ -289,6 +307,7 @@ void MAC_Check_Z2k<T, U, V, W>::Check(const Player& P)
   if (this->WaitingForCheck() == 0)
     return;
 
+  CODE_LOCATION
 #ifdef DEBUG_MAC
   cout << "Checking " << shares[0] << " " << this->vals[0] << " " << this->macs[0] << endl;
 #endif
@@ -301,7 +320,6 @@ void MAC_Check_Z2k<T, U, V, W>::Check(const Player& P)
   T y, mj;
   y.assign_zero();
   mj.assign_zero();
-  vector<U> chi;
   for (int i = 0; i < this->popen_cnt; ++i)
   {
     U temp_chi;
@@ -310,7 +328,6 @@ void MAC_Check_Z2k<T, U, V, W>::Check(const Player& P)
     y += xi * temp_chi;
     T mji = this->macs[i];
     mj += temp_chi * mji;
-    chi.push_back(temp_chi);
   }
 
   T zj = mj - this->alphai * y;
@@ -328,7 +345,8 @@ void MAC_Check_Z2k<T, U, V, W>::Check(const Player& P)
   this->vals.erase(this->vals.begin(), this->vals.begin() + this->popen_cnt);
   this->macs.erase(this->macs.begin(), this->macs.begin() + this->popen_cnt);
   this->popen_cnt=0;
-  if (!zj_sum.is_zero()) { throw mac_fail(); }
+  if (!zj_sum.is_zero())
+    mac_fail_remove<W>(P);
 }
 
 
@@ -381,6 +399,7 @@ void Direct_MAC_Check<T>::pre_exchange(const Player& P)
 template<class T>
 void Direct_MAC_Check<T>::exchange(const Player& P)
 {
+  CODE_LOCATION
   pre_exchange(P);
   P.unchecked_broadcast(oss);
 

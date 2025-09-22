@@ -12,6 +12,8 @@
 
 #include "Math/gfp.hpp"
 
+#include <boost/filesystem.hpp>
+
 using namespace std;
 
 OnlineOptions OnlineOptions::singleton;
@@ -21,6 +23,7 @@ OnlineOptions::OnlineOptions() : playerno(-1)
 {
     interactive = false;
     lgp = gfp0::MAX_N_BITS;
+    lg2 = 0;
     live_prep = true;
     batch_size = 1000;
     memtype = "empty";
@@ -36,6 +39,7 @@ OnlineOptions::OnlineOptions() : playerno(-1)
     opening_sum = 0;
     max_broadcast = 0;
     receive_threads = false;
+    code_locations = false;
 #ifdef VERBOSE
     verbose = true;
 #else
@@ -121,6 +125,14 @@ OnlineOptions::OnlineOptions(ez::ezOptionParser& opt, int argc,
             "-o", // Flag token.
             "--options" // Flag token.
     );
+    opt.add(
+            "", // Default.
+            0, // Required?
+            0, // Number of args expected.
+            ',', // Delimiter if expecting multiple args.
+            "Output code locations of the most relevant protocols used", // Help description.
+            "--code-locations" // Flag token.
+    );
 
     if (security)
         opt.add(
@@ -128,7 +140,7 @@ OnlineOptions::OnlineOptions(ez::ezOptionParser& opt, int argc,
             0, // Required?
             1, // Number of args expected.
             0, // Delimiter if expecting multiple args.
-            ("Statistical ecurity parameter (default: " + to_string(security_parameter)
+            ("Statistical security parameter (default: " + to_string(security_parameter)
                     + ")").c_str(), // Help description.
             "-S", // Flag token.
             "--security" // Flag token.
@@ -149,6 +161,8 @@ OnlineOptions::OnlineOptions(ez::ezOptionParser& opt, int argc,
 
     opt.get("--options")->getStrings(options);
 
+    code_locations = opt.isSet("--code-locations");
+
 #ifdef THROW_EXCEPTIONS
     options.push_back("throw_exceptions");
 #endif
@@ -162,8 +176,13 @@ OnlineOptions::OnlineOptions(ez::ezOptionParser& opt, int argc,
             exit(1);
         }
     }
+    else
+        security_parameter = 1000;
 
     opt.resetArgs();
+
+    if (argc > 0)
+        executable = boost::filesystem::path(argv[0]).filename().string();
 }
 
 OnlineOptions::OnlineOptions(ez::ezOptionParser& opt, int argc,
@@ -354,20 +373,6 @@ void OnlineOptions::finalize(ez::ezOptionParser& opt, int argc,
         exit(1);
     }
 
-    if (opt.get("-lgp"))
-    {
-        bigint schedule_prime = BaseMachine::prime_from_schedule(progname);
-        if (prime != 0 and prime != schedule_prime and schedule_prime != 0)
-        {
-            cerr << "Different prime for compilation and computation." << endl;
-            cerr << "Run with '--prime " << schedule_prime
-                    << "' or compile with '--prime " << prime << "'." << endl;
-            exit(1);
-        }
-        if (schedule_prime != 0)
-            prime = schedule_prime;
-    }
-
     for (size_t i = name_index + 1; i < allArgs.size(); i++)
     {
         try
@@ -384,6 +389,38 @@ void OnlineOptions::finalize(ez::ezOptionParser& opt, int argc,
         }
     }
 
+    if (has_option("throw_exceptions"))
+        finalize_with_error(opt);
+    else
+    {
+        try
+        {
+            finalize_with_error(opt);
+        }
+        catch (exception& e)
+        {
+            cerr << "Fatal error in option processing: " << e.what() << endl;
+            exit(1);
+        }
+    }
+}
+
+void OnlineOptions::finalize_with_error(ez::ezOptionParser& opt)
+{
+    if (opt.get("-lgp"))
+    {
+        bigint schedule_prime = BaseMachine::prime_from_schedule(progname);
+        if (prime != 0 and prime != schedule_prime and schedule_prime != 0)
+        {
+            cerr << "Different prime for compilation and computation." << endl;
+            cerr << "Run with '--prime " << schedule_prime
+                    << "' or compile with '--prime " << prime << "'." << endl;
+            exit(1);
+        }
+        if (schedule_prime != 0)
+            prime = schedule_prime;
+    }
+
     // ignore program if length explicitly set from command line
     if (opt.get("-lgp") and not opt.isSet("-lgp"))
     {
@@ -392,6 +429,23 @@ void OnlineOptions::finalize(ez::ezOptionParser& opt, int argc,
         // only increase to be consistent with program not demanding any length
         if (prog_lgp > lgp)
             lgp = prog_lgp;
+    }
+
+    if (opt.get("--lg2"))
+        opt.get("--lg2")->getInt(lg2);
+
+    int prog_lg2 = BaseMachine::gf2n_length_from_schedule(progname);
+    if (prog_lg2)
+    {
+        if (prog_lg2 != lg2 and opt.isSet("lg2"))
+        {
+            cerr << "GF(2^n) mismatch between command line and program" << endl;
+            exit(1);
+        }
+
+        if (verbose)
+            cerr << "Using GF(2^" << prog_lg2 << ") as requested by program" << endl;
+        lg2 = prog_lg2;
     }
 
     set_trunc_error(opt);
@@ -434,9 +488,8 @@ void OnlineOptions::set_trunc_error(ez::ezOptionParser& opt)
     if (opt.get("-E"))
     {
         opt.get("-E")->getInt(trunc_error);
-#ifdef VERBOSE
-        cerr << "Truncation error probability 2^-" << trunc_error << endl;
-#endif
+        if (verbose)
+            cerr << "Truncation error probability 2^-" << trunc_error << endl;
     }
 }
 

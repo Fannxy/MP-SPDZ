@@ -16,19 +16,19 @@ void exit_error(const string& message)
     exit(1);
 }
 
-IO_Error::IO_Error(const string& m)
+IO_Error::IO_Error(const string& m) :
+        ans(m)
 {
-    ans = "IO-Error : " + m;
 }
 
-file_error::file_error(const string& m)
+file_error::file_error(const string& m) :
+        ans(m)
 {
-    ans = "File Error : " + m;
 }
 
-Processor_Error::Processor_Error(const string& m)
+Processor_Error::Processor_Error(const string& m) :
+        msg(m)
 {
-    msg = "Processor-Error : " + m;
 }
 
 Processor_Error::Processor_Error(const char* m) :
@@ -46,7 +46,11 @@ wrong_gfp_size::wrong_gfp_size(const char* name, const bigint& p,
 }
 
 overflow::overflow(const string& name, size_t i, size_t n) :
-        runtime_error(name + " overflow: " + to_string(i) + "/" + to_string(n))
+    runtime_error(
+        name + " overflow: " + to_string(long(i)) + "/" + to_string(n)
+            + ((long(i) < 0) ? ". A negative value indicates that "
+                               "the computation modulus might be too small" :
+                               ""))
 {
 }
 
@@ -71,9 +75,10 @@ input_error::input_error(const char* name, const string& filename,
             + to_string(input_counter);
 }
 
-signature_mismatch::signature_mismatch(const string& filename) :
-        runtime_error("Signature in " + filename + " doesn't match protocol. "
-                "Re-run preprocessing")
+signature_mismatch::signature_mismatch(const string& filename, bool has_mac) :
+        runtime_error("Signature in " + filename + " doesn't match protocol. " +
+                "Maybe re-run preprocessing"
+                        + (has_mac ? " or check for MAC mismatch" : ""))
 {
 }
 
@@ -121,5 +126,35 @@ insufficient_shares::insufficient_shares(int expected, int actual, exception& e)
         runtime_error(
                 "expected " + to_string(expected) + " shares but only got "
                         + to_string(actual) + " (" + e.what() + ")")
+{
+}
+
+persistence_error::persistence_error(const string& error) :
+        runtime_error(
+                "Error while reading from persistence file. "
+                "You need to write to it first. "
+                "See https://mp-spdz.readthedocs.io/en/latest/io.html#persistence. "
+                "Details: " + error)
+{
+}
+
+bytecode_error::bytecode_error(const string& error) :
+        runtime_error(error)
+{
+}
+
+no_dynamic_memory::no_dynamic_memory() :
+        runtime_error("this functionality is only implemented "
+                "for online-only BMR, see "
+                "https://github.com/data61/MP-SPDZ?tab=readme-ov-file#bmr-1")
+{
+}
+
+field_too_small::field_too_small(int length, int security) :
+        runtime_error(
+                "Field too small (" + to_string(length)
+                        + " bits) for chosen security (" + to_string(security)
+                        + "). Increase size with -lgp or "
+                        "decrease security with --security")
 {
 }

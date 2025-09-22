@@ -7,8 +7,7 @@
 #define PROTOCOLS_SHAMIRINPUT_HPP_
 
 #include "ShamirInput.h"
-#include "Machines/ShamirMachine.h"
-
+#include "ShamirOptions.h"
 #include "Protocols/ReplicatedInput.hpp"
 #include "Protocols/SemiInput.hpp"
 
@@ -129,7 +128,9 @@ void IndividualInput<U>::send_mine()
 template<class T>
 void IndividualInput<T>::exchange()
 {
+    CODE_LOCATION
     P.send_receive_all(senders, os, InputBase<T>::os);
+    this->shares.reset();
 }
 
 template<class T>
@@ -149,6 +150,7 @@ void IndividualInput<T>::stop_exchange()
         if (senders[receive_from])
             P.receive_player(receive_from, InputBase<T>::os[receive_from]);
     }
+    this->shares.reset();
 }
 
 template<class T>

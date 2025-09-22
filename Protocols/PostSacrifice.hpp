@@ -3,6 +3,9 @@
  *
  */
 
+#ifndef PROTOCOLS_POSTSACRIFIE_HPP_
+#define PROTOCOLS_POSTSACRIFIE_HPP_
+
 #include "PostSacrifice.h"
 
 template<class T>
@@ -58,6 +61,7 @@ void PostSacrifice<T>::check()
     if (buffer_size == 0)
         return;
 
+    CODE_LOCATION
     vector<array<prep_type, 5>> tuples;
     tuples.reserve(buffer_size);
     auto& honest_prot = internal;
@@ -81,3 +85,5 @@ void PostSacrifice<T>::check()
     operands.erase(operands.begin(), operands.begin() + buffer_size);
     results.clear();
 }
+
+#endif

@@ -80,9 +80,8 @@ void secure_init(T& setup, Player& P, U& machine,
 
     try
     {
-        ifstream file(filename);
         octetStream os;
-        os.input(file);
+        os.input(filename);
         os.get(machine.extra_slack);
         setup.unpack(os);
     }
@@ -95,13 +94,17 @@ void secure_init(T& setup, Player& P, U& machine,
     {
         setup.check(P, machine);
     }
-    catch (exception& e)
+    catch (mismatch_among_parties& e)
     {
-        reason = e.what();
+        if (reason.empty())
+            reason = e.what();
     }
 
     if (not reason.empty())
     {
+        if (OnlineOptions::singleton.has_option("expect_setup"))
+            throw runtime_error("error in setup: " + reason);
+
         if (OnlineOptions::singleton.verbose)
             cerr << "Generating parameters for security " << sec
                     << " and field size ~2^" << plaintext_length
@@ -172,6 +175,7 @@ template <class FD>
 void PairwiseSetup<FD>::covert_key_generation(Player& P,
         PairwiseMachine& machine, int num_runs)
 {
+    CODE_LOCATION
     vector<SeededPRNG> G(num_runs);
     vector<AllCommitments> commits(num_runs, P);
     vector<FHE_KeyPair> my_keys(num_runs, {params, FieldD.get_prime()});

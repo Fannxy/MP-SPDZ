@@ -71,6 +71,8 @@ CXX = clang++
 # use CONFIG.mine to overwrite DIR settings
 -include CONFIG.mine
 
+AVX_SIMPLEOT := $(AVX_OT)
+
 ifeq ($(USE_GF2N_LONG),1)
 GF2N_LONG = -DUSE_GF2N_LONG
 endif
@@ -88,7 +90,7 @@ endif
 LDLIBS = -lgmpxx -lgmp -lsodium $(MY_LDLIBS)
 LDLIBS += $(BREW_LDLIBS)
 LDLIBS +=  -Wl,-rpath -Wl,$(CURDIR)/local/lib -L$(CURDIR)/local/lib
-LDLIBS += -lboost_system -lssl -lcrypto
+LDLIBS += -lssl -lcrypto
 LDLIBS += -lboost_filesystem -lboost_iostreams
 
 CFLAGS += -I./local/include
@@ -100,13 +102,10 @@ endif
 
 ifeq ($(OS), Linux)
 LDLIBS += -lrt
+LDLIBS += -z noexecstack
 endif
 
-ifeq ($(OS), Darwin)
-BOOST = -lboost_thread-mt $(MY_BOOST)
-else
 BOOST = -lboost_thread $(MY_BOOST)
-endif
 
 CFLAGS += $(ARCH) $(MY_CFLAGS) $(GDEBUG) -Wextra -Wall $(OPTIM) -I$(ROOT) -I$(ROOT)/deps -pthread $(PROF) $(DEBUG) $(MOD) $(GF2N_LONG) $(PREP_DIR) $(SSL_DIR) $(SECURE) -std=c++17 -Werror
 CFLAGS += $(BREW_CFLAGS)

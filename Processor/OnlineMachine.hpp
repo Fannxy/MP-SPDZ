@@ -12,26 +12,19 @@
 #include <string>
 #include <stdio.h>
 
+#include "Protocols/Replicated.hpp"
+#include "Protocols/ReplicatedPrep.hpp"
+#include "Protocols/MAC_Check_Base.hpp"
+
 using namespace std;
 
 template<class V>
 OnlineMachine::OnlineMachine(int argc, const char** argv, ez::ezOptionParser& opt,
         OnlineOptions& online_opts, int nplayers, V) :
-        argc(argc), argv(argv), online_opts(online_opts), lg2(0),
+        argc(argc), argv(argv), online_opts(online_opts),
         use_encryption(false),
         opt(opt), nplayers(nplayers)
 {
-    opt.add(
-          to_string(V::default_degree()).c_str(), // Default.
-          0, // Required?
-          1, // Number of args expected.
-          0, // Delimiter if expecting multiple args.
-          ("Bit length of GF(2^n) field (default: "
-                  + to_string(V::default_degree()) + "; options are "
-                  + V::options() + ")").c_str(), // Help description.
-          "-lg2", // Flag token.
-          "--lg2" // Flag token.
-    );
     opt.add(
           "5000", // Default.
           0, // Required?
@@ -83,7 +76,6 @@ OnlineMachine::OnlineMachine(int argc, const char** argv, ez::ezOptionParser& op
     );
 
     opt.parse(argc, argv);
-    opt.get("--lg2")->getInt(lg2);
     opt.resetArgs();
 }
 
@@ -174,7 +166,7 @@ Player* OnlineMachine::new_player(const string& id_base)
 template<class T, class U>
 int OnlineMachine::run()
 {
-    if (online_opts.has_option("throw_exception"))
+    if (online_opts.has_option("throw_exceptions"))
         return run_with_error<T, U>();
     else
     {
@@ -197,7 +189,7 @@ int OnlineMachine::run_with_error()
     try
 #endif
     {
-        Machine<T, U>(playerNames, use_encryption, online_opts, lg2).run(
+        Machine<T, U>(playerNames, use_encryption, online_opts).run(
                 online_opts.progname);
 
         if (online_opts.verbose)

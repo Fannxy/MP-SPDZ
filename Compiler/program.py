@@ -24,6 +24,7 @@ from Compiler.instructions_base import RegType
 
 from . import allocator as al
 from . import util
+from .papers import *
 
 data_types = dict(
     triple=0,
@@ -140,7 +141,14 @@ class Program(object):
                     raise CompilerError(
                         "integer bit length can be maximal %s" % max_bit_length
                     )
+                from .types import sfix
                 self.bit_length = self.bit_length or max_bit_length
+                k = self.bit_length // 2
+                f = int(math.ceil(k / 2))
+                if k < sfix.k or f < sfix.f:
+                    print("Reducing fixed-point precision to (%d, %d) "
+                          "to match prime %d" % (f, k, self.prime))
+                    sfix.set_precision(f, k)
                 self.non_linear = KnownPrime(self.prime)
             else:
                 self.non_linear = Prime()
@@ -212,7 +220,7 @@ class Program(object):
         self._invperm = options.invperm
         self._split = False
         if options.split:
-            self.use_split(int(options.split))
+            self.use_split([int(x) for x in options.split.split(",")])
         self._square = False
         self._always_raw = False
         self._linear_rounds = False
@@ -229,9 +237,20 @@ class Program(object):
         self.cisc_to_function = True
         if not self.options.cisc:
             self.options.cisc = not self.options.optimize_hard
-        self.use_tape_calls = True
+        self.use_tape_calls = not options.garbled
         self.force_cisc_tape = False
+        self.use_mulm = True
         self.have_warned_trunc_pr = False
+        self.use_unsplit = False
+        self.recommended = set()
+        if self.options.papers:
+            if self.options.execute:
+                protocol = self.options.execute
+                print("Recommended reading for %s: %s" % (
+                    protocol, reading_for_protocol(protocol)))
+            else:
+                print("Use '--execute <protocol>' to see recommended reading "
+                      "on the basic protocol.")
 
         Program.prog = self
         from . import comparison, instructions, instructions_base, types
@@ -260,7 +279,7 @@ class Program(object):
                 os.mkdir(dirname)
 
         # create extra directories if needed
-        for dirname in ["Public-Input", "Bytecode", "Schedules"]:
+        for dirname in ["Public-Input", "Bytecode", "Schedules", "Functions"]:
             if not os.path.exists(self.programs_dir + "/" + dirname):
                 os.mkdir(self.programs_dir + "/" + dirname)
 
@@ -446,6 +465,11 @@ class Program(object):
         sch_file.write("\n")
         sch_file.write("opts: %s\n" % " ".join(self.relevant_opts))
         sch_file.write("sec:%d\n" % self.used_security)
+        req2 = set(x.req_bit_length["2"] for x in self.tapes)
+        req2.add(0)
+        assert len(req2) <= 2
+        if req2:
+            sch_file.write("lg2:%s" % max(req2))
         sch_file.close()
         h = hashlib.sha256()
         for tape in self.tapes:
@@ -701,14 +725,23 @@ class Program(object):
         :returns: setting if :py:obj:`change` is :py:obj:`None`
         """
         if change is None:
-            if not self._split:
+            if self._split:
+                return self._split[0]
+            else:
                 self.relevant_opts.add("split")
-            return self._split
+                return False
         else:
             if change and not self.options.ring:
                 raise CompilerError("splitting only supported for rings")
-            assert change > 1 or change is False
-            self._split = change
+            if change:
+                self._split = util.tuplify(change)
+                for x in self._split:
+                    assert x > 1
+            else:
+                self._split = ()
+
+    def used_splits(self):
+        return self._split
 
     def use_square(self, change=None):
         """Setting whether to use preprocessed square tuples
@@ -740,12 +773,17 @@ class Program(object):
             self.use_trunc_pr = True
         if "signed_trunc_pr" in self.args:
             self.use_trunc_pr = -1
+        if "trunc_pr20" in self.args:
+            self.use_trunc_pr = 20
         if "split" in self.args or "split3" in self.args:
             self.use_split(3)
         for arg in self.args:
             m = re.match("split([0-9]+)", arg)
             if m:
                 self.use_split(int(m.group(1)))
+            m = re.match("unsplit([0-9]+)", arg)
+            if m:
+                self.use_unsplit = int(m.group(1))
         if "raw" in self.args:
             self.always_raw(True)
         if "edabit" in self.args:
@@ -754,6 +792,8 @@ class Program(object):
             self.use_invperm(True)
         if "linear_rounds" in self.args:
             self.linear_rounds(True)
+        if "back_mulm" in self.args:
+            self.use_mulm = -1
 
     def disable_memory_warnings(self):
         self.warn_about_mem.append(False)
@@ -829,6 +869,14 @@ class Program(object):
                 bl = inst.args[0]
                 return (abs(bl.i) + 63) // 64 * 8
 
+    def reading(self, concept, reference):
+        key = concept, reference
+        if self.options.papers and key not in self.recommended:
+            if isinstance(reference, tuple):
+                reference = ', '.join(papers.get(x) or x for x in reference)
+            print('Recommended reading on %s: %s' % (
+                concept, papers.get(reference) or reference))
+            self.recommended.add(key)
 
 class Tape:
     """A tape contains a list of basic blocks, onto which instructions are added."""
@@ -859,6 +907,7 @@ class Tape:
         self.warned_about_mem = False
         self.return_values = []
         self.ran_threads = False
+        self.unused_decorators = {}
 
     class BasicBlock(object):
         def __init__(self, parent, name, scope, exit_condition=None,
@@ -971,6 +1020,13 @@ class Tape:
             tape.basicblocks[-1] = self
             return res
 
+        def replace_last_reg(self, new_reg, last_reg):
+            args = self.instructions[-1].args
+            if args[0] is last_reg:
+                args[0] = new_reg
+            else:
+                new_reg.mov(new_reg, new_reg.conv(last_reg))
+
         def __str__(self):
             return self.name
 
@@ -1054,6 +1110,10 @@ class Tape:
             print()
             raise CompilerError("Unclosed if/else blocks, see tracebacks above")
 
+        if self.unused_decorators:
+            raise CompilerError("Unused branching decorators, make sure to write " + ",".join(
+                "'@%s' instead of '%s'" % (x, x) for x in set(self.unused_decorators.values())))
+
         if self.program.verbose:
             print(
                 "Processing tape", self.name, "with %d blocks" % len(self.basicblocks)
@@ -1082,6 +1142,8 @@ class Tape:
                     if len(block.instructions) > 1000000:
                         print("Eliminate dead code...")
                     merger.eliminate_dead_code()
+                else:
+                    merger.eliminate_dead_code(only_ldint=True)
                 if options.merge_opens and self.merge_opens:
                     if len(block.instructions) == 0:
                         block.used_from_scope = util.set_by_id()
@@ -1111,10 +1173,9 @@ class Tape:
                         )
                 # free memory
                 merger = None
-                if options.dead_code_elimination:
-                    block.instructions = [
-                        x for x in block.instructions if x is not None
-                    ]
+                block.instructions = [
+                    x for x in block.instructions if x is not None
+                ]
         if not (options.merge_opens and self.merge_opens):
             print("Not merging instructions in tape %s" % self.name)
 
@@ -1235,13 +1296,13 @@ class Tape:
                         field_types[req[0]], req[2], num, add_to_prog=False
                     )
                 )
-            elif req[0] == "modp":
+            elif req[0] == "modp" and req[1] == "prep":
                 self.basicblocks[-1].instructions.append(
-                    Compiler.instructions.use_prep(req[1], num, add_to_prog=False)
+                    Compiler.instructions.use_prep(req[2], num, add_to_prog=False)
                 )
-            elif req[0] == "gf2n":
+            elif req[0] == "gf2n" and req[1] == "prep":
                 self.basicblocks[-1].instructions.append(
-                    Compiler.instructions.guse_prep(req[1], num, add_to_prog=False)
+                    Compiler.instructions.guse_prep(req[2], num, add_to_prog=False)
                 )
             elif req[0] == "edabit":
                 self.basicblocks[-1].instructions.append(
@@ -1262,13 +1323,14 @@ class Tape:
 
         if not self.is_empty():
             # bit length requirement
-            for x in ("p", "2"):
+            from Compiler.instructions import reqbl, greqbl
+            for x, inst in (("p", reqbl), ("2", greqbl)):
                 if self.req_bit_length[x]:
                     bl = self.req_bit_length[x]
                     if self.program.options.ring:
                         bl = -int(self.program.options.ring)
                     self.basicblocks[-1].instructions.append(
-                        Compiler.instructions.reqbl(bl, add_to_prog=False)
+                        inst(bl, add_to_prog=False)
                     )
             if self.program.verbose:
                 print("Tape requires prime bit length",
@@ -1540,14 +1602,16 @@ class Tape:
                     raise CompilerError(
                         "required bit length %d too much for %d"
                         % (bit_length, self.program.prime)
-                        + ('(for %s)' % reason if reason else '')
+                        + (" (for %s)" % reason if reason else '')
                     )
             bit_length += 1
             if bit_length > self.req_bit_length[t]:
                 self.req_bit_length[t] = bit_length
                 self.bit_length_reason = reason
         else:
-            self.req_bit_length[t] = max(bit_length, self.req_bit_length)
+            if self.req_bit_length[t] and bit_length != self.req_bit_length[t]:
+                raise CompilerError('cannot change bit length')
+            self.req_bit_length[t] = bit_length
 
     @staticmethod
     def read_instructions(tapename):
@@ -1560,11 +1624,9 @@ class Tape:
 
         def __bool__(self):
             raise CompilerError(
-                "Cannot derive truth value from register. "
-                "This is a catch-all error appearing if you try to use a "
-                "run-time value where the compiler expects a compile-time "
-                "value, most likely a Python integer. "
-                "In some cases, you can fix this by using 'compile.py -l'."
+                "Cannot derive truth value (bool) from %s. "
+                "See https://mp-spdz.readthedocs.io/en/latest/troubleshooting.html#cannot-derive-truth-value-from-register. " % \
+                type(self).__name__
             )
 
         def __int__(self):
@@ -1599,6 +1661,7 @@ class Tape:
             "caller",
             "can_eliminate",
             "duplicates",
+            "dup_count",
             "block",
         ]
         maximum_size = 2 ** (64 - inst_base.Instruction.code_length) - 1
@@ -1631,6 +1694,7 @@ class Tape:
             self.vector = []
             self.can_eliminate = True
             self.duplicates = util.set_by_id([self])
+            self.dup_count = None
             if Program.prog.DEBUG:
                 self.caller = [frame[1:] for frame in inspect.stack()[1:]]
             else:
@@ -1724,7 +1788,9 @@ class Tape:
 
             """
             other = type(self)(other)
-            self.program.start_new_basicblock(name="update")
+            same_block = other.block == self.block
+            if same_block or self.reg_type[0] != "s":
+                self.program.start_new_basicblock(name="update")
             if self.program != other.program:
                 raise CompilerError(
                     'cannot update register with one from another thread')

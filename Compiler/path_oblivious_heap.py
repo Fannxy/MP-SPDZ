@@ -1,4 +1,4 @@
-"""This module contains an implementation of the "Path Oblivious Heap"
+r"""This module contains an implementation of the "Path Oblivious Heap"
 oblivious priority queue as proposed by 
 `Shi <https://eprint.iacr.org/2019/274.pdf>`_.
 
@@ -991,6 +991,8 @@ class PathObliviousHeap(AbstractMinPriorityQueue[_secret]):
             stash_size=stash_size,
             init_rounds=init_rounds,
         )
+
+        lib.get_program().reading('path oblivious heap', 'Shi19')
 
     def insert(self, value, priority, fake: bool = False) -> None:
         """Insert an element with a priority into the queue."""

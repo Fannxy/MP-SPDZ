@@ -2,6 +2,7 @@
 #include "Tools/random.h"
 #include "Tools/benchmarking.h"
 #include "Tools/Bundle.h"
+#include "Tools/CodeLocations.h"
 #include "Processor/OnlineOptions.h"
 
 #include <stdio.h>
@@ -111,6 +112,16 @@ void receiver_keygen(ref10_RECEIVER* r, unsigned char (*keys)[HASHBYTES])
     ref10_receiver_keygen(r, keys);
 }
 
+void BaseOT::allocate()
+{
+    for (int i = 0; i < nOT; i++)
+    {
+        sender_inputs[i][0] = BitVector(8 * AES_BLK_SIZE);
+        sender_inputs[i][1] = BitVector(8 * AES_BLK_SIZE);
+        receiver_outputs[i] = BitVector(8 * AES_BLK_SIZE);
+    }
+}
+
 int BaseOT::avx = -1;
 
 bool BaseOT::use_avx()
@@ -146,6 +157,7 @@ void BaseOT::exec_base(bool new_receiver_inputs)
 template<class T, class U>
 void BaseOT::exec_base(bool new_receiver_inputs)
 {
+    CODE_LOCATION
     int i, j, k;
     size_t len;
     PRNG G;
@@ -186,6 +198,7 @@ void BaseOT::exec_base(bool new_receiver_inputs)
     }
 
     os[0].reset_write_head();
+    allocate();
 
     for (i = 0; i < nOT; i += 4)
     {
@@ -408,6 +421,8 @@ void FakeOT::exec_base(bool new_receiver_inputs)
     G.ReSeed();
     vector<octetStream> os(2);
     vector<BitVector> bv(2, 128);
+
+    allocate();
 
     if ((ot_role & RECEIVER) && new_receiver_inputs)
     {

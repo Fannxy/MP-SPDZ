@@ -178,6 +178,8 @@ class StraightlineAllocator:
             dup = dup.vectorbase
             self.alloc[dup] = self.alloc[base]
             dup.i = self.alloc[base]
+            if not dup.dup_count:
+                dup.dup_count = len(base.duplicates)
 
     def dealloc_reg(self, reg, inst, free):
         if reg.vector:
@@ -275,8 +277,9 @@ class StraightlineAllocator:
         for reg in self.alloc:
             for x in reg.get_all():
                 if x not in self.dealloc and reg not in self.dealloc \
-                   and len(x.duplicates) == 0:
-                    print('Warning: read before write at register', x)
+                   and len(x.duplicates) == x.dup_count:
+                    print('Warning: read before write at register %s/%x' % 
+                          (x, id(x)))
                     print('\tregister trace: %s' % format_trace(x.caller,
                                                                 '\t\t'))
                     if options.stop:
@@ -486,20 +489,25 @@ class Merger:
                 if this[-1] < other[0]:
                     del this[:]
             this.append(n)
-            for inst in other:
+            if id(last_access_this_kind) == id(last_mem_write_of):
+                insts = itertools.chain(other, this)
+            else:
+                insts = other
+            for inst in insts:
                 add_edge(inst, n)
 
         def mem_access(n, instr, last_access_this_kind, last_access_other_kind):
             addr = instr.args[1]
             reg_type = instr.args[0].reg_type
+            budget = block.parent.program.budget
             if isinstance(addr, int):
-                for i in range(min(instr.get_size(), 100)):
+                for i in range(min(instr.get_size(), budget)):
                     addr_i = addr + i
                     handle_mem_access(addr_i, reg_type, last_access_this_kind,
                                       last_access_other_kind)
                 if block.warn_about_mem and \
                    not block.parent.warned_about_mem and \
-                   (instr.get_size() > 100) and not instr._protect:
+                   (instr.get_size() > budget) and not instr._protect:
                     print('WARNING: Order of memory instructions ' \
                         'not preserved due to long vector, errors possible')
                     block.parent.warned_about_mem = True
@@ -519,7 +527,11 @@ class Merger:
                last_other_kind[-1] > last_this_kind[-1]:
                 last_this_kind[:] = []
             last_this_kind.append(n)
-            for i in last_other_kind:
+            if last_this_kind == last_mem_write:
+                insts = itertools.chain(last_other_kind, last_this_kind)
+            else:
+                insts = last_other_kind
+            for i in insts:
                 add_edge(i, n)
 
         def keep_order(instr, n, t, arg_index=None):
@@ -582,7 +594,7 @@ class Merger:
                 keep_text_order(instr, n)
             elif isinstance(instr, RawInputInstruction):
                 keep_merged_order(instr, n, RawInputInstruction)
-            elif isinstance(instr, matmulsm):
+            elif isinstance(instr, matmulsm_class):
                 if options.preserve_mem_order:
                     strict_mem_access(n, last_mem_read, last_mem_write)
                 else:
@@ -724,7 +736,7 @@ class Merger:
         G.get_attr(i, 'merges').append(j)
         G.remove_node(j)
 
-    def eliminate_dead_code(self):
+    def eliminate_dead_code(self, only_ldint=False):
         instructions = self.instructions
         G = self.G
         merge_nodes = self.open_nodes
@@ -733,6 +745,8 @@ class Merger:
         stats = defaultdict(lambda: 0)
         for i,inst in zip(range(len(instructions) - 1, -1, -1), reversed(instructions)):
             if inst is None:
+                continue
+            if only_ldint and not isinstance(inst, ldint_class):
                 continue
             can_eliminate_defs = True
             for reg in inst.get_def():
@@ -750,6 +764,8 @@ class Merger:
                 G.remove_node(i)
                 merge_nodes.discard(i)
                 stats[type(instructions[i]).__name__] += 1
+                for reg in instructions[i].get_def():
+                    self.block.parent.program.base_addresses.pop(reg)
                 instructions[i] = None
             if unused_result:
                 eliminate(i)
@@ -787,7 +803,9 @@ class RegintOptimizer:
             self.rev_offset_cache[new_base.i, new_offset, multiplier] = res
 
     def run(self, instructions, program):
+        changed = defaultdict(int)
         for i, inst in enumerate(instructions):
+            pre = inst
             if isinstance(inst, ldint_class):
                 self.cache[inst.args[0]] = inst.args[1]
             elif isinstance(inst, incint):
@@ -824,7 +842,11 @@ class RegintOptimizer:
                         delta = self.cache[cached]
                         if reg in self.offset_cache:
                             reg, offset, mult = self.offset_cache[reg]
-                            new_base, new_offset = reg, offset - delta
+                            new_base = reg
+                            if reverse:
+                                new_offset = offset - delta
+                            else:
+                                new_offset = offset + delta
                         else:
                             new_base = reg
                             new_offset = -delta if reverse else delta
@@ -865,8 +887,12 @@ class RegintOptimizer:
                     cond = self.cache[inst.args[0]]
                     if not cond:
                         instructions[i] = None
+            if pre != instructions[i]:
+                changed[type(inst).__name__] += 1
         pre = len(instructions)
         instructions[:] = list(filter(lambda x: x is not None, instructions))
         post = len(instructions)
+        if changed and program.options.verbose:
+            print('regint optimizer changed:', dict(changed))
         if pre != post and program.options.verbose:
             print('regint optimizer removed %d instructions' % (pre - post))

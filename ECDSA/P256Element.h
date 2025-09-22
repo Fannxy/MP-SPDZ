@@ -30,8 +30,10 @@ public:
     static int size() { return 0; }
     static int length() { return 256; }
     static string type_string() { return "P256"; }
+    static string type_short() { return Scalar::type_short(); }
+    static char type_char() { return Scalar::type_char(); }
 
-    static void init();
+    static void init(int nid = NID_X9_62_prime256v1);
     static void finish();
 
     P256Element();
@@ -51,6 +53,7 @@ public:
     P256Element operator*(const Scalar& other) const;
 
     P256Element& operator+=(const P256Element& other);
+    P256Element& operator*=(const Scalar& other);
     P256Element& operator/=(const Scalar& other);
 
     bool operator==(const P256Element& other) const;
@@ -58,6 +61,8 @@ public:
 
     void pack(octetStream& os, int = -1) const;
     void unpack(octetStream& os, int = -1);
+
+    void output(ostream& s, bool human) const;
 
     friend ostream& operator<<(ostream& s, const P256Element& x);
 };

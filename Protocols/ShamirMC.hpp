@@ -8,6 +8,9 @@
 
 #include "ShamirMC.h"
 
+#include "MAC_Check_Base.hpp"
+#include "Shamir.hpp"
+
 template<class T>
 ShamirMC<T>::ShamirMC(int t) :
         os(0), player(0), threshold()
@@ -90,6 +93,7 @@ void ShamirMC<T>::POpen(vector<typename T::open_type>& values, const vector<T>& 
 template<class T>
 void ShamirMC<T>::exchange(const Player& P)
 {
+    CODE_LOCATION
     vector<bool> my_senders(P.num_players()), my_receivers(P.num_players());
     for (int i = 0; i < P.num_players(); i++)
     {
@@ -114,6 +118,14 @@ void ShamirMC<T>::finalize(vector<typename T::open_type>& values,
     values.clear();
     for (size_t i = 0; i < S.size(); i++)
         values.push_back(finalize_raw());
+}
+
+template<class T>
+array<typename T::open_type*, 2> ShamirMC<T>::finalize_several(size_t n)
+{
+    this->values.clear();
+    finalize(this->values, vector<T>(n));
+    return MAC_Check_Base<T>::finalize_several(n);
 }
 
 template<class T>
@@ -147,6 +159,7 @@ typename T::open_type ShamirMC<T>::reconstruct(const vector<open_type>& shares)
 template<class T>
 void IndirectShamirMC<T>::exchange(const Player& P)
 {
+    CODE_LOCATION
     oss.resize(P.num_players());
     int threshold = ShamirMachine::s().threshold;
     if (P.my_num() <= threshold)

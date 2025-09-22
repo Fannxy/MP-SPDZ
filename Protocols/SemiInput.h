@@ -7,6 +7,7 @@
 #define PROTOCOLS_SEMIINPUT_H_
 
 #include "ReplicatedInput.h"
+#include "Hemi.h"
 
 template<class T> class SemiMC;
 
@@ -39,7 +40,8 @@ public:
 
     SemiInput(SubProcessor<T>* proc, PlayerBase& P);
 
-    SemiInput(typename T::MAC_Check& MC, Preprocessing<T>& prep, Player& P) :
+    SemiInput(typename T::MAC_Check& MC, Preprocessing<T>& prep, Player& P,
+            typename T::Protocol* = 0) :
             SemiInput(0, P)
     {
         (void) MC, (void) prep;
@@ -50,7 +52,6 @@ public:
     void add_other(int player, int n_bits = -1);
     void exchange();
     void finalize_other(int player, T& target, octetStream& o, int n_bits = -1);
-    T finalize_mine();
 };
 
 #endif /* PROTOCOLS_SEMIINPUT_H_ */

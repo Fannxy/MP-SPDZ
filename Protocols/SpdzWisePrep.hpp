@@ -29,15 +29,15 @@ void SpdzWisePrep<T>::buffer_triples()
 }
 
 template<class T>
-template<int X, int L>
-void SpdzWisePrep<T>::buffer_bits(MaliciousRep3Share<gfp_<X, L>>)
+void SpdzWisePrep<T>::buffer_bits(false_type, true_type, false_type)
 {
     MaliciousRingPrep<T>::buffer_bits();
 }
 
-template<>
-void SpdzWisePrep<SpdzWiseShare<MaliciousRep3Share<gf2n>>>::buffer_bits()
+template<class T>
+void SpdzWisePrep<T>::buffer_bits(false_type, false_type, true_type)
 {
+    CODE_LOCATION
     typedef MaliciousRep3Share<gf2n> part_type;
     vector<typename part_type::Honest> bits;
     ProtocolSet<typename part_type::Honest> set(this->proc->P, {});
@@ -60,6 +60,7 @@ template<int K, int S>
 void buffer_bits_from_squares_in_ring(vector<SpdzWiseRingShare<K, S>>& bits,
         SubProcessor<SpdzWiseRingShare<K, S>>* proc)
 {
+    CODE_LOCATION
     assert(proc != 0);
     typedef SpdzWiseRingShare<K + 2, S> BitShare;
     typename BitShare::MAC_Check MC(proc->MC.get_alphai());
@@ -84,19 +85,24 @@ void SpdzWiseRingPrep<T>::buffer_bits()
 template<class T>
 void SpdzWisePrep<T>::buffer_bits()
 {
-    buffer_bits(typename T::share_type());
+    buffer_bits(T::share_type::variable_players, T::clear::prime_field,
+            T::clear::characteristic_two);
 }
 
 template<class T>
-template<int X, int L>
-void SpdzWisePrep<T>::buffer_bits(MaliciousShamirShare<gfp_<X, L>>)
+void SpdzWisePrep<T>::buffer_bits(true_type, true_type, false_type)
 {
     buffer_bits_from_squares(*this);
 }
 
 template<class T>
-template<class U>
-void SpdzWisePrep<T>::buffer_bits(U)
+void SpdzWisePrep<T>::buffer_bits(false_type, false_type, false_type)
+{
+    super::buffer_bits();
+}
+
+template<class T>
+void SpdzWisePrep<T>::buffer_bits(true_type, false_type, true_type)
 {
     super::buffer_bits();
 }
@@ -104,6 +110,7 @@ void SpdzWisePrep<T>::buffer_bits(U)
 template<class T>
 void SpdzWisePrep<T>::buffer_inputs(int player)
 {
+    CODE_LOCATION
     assert(this->proc != 0);
     assert(this->protocol != 0);
     vector<T> rs(BaseMachine::input_batch_size<T>(player,

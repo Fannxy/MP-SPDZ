@@ -35,6 +35,11 @@ class Thread;
 template <class T>
 class Machine;
 
+template<class T, class U>
+void plain_bitcom(T& res, StackedVector<U>& S, const vector<int>& regs);
+template<class T, class U>
+void plain_bitdec(const T& res, StackedVector<U>& S, const vector<int>& regs);
+
 template<class U>
 class ShareSecret
 {
@@ -47,6 +52,7 @@ public:
     static const bool is_real = true;
     static const bool actual_inputs = true;
     static const bool symmetric = true;
+    static const bool garbled = false;
 
     static bool real_shares(const Player&) { return true; }
 
@@ -125,6 +131,8 @@ public:
 
     typedef NoShare bit_type;
 
+    typedef void DefaultMC;
+
     static const int N_BITS = clear::N_BITS;
 
     static const bool dishonest_majority = false;
@@ -132,6 +140,7 @@ public:
     static const bool needs_ot = false;
     static const bool has_mac = false;
     static const bool randoms_for_opens = false;
+    static const bool function_dependent = false;
 
     static string type_string() { return "replicated secret"; }
     static string phase_name() { return "Replicated computation"; }
@@ -166,6 +175,11 @@ public:
         return T::fake_opts();
     }
 
+    static size_t maximum_size()
+    {
+        return default_length;
+    }
+
     RepSecretBase()
     {
     }
@@ -178,9 +192,6 @@ public:
     void bitcom(StackedVector<U>& S, const vector<int>& regs);
     void bitdec(StackedVector<U>& S, const vector<int>& regs) const;
 
-    void xor_(int n, const This& x, const This& y)
-    { *this = (x ^ y).mask(n); }
-
     This operator&(const Clear& other)
     { return super::operator&(BitVec(other)); }
 
@@ -189,9 +200,6 @@ public:
 
     This get_bit(int i)
     { return (*this >> i) & 1; }
-
-    void xor_bit(int i, const This& bit)
-    { *this ^= bit << i; }
 };
 
 template<class U>
@@ -203,7 +211,7 @@ public:
     typedef ReplicatedBase Protocol;
 
     static ReplicatedSecret constant(const typename super::clear& value,
-        int my_num, typename super::mac_key_type, int = -1)
+        int my_num, typename super::mac_key_type = {}, int = -1)
     {
       ReplicatedSecret res;
       if (my_num < 2)
@@ -220,6 +228,11 @@ public:
     BitVec local_mul(const ReplicatedSecret& other) const;
 
     void reveal(size_t n_bits, Clear& x);
+
+    static ReplicatedSecret from_rep3(const FixedVec<BitVec, 2>& x)
+    {
+        return x;
+    }
 };
 
 class SemiHonestRepPrep;

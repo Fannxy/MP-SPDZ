@@ -7,25 +7,30 @@
 
 #include "Math/gfp.hpp"
 
-EC_GROUP* P256Element::curve;
+EC_GROUP* P256Element::curve = 0;
 
-void P256Element::init()
+void P256Element::init(int nid)
 {
-    curve = EC_GROUP_new_by_curve_name(NID_secp256k1);
+    assert(not curve);
+    curve = EC_GROUP_new_by_curve_name(nid);
     assert(curve != 0);
     auto modulus = EC_GROUP_get0_order(curve);
     auto mod = BN_bn2dec(modulus);
+    Scalar::get_ZpD() = {};
     Scalar::init_field(mod, false);
     free(mod);
 }
 
 void P256Element::finish()
 {
+    assert(curve);
     EC_GROUP_free(curve);
+    curve = 0;
 }
 
 P256Element::P256Element()
 {
+    assert(curve);
     point = EC_POINT_new(curve);
     assert(point != 0);
     assert(EC_POINT_set_to_infinity(curve, point) != 0);
@@ -139,6 +144,12 @@ ostream& operator <<(ostream& s, const P256Element& x)
     return s;
 }
 
+void P256Element::output(ostream& s, bool human) const
+{
+    assert(human);
+    s << *this;
+}
+
 P256Element::P256Element(const P256Element& other) :
         P256Element()
 {
@@ -153,6 +164,12 @@ P256Element operator*(const P256Element::Scalar& x, const P256Element& y)
 P256Element& P256Element::operator +=(const P256Element& other)
 {
     *this = *this + other;
+    return *this;
+}
+
+P256Element& P256Element::operator *=(const Scalar& other)
+{
+    *this = *this * other;
     return *this;
 }
 

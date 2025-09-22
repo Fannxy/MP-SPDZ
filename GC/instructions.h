@@ -35,8 +35,7 @@
 
 #define MMS processor.memories.MS
 #define MMC processor.memories.MC
-#define MID MACH->MI[IMM]
-#define MII MACH->MI[PI1.get()]
+#define MMI MACH->MI
 
 #define BIT_INSTRUCTIONS \
     X(XORS, T::xors(PROC, EXTRA)) \
@@ -72,6 +71,7 @@
     X(PRINTREGSIGNED, PROC.print_reg_signed(IMM, R0)) \
     X(PRINTREGB, PROC.print_reg(R0, IMM, SIZE)) \
     X(PRINTREGPLAINB, PROC.print_reg_plain(C0)) \
+    X(PRINTREGPLAINSB, PROC.print_reg_plain(S0)) \
     X(PRINTFLOATPLAINB, PROC.print_float(EXTRA)) \
     X(CONDPRINTSTRB, if(C0.get()) PROC.print_str(IMM)) \
 
@@ -88,16 +88,19 @@
     X(EDABIT, Proc.edabit(INST)) \
     X(SEDABIT, Proc.edabit(INST, true)) \
     X(SPLIT, Proc.split(INST)) \
+    X(UNSPLIT, Proc.unsplit(INST)) \
     X(CALL_ARG, ) \
 
-#define GC_INSTRUCTIONS \
-    X(INPUTB, T::inputb(PROC, EXTRA)) \
-    X(INPUTBVEC, T::inputbvec(PROC, PROC, EXTRA)) \
+#define DYNAMIC_INSTRUCTIONS \
     X(LDMSD, PROC.load_dynamic_direct(EXTRA, MD)) \
     X(STMSD, PROC.store_dynamic_direct(EXTRA, MD)) \
     X(LDMSDI, PROC.load_dynamic_indirect(EXTRA, MD)) \
     X(STMSDI, PROC.store_dynamic_indirect(EXTRA, MD)) \
     X(STMSDCI, PROC.store_clear_in_dynamic(EXTRA, MD)) \
+
+#define GC_INSTRUCTIONS DYNAMIC_INSTRUCTIONS \
+    X(INPUTB, T::inputb(PROC, EXTRA)) \
+    X(INPUTBVEC, T::inputbvec(PROC, PROC, EXTRA)) \
     X(CONVSINT, S0.load_clear(IMM, PI1)) \
     X(CONVCINT, C0 = PI1) \
     X(CONVCBIT, T::convcbit(I0, PC1, PROC)) \
@@ -106,7 +109,7 @@
     X(PRINTCHR, PROC.print_chr(IMM)) \
     X(PRINTSTR, PROC.print_str(IMM)) \
     X(PRINTFLOATPREC, PROC.print_float_prec(IMM)) \
-    X(LDINT, I0 = int(IMM)) \
+    X(LDINT, auto d = &I0; for (int i = 0; i < SIZE; i++) *d++ = int(IMM)) \
     X(ADDINT, I0 = PI1 + PI2) \
     X(SUBINT, I0 = PI1 - PI2) \
     X(MULINT, I0 = PI1 * PI2) \
@@ -121,10 +124,10 @@
     X(GTC, I0 = PI1 > PI2) \
     X(EQC, I0 = PI1 == PI2) \
     X(JMPI, PROC.PC += I0) \
-    X(LDMINT, I0 = MID) \
-    X(STMINT, MID = I0) \
-    X(LDMINTI, I0 = MII) \
-    X(STMINTI, MII = I0) \
+    X(LDMINT, PROC.mem_op(SIZE, PROC.I, MMI, R0, IMM)) \
+    X(STMINT, PROC.mem_op(SIZE, MMI, PROC.I, IMM, R0)) \
+    X(LDMINTI, PROC.mem_op(SIZE, PROC.I, MMI, R0, Ci[REG1])) \
+    X(STMINTI, PROC.mem_op(SIZE, MMI, PROC.I, Ci[REG1], R0)) \
     X(PUSHINT, PROC.pushi(I0.get())) \
     X(POPINT, PROC.popi(I0)) \
     X(MOVINT, I0 = PI1) \

@@ -3,6 +3,9 @@
  *
  */
 
+#ifndef PROTOCOLS_HEMIMATRIXPREP_HPP_
+#define PROTOCOLS_HEMIMATRIXPREP_HPP_
+
 #include "HemiMatrixPrep.h"
 #include "MAC_Check.h"
 #include "FHE/Diagonalizer.h"
@@ -96,6 +99,7 @@ int HemiMatrixPrep<T>::minimum_batch()
 template<class T>
 void HemiMatrixPrep<T>::buffer_triples()
 {
+    CODE_LOCATION
     assert(prep);
     auto& multipliers = prep->get_multipliers();
     auto& FTD = prep->get_FTD();
@@ -226,3 +230,5 @@ void HemiMatrixPrep<T>::buffer_triples()
     fflush(stderr);
 #endif
 }
+
+#endif

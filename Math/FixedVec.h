@@ -63,25 +63,25 @@ public:
         return res;
     }
 
-    FixedVec<T, L>(const T& other = {})
+    FixedVec(const T& other = {})
     {
         for (auto& x : v)
             x = other;
     }
 
-    FixedVec<T, L>(long other) :
-            FixedVec<T, L>(T(other))
+    FixedVec(long other) :
+            FixedVec(T(other))
     {
     }
 
     template<class U>
-    FixedVec<T, L>(const FixedVec<U, L>& other)
+    FixedVec(const FixedVec<U, L>& other)
     {
         for (int i = 0; i < L; i++)
             v[i] = other[i];
     }
 
-    FixedVec<T, L>(const array<T, L>& other)
+    FixedVec(const array<T, L>& other)
     {
         v = other;
     }
@@ -89,6 +89,11 @@ public:
     const array<T, L>& get() const
     {
         return v;
+    }
+
+    const void* get_ptr() const
+    {
+        return v.data();
     }
 
     T& operator[](int i)
@@ -100,25 +105,16 @@ public:
         return v[i];
     }
 
-    void assign(const T& other)
-    {
-        for (auto& x : v)
-            x = other;
-    }
-    void assign(const char* buffer)
+    void assign(const void* buffer)
     {
         for (int i = 0; i < L; i++)
-            v[i].assign(buffer + i * T::size());
+            v[i].assign((octet*) buffer + i * T::size());
     }
 
     void assign_zero()
     {
         for (auto& x : v)
             x = 0;
-    }
-    void assign_one()
-    {
-        assign(1);
     }
 
     void add(const FixedVec<T, L>& x, const FixedVec<T, L>& y)
@@ -216,6 +212,15 @@ public:
         return res;
     }
 
+    template<class U>
+    FixedVec<T, L>operator&(const U& other) const
+    {
+        FixedVec<T, L> res;
+        for (int i = 0; i < L; i++)
+            res[i] = v[i] & other;
+        return res;
+    }
+
     FixedVec<T, L>operator~() const
     {
         FixedVec<T, L> res;
@@ -288,6 +293,14 @@ public:
     {
         *this = *this >> i;
         return *this;
+    }
+
+    FixedVec<T, L> cheap_lshift(unsigned i) const
+    {
+        FixedVec<T ,L> res;
+        for (int j = 0; j < L; j++)
+            res[j] = v[j].cheap_lshift(i);
+        return res;
     }
 
     T sum() const
@@ -365,6 +378,21 @@ public:
     FixedVec get_bit(int i)
     {
         return (*this >> i) & 1;
+    }
+
+    void xor_bit(int i, const This& bit)
+    {
+        *this ^= bit << i;
+    }
+
+    void xor_(int n, const This& x, const This& y)
+    {
+        *this = (x ^ y).mask(n);
+    }
+
+    T for_split(int i) const
+    {
+        return (*this)[i];
     }
 
     void output(ostream& s, bool human) const

@@ -2,11 +2,15 @@
 #include "FHE/P2Data.h"
 #include "Math/Setup.h"
 #include "Math/fixint.h"
+#include "Processor/OnlineOptions.h"
+#include "Tools/CodeLocations.h"
 #include <fstream>
 
 
 void P2Data::forward(vector<poly_type>& ans,const vector<gf2n_short>& a) const
 {
+  CODE_LOCATION
+
   int n=gf2n_short::degree();
   
   BitVector bv(A.size());
@@ -28,6 +32,8 @@ void P2Data::forward(vector<poly_type>& ans,const vector<gf2n_short>& a) const
 
 void P2Data::backward(vector<gf2n_short>& ans,const vector<poly_type>& a) const
 {
+  CODE_LOCATION
+
   int n=gf2n_short::degree();
   BitVector bv(a.size());
   for (size_t i = 0; i < a.size(); i++)
@@ -74,7 +80,6 @@ bool P2Data::operator!=(const P2Data& other) const
 
 void P2Data::hash(octetStream& o) const
 {
-  check_dimensions();
   o.store(gf2n_short::degree());
   o.store(slots);
   A.hash(o);
@@ -113,17 +118,18 @@ string get_filename(const Ring& Rg)
 void P2Data::load(const Ring& Rg)
 {
   string filename = get_filename(Rg);
-  cout << "Loading from " << filename << endl;
-  ifstream s(filename);
+  if (OnlineOptions::singleton.verbose)
+    cerr << "Loading from " << filename << endl;
   octetStream os;
-  os.input(s);
+  os.input(filename);
   unpack(os);
 }
 
 void P2Data::store(const Ring& Rg) const
 {
   string filename = get_filename(Rg);
-  cout << "Storing in " << filename << endl;
+  if (OnlineOptions::singleton.verbose)
+    cerr << "Storing in " << filename << endl;
   ofstream s(filename);
   octetStream os;
   pack(os);

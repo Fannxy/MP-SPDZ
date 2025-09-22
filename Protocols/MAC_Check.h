@@ -107,9 +107,6 @@ class Tree_MAC_Check : public TreeSum<typename U::open_type>, public MAC_Check_B
 
   virtual void AddToCheck(const U& share, const T& value, const Player& P);
   virtual void Check(const Player& P) = 0;
-
-  // compatibility
-  void set_random_element(const U& random_element) { (void) random_element; }
 };
 
 template<class U>
@@ -316,6 +313,7 @@ void TreeSum<T>::add_openings(vector<T>& values, const Player& P,
 template<class T>
 void TreeSum<T>::start(vector<T>& values, const Player& P)
 {
+  CODE_LOCATION
   if (opening_sum < 2)
     opening_sum = P.num_players();
   if (max_broadcast < 2)
