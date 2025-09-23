@@ -1,0 +1,8 @@
+import test_nfgen as tn 
+program.use_trunc_pr = True
+
+N = 100
+x = Array.create_from([sfix(i) for i in range(N)])
+sfix.set_precision(48, 96)
+y = tn.sigmoid(x[0])
+print(y.reveal())
