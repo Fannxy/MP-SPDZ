@@ -7,6 +7,6 @@ logTmp=/dev/null
 echo -e "\n\nTest $1 using protocol $2 \n" >> ${logFile}
 
 # ./${protocol} -p 0 ${task} >> ${logFile} 2>&1 & ./${protocol} -p 1 ${task} >> ${logTmp} & ./${protocol} -p 2 ${task} >> ${logTmp} &
-./${protocol} -p 0 ${task} >> ${logFile} 2>&1 & ./${protocol} -p 1 ${task} >> ${logTmp} & ./${protocol} -p 2 ${task} >> ${logTmp} &
+./${protocol} -p 0 ${task} -v >> ${logFile} 2>&1 & ./${protocol} -p 1 -v ${task} >> ${logTmp} & ./${protocol} -p 2 ${task} -v >> ${logTmp} &
 wait
 echo -e "Success" >> ${logFile}

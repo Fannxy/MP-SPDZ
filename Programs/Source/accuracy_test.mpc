@@ -1,0 +1,27 @@
+import test_nfgen as tn 
+program.use_trunc_pr
+program.use_edabit
+
+func_name="sigmoid"
+
+min_max_dict={
+    "sigmoid": (-10, 10),
+}
+
+sfix.set_precision(48, 96)
+REPEATS=1
+
+a,b=min_max_dict[func_name]
+N = 10000
+step = (b - a) / N
+x_list = Array.create_from([sfix(a+step*i) for i in range(N)])
+
+# Test approximation, 1e-3 relative accuracy
+general_res = Array.create_from([sfix(0) for _ in range(N)])
+@for_range_opt(N)
+def _(i):
+    general_res[i] = eval(f"tn.{func_name}")(x_list[i])
+
+print_ln("General res:")
+print_float_prec(14)
+print_ln("approximation = %s", general_res.reveal())

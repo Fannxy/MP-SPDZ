@@ -1,7 +1,7 @@
 logFolder=./Record/
 clogFolder=./Record/Compile/
 clogFile=${clogFolder}compile_log
-logFile=${logFolder}vector_log
+logFile=${logFolder}execution_log
 sourceFile=test_nfgen
 protocol=replicated-ring-party.x
 
@@ -25,7 +25,7 @@ fi
 # repeats_list=(1000 100 10)
 
 # compile
-python compile.py ${sourceFile} > ${taskCompile} &
+python compile.py -R 144 ${sourceFile} > ${clogFile} &
 wait;
 
 # execute
