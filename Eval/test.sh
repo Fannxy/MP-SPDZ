@@ -2,7 +2,7 @@ logFolder=./Record/
 clogFolder=./Record/Compile/
 clogFile=${clogFolder}compile_log
 logFile=${logFolder}execution_log
-sourceFile=test_nfgen
+sourceFile=test_kan
 protocol=replicated-ring-party.x
 
 
@@ -31,6 +31,7 @@ wait;
 # execute
 ./Eval/local_exec.sh ${sourceFile} ${protocol} ${logFolder} ${logFile}
 wait;
+
 
 
 # # compile

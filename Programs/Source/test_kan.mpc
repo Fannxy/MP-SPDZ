@@ -1,0 +1,15 @@
+import func1_kan_model_spdz as func1
+program.use_trunc_pr = True 
+program.use_edabit
+program.use_split(3)
+
+N = 10
+sfix.set_precision(48, 96)
+# x = Matrix.create_from([[sfix(0.5), sfix(0.5)], [sfix(0.2), sfix(0.8)]])
+x = [Array.create_from([sfix(0.5), sfix(0.5)]), Array.create_from([sfix(0.2), sfix(0.8)])]
+y_list = Array.create_from([sfix(0), sfix(0)])
+for i in range(len(x)):
+    y = func1.func1_kan_model_evaluate(x[i])
+    y_list[i] = y[0]
+    
+# print_ln('y_list=%s', y_list.reveal())
