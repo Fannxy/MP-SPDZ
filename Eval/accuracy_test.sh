@@ -20,14 +20,14 @@ fi
 
 target_funcs=("func1" "func2" "func3" "func4" "func5" "func6" "func7" "func8" "func9" "func15")
 
-# for func in "${target_funcs[@]}"; do
-#     echo "Testing ${func} ..."
+for func in "${target_funcs[@]}"; do
+    echo "Testing ${func} ..."
     
-#     # compile
-#     python compile.py -R 144 ${sourceFile} -D ${func} > ${clogFile}_${func} &
-#     wait;
-# done
-# # wait;
+    # compile
+    python compile.py -R 144 ${sourceFile} -D ${func} > ${clogFile}_${func} &
+    # wait;
+done
+wait;
 
 for func in "${target_funcs[@]}"; do
     echo "Executing ${func} ..."
