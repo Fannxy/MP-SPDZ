@@ -1,0 +1,32 @@
+import multivariate_nonlinear_baseline as mnb
+
+program.use_trunc_pr = True
+program.use_split(3)
+program.use_edabit(True)
+
+func_name = str(program.args[1])
+N = int(program.args[2])
+func_baseline = mnb.benchmark_dict[func_name]["func"]
+n_vars = mnb.benchmark_dict[func_name]["n_vars"]
+domain = mnb.benchmark_dict[func_name]["domain"]
+
+sfix.set_precision(48, 96)
+
+# generate the test data.
+linspaces = [
+    [domain[j][0] + (domain[j][1] - domain[j][0]) * i / (N - 1) for i in range(N)]
+    for j in range(n_vars)
+]
+
+x = [
+    Array.create_from([sfix(linspaces[j][i]) for j in range(n_vars)])
+    for i in range(N)
+]
+
+y_list = Array.create_from([sfix(0) for _ in range(N)])
+
+start_timer("Baseline evaluation")
+for i in range(len(x)):
+    y = func_baseline(x[i])
+    y_list[i] = y[0]
+end_timer("Baseline evaluation")

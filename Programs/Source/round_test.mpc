@@ -1,0 +1,7 @@
+program.use_trunc_pr = True 
+program.use_split(3)
+
+sfix.set_precision(48, 96)
+x = sfix(0.5)
+
+pre_muls = floatingpoint.PreOpL(lambda a,b,_: a * b, [x] * 6)

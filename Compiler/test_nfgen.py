@@ -1,13 +1,6 @@
 from Compiler import types
-from Compiler import instructions_base
 from Compiler.types import floatingpoint, sfix
-from Compiler import program
-from Compiler.types import Array, regint
 
-from Compiler.library import print_ln, for_range_opt
-import Compiler.ml as ml
-from Compiler.mpc_math import sqrt, log_fx, pow_fx
-import math
 
 @types.vectorize
 def sigmoid(x):
@@ -32,6 +25,7 @@ def sigmoid(x):
     
     pre_muls = floatingpoint.PreOpL(lambda a,b,_: a * b, [x] * degree)
 
+    return x
     poss_res = [0]*m
     for i in range(m):
         poss_res0 = coeffA[i][0] * scaler[i][0]

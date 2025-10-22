@@ -1,0 +1,13 @@
+import func1_kan as func1
+program.use_trunc_pr = True 
+program.use_edabit
+program.use_split(3)
+
+program.options_from_args()
+
+sfix.set_precision(48, 96)
+neuron = program.args[1]
+x = sfix(0.5)
+
+eval(f"func1.neuron{neuron}")(x)
+

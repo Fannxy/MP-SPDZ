@@ -1,0 +1,41 @@
+import multivariate_nonlinear_baseline as mnb
+import itertools, math
+
+program.use_trunc_pr = True
+program.use_split(3)
+program.use_edabit(True)
+
+func_name = str(program.args[1])
+N = 50
+# N = 10000
+func_baseline = mnb.benchmark_dict[func_name]["func"]
+n_vars = mnb.benchmark_dict[func_name]["n_vars"]
+domain = mnb.benchmark_dict[func_name]["domain"]
+
+sfix.set_precision(32, 64)
+
+# generate the test data.
+m = math.ceil(N ** (1.0 / n_vars))  # 每个维度取点数量
+grids = [
+    [domain[j][0] + (domain[j][1] - domain[j][0]) * i / (m - 1) for i in range(m)]
+    for j in range(n_vars)
+]
+
+# 取笛卡尔积并裁剪到 N 个样本
+x = [
+    Array.create_from([sfix(val) for val in combo])
+    for combo in itertools.islice(itertools.product(*grids), N)
+]
+y_list = Array.create_from([sfix(0) for _ in range(len(x))])
+
+
+start_timer(1)
+for i in range(len(x)):
+    y = func_baseline(x[i])
+    y_list[i] = y[0]
+stop_timer(1)
+
+
+print_ln("Benchmark res:")
+print_float_prec(14)
+print_ln("benchmark = %s", y_list.reveal())
