@@ -1,12 +1,49 @@
 import multivariate_nonlinear_baseline as mnb
+import func1_kan_model_spdz as approx_func1
+import func2_kan_model_spdz as approx_func2
+import func3_kan_model_spdz as approx_func3
+import func4_kan_model_spdz as approx_func4
+import func5_kan_model_spdz as approx_func5
+import func6_kan_model_spdz as approx_func6
+import func7_kan_model_spdz as approx_func7
+import func8_kan_model_spdz as approx_func8
+import func9_kan_model_spdz as approx_func9
+import func10_kan_model_spdz as approx_func10
+import func11_kan_model_spdz as approx_func11
+import func12_kan_model_spdz as approx_func12
+import func13_kan_model_spdz as approx_func13
+import func14_kan_model_spdz as approx_func14
+import func15_kan_model_spdz as approx_func15
 import itertools, math, os
+
+program.use_edabit(True)
+
+arg_val = str(program.args[3])
+
+if (arg_val == "0" or arg_val == "1" or arg_val == "5"):
+    # 处理 "ring" 的情况
+    if (arg_val == "0" or arg_val == "1"):
+        program.use_split(3)
+    print("compiled for ring")
+    if (arg_val == "0" or arg_val == "5"):
+        program.use_trunc_pr = True
+    else:  # arg_val must be "1" here
+        program.use_square(True)
+else:
+    # 处理 "field" 和 "others" 的情况
+    if (arg_val == "2" or arg_val == "3"):
+        # 处理 "field" 的情况
+        print("compiled for field")
+    else:
+        # 处理其他所有情况
+        print("compiled for others")
 
 func_name = str(program.args[1])
 N = int(program.args[2])
 M = 100
-func_baseline = mnb.benchmark_dict[func_name]["func"]
 n_vars = mnb.benchmark_dict[func_name]["n_vars"]
 domain = mnb.benchmark_dict[func_name]["domain"]
+func_approx = eval(f"approx_{func_name}.{func_name}_kan_model_evaluate_vectorized")
 input_file_path = f"/root/llm-project/NFGen+KAN/Results/inputs/{func_name}_input.txt"
 
 sfix.set_precision(48, 96)
@@ -44,23 +81,13 @@ if last_index + 1 < N:
 print_ln("输入数据加载完成。")
 # --- END: 修改部分 ---
 
-y_list = Array.create_from([sfix(0) for _ in range(N)])
+y_approx_list = Array.create_from([sfix(0) for _ in range(N)])
 
 start_timer(1)
-# @for_range(M)
-# def _(j):
-#     for i in range(N):
-#         current_x_vector = x_matrix[i]
-#         y = func_baseline(current_x_vector)
-#         y_list[i] = y[0]
-# @for_range(N)
-# def _(i):
-for i in range(N):
-# @for_range_opt(N)
-# def _(i):
-# @for_range_opt_multithread(20, N)
-# def _(i):
+@for_range_opt_multithread(40, N)   
+def _(i):
+# for i in range(N):
     current_x_vector = x_matrix[i]
-    y = func_baseline(current_x_vector)
-    y_list[i] = y[0]
+    y = func_approx(current_x_vector)
+    y_approx_list[i] = y[0]
 stop_timer(1)

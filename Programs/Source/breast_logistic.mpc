@@ -51,5 +51,7 @@ log = ml.SGDLogistic(20, 2, program)
 log.fit(X_train, y_train)
 print_ln('%s', (log.predict(X_test) - y_test.get_vector()).reveal())
 
+start_timer(1)
 log.fit_with_testing(X_train, y_train, X_test, y_test)
 print_ln('%s', (log.predict_proba(X_test) - y_test.get_vector()).reveal())
+stop_timer(1)

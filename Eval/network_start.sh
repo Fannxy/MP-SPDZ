@@ -1,3 +1,6 @@
+# setup the bandwidth and latency.
+bandwidth=$1; latency=$2; logFolder=$3; parties_num=$4
+
 # set up the ssh configurations - pre-config 4 hosts.
 ssh_config_content=$(cat <<EOF
 
@@ -45,15 +48,10 @@ else
 fi
 
 # obtain the ip address of the current machine
-ip_address=$(ifconfig ens121f0 | grep 'inet ' | awk '{print $2}')
-
-# setup the bandwidth and latency.
-bandwidth=100 # in Mbps
-latency=1ms # in ms
+ip_address=$(hostname -I | awk '{print $1}')
 
 # Start the network with specified bandwidth and latency
-./Eval/network_setup.sh ${bandwidth} ${bandwidth} ${bandwidth} ${latency} ${latency} ${latency} ${ip_address}
-
-echo "Network started with bandwidth: ${bandwidth}Mbps and latency: ${latency}ms, you can login the hosts through ssh h1, ssh h2, ssh h3"
+./Eval/network_setup.sh ${parties_num} ${bandwidth} ${latency} ${ip_address} ${logFolder}
+echo "Network started with bandwidth: ${bandwidth}Mbps and latency: ${latency}ms, you can login the hosts through ssh h1, ssh h2, ssh h3, (ssh h4)."
 
 

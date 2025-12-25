@@ -1,12 +1,23 @@
 # start network and set the bandwidth
-bw_list="$1 $2 $3"
-latency_list="$4 $5 $6"
-ip="$7"
+parties_num=$1
+bandwidth=$2
+latency=$3
+if [ ${parties_num} -eq 3 ]; then
+    bw_list="$bandwidth $bandwidth $bandwidth"
+    atency_list="$latency $latency $latency"
+else
+    bw_list="$bandwidth $bandwidth $bandwidth $bandwidth"
+    atency_list="$latency $latency $latency $latency"
+fi
+
+ip="$4"
+logFolder="$5"
 mn -c
-root_folder=/root/
-log_file=${root_folder}/network_setup.log
+root_folder=/root/llm-project/NFGen+KAN/
+log_file=${logFolder}network_setup.log
 
 MININET_SESSION="mininet"
+mininet_folder=/root/llm-project/NFGen+KAN/aby3/Net/mininet
 
 # 检查 tmux 会话是否存在
 if tmux has-session -t $MININET_SESSION 2>/dev/null; then
@@ -17,14 +28,20 @@ else
     echo "tmux session $MININET_SESSION created"
 fi
 
-cd ${root_folder}/mininet;
+cd ${mininet_folder};
 # tmux new-session -d -s $MININET_SESSION "python ./examples/p2p_3pc_net.py --ip 10.1.0.12 --bw $bw_list; bash"
-tmux send-keys -t $MININET_SESSION "cd ${root_folder}/mininet; python ./examples/p2p_3pc_net.py --ip ${ip} --bw $bw_list; bash" C-m
+if [ ${parties_num} -eq 3 ]; then
+    tmux send-keys -t $MININET_SESSION "cd ${mininet_folder}; python ./examples/p2p_3pc_net.py --ip ${ip} --bw $bw_list; bash" C-m
+else
+    tmux send-keys -t $MININET_SESSION "cd ${mininet_folder}; python ./examples/p2p_4pc_net.py --ip ${ip} --bw $bw_list; bash" C-m
+fi
+
+echo "output the information to ${log_file}."
 
 # wait for the network to be set up
-hosts=("h1" "h2" "h3")
-for host in "${hosts[@]}"; do
-    while ! ssh -o ConnectTimeout=2 -o StrictHostKeyChecking=no $host "exit" 2>/dev/null; do
+for i in $(seq 1 ${parties_num}); do
+    host="h${i}"
+    while ! ssh -o ConnectTimeout=5 -o StrictHostKeyChecking=no $host "exit" 2>/dev/null; do
         echo "Waiting for $host to be ready..." >> $log_file
         sleep 5
     done

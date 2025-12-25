@@ -1,10 +1,17 @@
 import pandas
 from sklearn.model_selection import train_test_split
 from Compiler import decision_tree
+import os
 
-data = pandas.read_csv(
-    'https://raw.githubusercontent.com/jbrownlee/Datasets/master/adult-all.csv', header=None)
-#'/tmp/adult.csv')
+# 使用本地数据集文件，如果不存在则使用URL下载
+# dataset_path = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), 'data', 'adult-all.csv')
+dataset_path = '/root/llm-project/NFGen+KAN/data/adult-all.csv'
+if os.path.exists(dataset_path):
+    data = pandas.read_csv(dataset_path, header=None)
+else:
+    # 如果本地文件不存在，回退到URL下载
+    data = pandas.read_csv(
+        'https://raw.githubusercontent.com/jbrownlee/Datasets/master/adult-all.csv', header=None)
 
 data, attr_types = decision_tree.preprocess_pandas(data)
 
@@ -35,4 +42,6 @@ tree.fit_with_testing(X_train, y_train, X_test, y_test, attr_types=attr_types)
 # plain training
 tree.fit(X_train, y_train, attr_types=attr_types)
 
+start_timer(1)
 print_ln('%s', (tree.predict(X_test) - y_test.get_vector()).reveal())
+stop_timer(1)

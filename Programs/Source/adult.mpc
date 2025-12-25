@@ -44,11 +44,17 @@ if 'nearest' in program.args:
 
 sfix.set_precision_from_args(program, True)
 
+try:
+   depth = int(program.args[1])
+except:
+   depth = 10
+
 trainer = decision_tree.TreeTrainer(
-   train[1], train[0], int(program.args[1]), attr_lengths=attr_lengths,
+   train[1], train[0], depth, attr_lengths=attr_lengths,
    n_threads=n_threads)
 trainer.debug_selection = 'debug_selection' in program.args
 trainer.debug_gini = True
+start_timer(1)
 layers = trainer.train_with_testing(*test)
-
+stop_timer(1)
 #decision_tree.output_decision_tree(layers)

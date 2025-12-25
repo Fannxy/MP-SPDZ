@@ -1,13 +1,40 @@
-import multivariate_nonlinear_baseline as mnb
+import KAN_approx_adult_model_spdz as adult
+import KAN_approx_breast_cancer_model_spdz as breast_cancer
 import itertools, math, os
 
-func_name = str(program.args[1])
+program.use_edabit(True)
+
+arg_val = str(program.args[3])
+
+if (arg_val == "0" or arg_val == "1" or arg_val == "5"):
+    # 处理 "ring" 的情况
+    if (arg_val == "0" or arg_val == "1"):
+        program.use_split(3)
+    print("compiled for ring")
+    if (arg_val == "0" or arg_val == "5"):
+        program.use_trunc_pr = True
+    else:  # arg_val must be "1" here
+        program.use_square(True)
+else:
+    # 处理 "field" 和 "others" 的情况
+    if (arg_val == "2" or arg_val == "3"):
+        # 处理 "field" 的情况
+        print("compiled for field")
+    else:
+        # 处理其他所有情况
+        print("compiled for others")
+
+network_name = str(program.args[1])
 N = int(program.args[2])
 M = 100
-func_baseline = mnb.benchmark_dict[func_name]["func"]
-n_vars = mnb.benchmark_dict[func_name]["n_vars"]
-domain = mnb.benchmark_dict[func_name]["domain"]
-input_file_path = f"/root/llm-project/NFGen+KAN/Results/inputs/{func_name}_input.txt"
+if network_name == "adult":
+    n_vars = 92
+elif network_name == "breast_cancer":
+    n_vars = 30
+else:
+    raise ValueError(f"Invalid network name: {network_name}")
+network_approx = eval(f"{network_name}.KAN_approx_{network_name}_model_evaluate")
+input_file_path = f"/root/llm-project/NFGen+KAN/Results/inputs/{network_name}_input.txt"
 
 sfix.set_precision(48, 96)
 
@@ -44,23 +71,13 @@ if last_index + 1 < N:
 print_ln("输入数据加载完成。")
 # --- END: 修改部分 ---
 
-y_list = Array.create_from([sfix(0) for _ in range(N)])
+y_approx_list = Array.create_from([sfix(0) for _ in range(N)])
 
 start_timer(1)
-# @for_range(M)
-# def _(j):
-#     for i in range(N):
-#         current_x_vector = x_matrix[i]
-#         y = func_baseline(current_x_vector)
-#         y_list[i] = y[0]
-# @for_range(N)
-# def _(i):
-for i in range(N):
-# @for_range_opt(N)
-# def _(i):
-# @for_range_opt_multithread(20, N)
-# def _(i):
+@for_range_opt_multithread(20, N)   
+def _(i):
+# for i in range(N):
     current_x_vector = x_matrix[i]
-    y = func_baseline(current_x_vector)
-    y_list[i] = y[0]
+    y = network_approx(current_x_vector)
+    y_approx_list[i] = y[0]
 stop_timer(1)
