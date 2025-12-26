@@ -1000,6 +1000,36 @@ def neuron180(x):
 
     return sfix.dot_product(cipher_index, poss_res)
 
+neuron_func_dict = {
+    "neuron000": neuron000,
+    "neuron001": neuron001,
+    "neuron002": neuron002,
+    "neuron003": neuron003,
+    "neuron004": neuron004,
+    "neuron005": neuron005,
+    "neuron006": neuron006,
+    "neuron007": neuron007,
+    "neuron008": neuron008,
+    "neuron010": neuron010,
+    "neuron011": neuron011,
+    "neuron012": neuron012,
+    "neuron013": neuron013,
+    "neuron014": neuron014,
+    "neuron015": neuron015,
+    "neuron016": neuron016,
+    "neuron017": neuron017,
+    "neuron018": neuron018,
+    "neuron100": neuron100,
+    "neuron110": neuron110,
+    "neuron120": neuron120,
+    "neuron130": neuron130,
+    "neuron140": neuron140,
+    "neuron150": neuron150,
+    "neuron160": neuron160,
+    "neuron170": neuron170,
+    "neuron180": neuron180
+}
+
 def func4_kan_model_evaluate(x):
     # dim_list required
     input_x = x
@@ -1011,5 +1041,34 @@ def func4_kan_model_evaluate(x):
             for j in range(out_dim):
                 partial_result[j] += eval(f"neuron{l}{i}{j}")(input_x[i])
         input_x = partial_result
+    return input_x
+
+def func4_kan_model_evaluate_vectorized(x):
+    dim_list = [(2, 9), (9, 1)]
+    input_x = x
+
+    for l in range(len(dim_list)):
+        in_dim, out_dim = dim_list[l]
+        
+        # 1. 创建一个 sfix 矩阵来存储所有中间激活值
+        # 矩阵维度是 in_dim x out_dim
+        activations = sfix.Matrix(in_dim, out_dim)
+
+        # 2. 并行计算所有激活值
+        # 编译器会将这个嵌套循环完全展开，实现最大化的向量化
+        for i in range(in_dim):
+            for j in range(out_dim):
+                activations[i][j] = neuron_func_dict[f"neuron{l}{i}{j}"](input_x[i])
+                
+        output = sfix.Array(out_dim)
+
+        for j in range(out_dim):
+            sum_val = sfix(0)
+            for i in range(in_dim):
+                sum_val += activations[i][j]
+            output[j] = sum_val
+            
+        input_x = output
+        
     return input_x
 

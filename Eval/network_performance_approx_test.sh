@@ -2,7 +2,7 @@ set -e
 
 programs=("replicated-ring-party.x" "ps-rep-ring-party.x" "replicated-field-party.x" "ps-rep-field-party.x" "shamir-party.x" "rep4-ring-party.x")
 scripts=("ring.sh" "ps-rep-ring.sh" "rep-field.sh" "ps-rep-field.sh" "shamir.sh" "rep4-ring.sh")
-nth=4
+nth=5
 
 protocol=${programs[${nth}]}
 script=${scripts[${nth}]}
