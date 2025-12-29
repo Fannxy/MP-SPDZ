@@ -69575,3 +69575,31 @@ def KAN_approx_adult_model_evaluate(x):
         input_x = partial_result
     return input_x
 
+def KAN_approx_adult_model_evaluate_vectorized(x):
+    dim_list = [(92, 20), (20, 2)]
+    input_x = x
+
+    for l in range(len(dim_list)):
+        in_dim, out_dim = dim_list[l]
+        
+        # 1. 创建一个 sfix 矩阵来存储所有中间激活值
+        # 矩阵维度是 in_dim x out_dim
+        activations = sfix.Matrix(in_dim, out_dim)
+
+        # 2. 并行计算所有激活值
+        # 编译器会将这个嵌套循环完全展开，实现最大化的向量化
+        for i in range(in_dim):
+            for j in range(out_dim):
+                activations[i][j] = eval(f"neuron{l}{i}{j}")(input_x[i])
+                
+        output = sfix.Array(out_dim)
+
+        for j in range(out_dim):
+            sum_val = sfix(0)
+            for i in range(in_dim):
+                sum_val += activations[i][j]
+            output[j] = sum_val
+            
+        input_x = output
+        
+    return input_x

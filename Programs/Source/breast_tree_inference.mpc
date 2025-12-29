@@ -1,0 +1,76 @@
+"""
+推理版本的breast_tree.mpc
+使用随机初始化的决策树进行推理，不进行训练
+用于性能测试
+"""
+from sklearn.datasets import load_breast_cancer
+from sklearn.model_selection import train_test_split
+
+X, y = load_breast_cancer(return_X_y=True)
+X_train, X_test, y_train, y_test = train_test_split(X, y, random_state=0)
+
+# 限制测试数据为100条
+N_TEST = 100
+X_test = X_test[:N_TEST]
+y_test = y_test[:N_TEST]
+
+# 只加载测试数据用于推理
+X_test = sfix.input_tensor_via(0, X_test)
+y_test = sint.input_tensor_via(0, y_test)
+
+# use "nearest" option for deterministic result
+sfix.set_precision_from_args(program)
+
+from Compiler.decision_tree import TreeClassifier
+from Compiler import decision_tree
+from Compiler.types import sint, sfix
+
+# 创建随机初始化的决策树（max_depth=5，与breast_tree.mpc一致）
+max_depth = 5
+n_features = X_test.sizes[1] if hasattr(X_test, 'sizes') else len(X_test[0])
+
+# 创建虚拟的训练数据用于初始化TreeTrainer结构
+n_dummy = 100
+dummy_X = sfix.Matrix(n_features, n_dummy)
+dummy_y = sint.Array(n_dummy)
+
+# 随机初始化虚拟数据
+for i in range(n_features):
+    for j in range(n_dummy):
+        dummy_X[i][j] = sfix.get_random(-1, 1)
+for j in range(n_dummy):
+    dummy_y[j] = sint.get_random_bit()
+
+# 创建TreeTrainer但不训练
+trainer = decision_tree.TreeTrainer(
+    dummy_X, dummy_y, max_depth)
+
+# 手动随机初始化树层
+h = max_depth
+for k in range(h):
+    n_nodes = min(2 ** k, len(trainer.nids[k]))
+    for i in range(n_nodes):
+        trainer.nids[k][i] = sint.get_random()
+        trainer.aids[k][i] = sint.get_random()
+        trainer.thresholds[k][i] = sfix.get_random(-10, 10)
+
+# 随机初始化叶子节点
+n_leaves = min(2 ** h, len(trainer.NID))
+for i in range(n_leaves):
+    trainer.NID[i] = sint.get_random()
+
+# 获取树结构
+layers = trainer.get_tree(h)
+
+# 创建TreeClassifier对象
+tree = TreeClassifier(max_depth=max_depth, n_threads=2)
+tree.tree = layers
+
+# 只进行推理（不训练）
+start_timer(1)
+predictions = tree.predict(X_test)
+# 计算预测与真实值的差值
+diff = predictions - y_test.get_vector()
+print_ln('%s', diff.reveal())
+stop_timer(1)
+

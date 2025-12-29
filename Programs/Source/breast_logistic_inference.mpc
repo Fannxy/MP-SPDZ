@@ -1,0 +1,53 @@
+"""
+推理版本的breast_logistic.mpc
+使用随机初始化的逻辑回归模型进行推理，不进行训练
+用于性能测试
+"""
+from sklearn.datasets import load_breast_cancer
+from sklearn.model_selection import train_test_split
+
+X, y = load_breast_cancer(return_X_y=True)
+
+# normalize column-wise
+X /= X.max(axis=0)
+X_train, X_test, y_train, y_test = train_test_split(X, y, random_state=0)
+
+# 限制测试数据为100条
+N_TEST = 100
+X_test = X_test[:N_TEST]
+y_test = y_test[:N_TEST]
+
+# 只加载测试数据用于推理
+X_test = sfix.input_tensor_via(0, X_test)
+y_test = sint.input_tensor_via(0, y_test)
+
+from Compiler import ml
+from Compiler.types import sfix, sint
+
+# 创建逻辑回归模型（20 epochs, batch_size=2，与breast_logistic.mpc一致）
+# 但使用随机初始化的权重
+log = ml.SGDLogistic(20, 2, program)
+
+# 初始化模型结构（这会创建Dense层和Output层）
+log.init(X_test)
+
+# 随机初始化权重和偏置（不进行训练）
+# Dense层的权重矩阵 W: [d_in, d_out] = [n_features, 1]
+# 偏置 b: [d_out] = [1]
+dense_layer = log.opt.layers[0]
+d_in = dense_layer.d_in
+d_out = dense_layer.d_out
+
+# 随机初始化权重矩阵和偏置（使用reset方法，但会随机初始化）
+# 或者手动初始化
+dense_layer.W.randomize(-1, 1)
+dense_layer.b.randomize(-1, 1)
+
+# 只进行推理（不训练）
+start_timer(1)
+predictions = log.predict(X_test)
+# 计算预测与真实值的差值
+diff = predictions - y_test.get_vector()
+print_ln('%s', diff.reveal())
+stop_timer(1)
+

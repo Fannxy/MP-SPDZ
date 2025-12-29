@@ -1,0 +1,101 @@
+"""
+推理版本的easy_adult.mpc
+使用随机初始化的决策树进行推理，不进行训练
+用于性能测试
+"""
+import pandas
+from sklearn.model_selection import train_test_split
+from Compiler import decision_tree
+import os
+
+# 使用本地数据集文件，如果不存在则使用URL下载
+dataset_path = '/root/llm-project/NFGen+KAN/data/adult-all.csv'
+if os.path.exists(dataset_path):
+    data = pandas.read_csv(dataset_path, header=None)
+else:
+    # 如果本地文件不存在，回退到URL下载
+    data = pandas.read_csv(
+        'https://raw.githubusercontent.com/jbrownlee/Datasets/master/adult-all.csv', header=None)
+
+data, attr_types = decision_tree.preprocess_pandas(data)
+
+# label is last column
+X = data[:,:-1]
+y = data[:,-1]
+
+X_train, X_test, y_train, y_test = train_test_split(X, y, random_state=0)
+
+# 限制测试数据为100条
+N_TEST = 100
+X_test = X_test[:N_TEST]
+y_test = y_test[:N_TEST]
+
+# 只加载测试数据用于推理
+X_test = sint.input_tensor_via(0, X_test)
+y_test = sint.input_tensor_via(0, y_test)
+
+# needed for correct Gini coefficient
+sfix.round_nearest = True
+sfix.set_precision(15, 31)
+
+# input values all fit 32 bits
+program.set_bit_length(32)
+
+# 创建随机初始化的决策树（max_depth=10，与easy_adult.mpc一致）
+max_depth = 10
+n_features = X_test.sizes[1] if hasattr(X_test, 'sizes') else len(X_test[0])
+
+# 创建随机初始化的树结构
+# 使用TreeTrainer来创建结构，但不训练
+from Compiler import util
+from Compiler.types import sint, sfix, regint
+
+# 创建虚拟的训练数据用于初始化TreeTrainer结构
+n_dummy = 100  # 虚拟样本数量
+dummy_X = sint.Matrix(n_features, n_dummy)
+dummy_y = sint.Array(n_dummy)
+
+# 随机初始化虚拟数据
+for i in range(n_features):
+    for j in range(n_dummy):
+        dummy_X[i][j] = sint.get_random()
+for j in range(n_dummy):
+    dummy_y[j] = sint.get_random_bit()
+
+# 创建TreeTrainer但不训练
+trainer = decision_tree.TreeTrainer(
+    dummy_X, dummy_y, max_depth,
+    attr_lengths=decision_tree.TreeClassifier.get_attr_lengths(attr_types))
+
+# 手动随机初始化树层
+h = max_depth
+for k in range(h):
+    n_nodes = min(2 ** k, len(trainer.nids[k]))
+    for i in range(n_nodes):
+        # 随机初始化节点ID（使用随机整数，值不重要，只用于性能测试）
+        trainer.nids[k][i] = sint.get_random()
+        # 随机选择属性
+        trainer.aids[k][i] = sint.get_random()
+        # 随机阈值
+        trainer.thresholds[k][i] = sfix.get_random(-10, 10)
+
+# 随机初始化叶子节点
+n_leaves = min(2 ** h, len(trainer.NID))
+for i in range(n_leaves):
+    trainer.NID[i] = sint.get_random()
+
+# 获取树结构
+layers = trainer.get_tree(h)
+
+# 创建TreeClassifier对象
+tree = decision_tree.TreeClassifier(max_depth=max_depth)
+tree.tree = layers
+
+# 只进行推理（不训练）
+start_timer(1)
+predictions = tree.predict(X_test)
+# 计算预测与真实值的差值（用于验证推理过程）
+diff = predictions - y_test.get_vector()
+print_ln('%s', diff.reveal())
+stop_timer(1)
+

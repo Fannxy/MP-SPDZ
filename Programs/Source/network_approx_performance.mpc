@@ -33,7 +33,7 @@ elif network_name == "breast_cancer":
     n_vars = 30
 else:
     raise ValueError(f"Invalid network name: {network_name}")
-network_approx = eval(f"{network_name}.KAN_approx_{network_name}_model_evaluate")
+network_approx = eval(f"{network_name}.KAN_approx_{network_name}_model_evaluate_vectorized")
 input_file_path = f"/root/llm-project/NFGen+KAN/Results/inputs/{network_name}_input.txt"
 
 sfix.set_precision(48, 96)

@@ -2,7 +2,7 @@ set -e
 
 programs=("replicated-ring-party.x" "ps-rep-ring-party.x" "replicated-field-party.x" "ps-rep-field-party.x" "shamir-party.x" "rep4-ring-party.x")
 scripts=("ring.sh" "ps-rep-ring.sh" "rep-field.sh" "ps-rep-field.sh" "shamir.sh" "rep4-ring.sh")
-nth=5
+nth=4
 
 protocol=${programs[${nth}]}
 script=${scripts[${nth}]}
@@ -11,7 +11,7 @@ if [ ${nth} -eq 5 ]; then
     parties_num=4
 fi
 
-network=LAN
+network=WAN
 bandwidth=100 # in Mbps
 latency=100ms # in ms
 if [ "$network" == "LAN" ]; then
@@ -51,7 +51,8 @@ else
     rm -r ${clogFolder}*
 fi
 
-target_networks=("adult" "breast_cancer")
+# target_networks=("adult" "breast_cancer")
+target_networks=("breast_cancer")
 
 ./Eval/network_start.sh ${bandwidth} ${latency} ${logFolder} ${parties_num}
 
