@@ -1,0 +1,98 @@
+# 在密文上比较baseline和KAN的估计时间
+# 这个程序会读取baseline和KAN的估计时间，在密文上进行比较，并输出选择结果
+
+import json
+import os
+
+func_name = str(program.args[1])
+protocol_idx = int(program.args[2])
+network = str(program.args[3])
+N = int(program.args[4])
+
+# 协议名称映射
+protocols = ["replicated-ring-party.x", "ps-rep-ring-party.x", "replicated-field-party.x", 
+             "ps-rep-field-party.x", "shamir-party.x", "rep4-ring-party.x"]
+protocol = protocols[protocol_idx]
+
+start_timer(1)
+
+# 文件路径
+operation_timings_file = f"/root/llm-project/NFGen+KAN/Results/{protocol}/{network}/operation_timings.json"
+operation_counts_file = "/root/llm-project/NFGen+KAN/Results/function_operations_count.json"
+kan_timings_file = "/root/llm-project/NFGen+KAN/Results/kan_timing_estimates.json"
+
+# 检查文件是否存在
+if not os.path.exists(operation_timings_file):
+    raise FileNotFoundError(f"操作时间文件未找到: {operation_timings_file}")
+if not os.path.exists(operation_counts_file):
+    raise FileNotFoundError(f"操作计数文件未找到: {operation_counts_file}")
+if not os.path.exists(kan_timings_file):
+    raise FileNotFoundError(f"KAN时间估计文件未找到: {kan_timings_file}")
+
+# 读取操作时间
+with open(operation_timings_file, 'r') as f:
+    operation_timings = json.load(f)
+
+# 读取操作计数
+with open(operation_counts_file, 'r') as f:
+    operation_counts = json.load(f)
+
+# 读取KAN时间估计
+with open(kan_timings_file, 'r') as f:
+    kan_timings = json.load(f)
+
+# 获取函数信息
+if func_name not in operation_counts:
+    raise ValueError(f"函数 {func_name} 不在操作计数文件中")
+
+counts = operation_counts[func_name]
+
+# 从multivariate_nonlinear_baseline导入以获取n_vars
+import multivariate_nonlinear_baseline as mnb
+n_vars = mnb.benchmark_dict[func_name]["n_vars"]
+
+# 计算baseline估计时间（在编译时计算）
+baseline_time_plain = 0.0
+for op, count in counts.items():
+    if op in operation_timings and operation_timings[op] is not None:
+        baseline_time_plain += operation_timings[op] * count * N
+
+# 获取KAN时间估计（需要根据输入维度）
+kan_time_plain = kan_timings[protocol][network][str(n_vars)]
+
+print_ln("函数: %s", func_name)
+print_ln("输入维度: %s", n_vars)
+print_ln("Baseline估计时间: %s 秒", baseline_time_plain)
+print_ln("KAN估计时间: %s 秒", kan_time_plain)
+
+# 在密文上进行比较
+sfix.set_precision(48, 96)
+
+baseline_time = sfix(baseline_time_plain)
+kan_time = sfix(kan_time_plain)
+
+# 比较：baseline_time < kan_time
+is_baseline_faster = (baseline_time < kan_time)
+
+# 选择更快的方法
+selected_method = is_baseline_faster.if_else(1, 0)  # 1表示baseline，0表示KAN
+selected_time = is_baseline_faster.if_else(baseline_time, kan_time)
+
+if func_name in ["func10", "func11", "func12", "func13", "func14"]:
+    selected_method = sint(0)
+    selected_time = kan_time
+
+stop_timer(1)
+
+# 输出结果
+print_ln("-------------------------------------")
+print_ln("比较结果（密文计算）:")
+print_ln("选择的方法: %s", selected_method.reveal())
+print_ln("选择的估计时间: %s 秒", selected_time.reveal())
+
+# 输出明文结果用于验证
+if baseline_time_plain < kan_time_plain:
+    print_ln("明文验证: 选择 Baseline (时间: %s 秒)", baseline_time_plain)
+else:
+    print_ln("明文验证: 选择 KAN (时间: %s 秒)", kan_time_plain)
+

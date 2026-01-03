@@ -1,0 +1,82 @@
+# 用于offline测量各种MPC操作的时间
+# 这个程序会测量加减乘除、指数、对数、sin、cos等基本操作的时间
+
+import math
+
+# 设置精度
+sfix.set_precision(48, 96)
+
+# 操作类型从命令行参数获取
+op_type = str(program.args[1])
+N = int(program.args[2])  # 重复次数，用于平均化
+
+# 创建测试数据
+a = sfix(1.5)
+b = sfix(2.3)
+c = sfix(0.7)
+
+result = sfix(0)
+
+start_timer(1)
+
+if op_type == "add":
+    @for_range(N)
+    def _(i):
+        result = a + b
+elif op_type == "sub":
+    @for_range(N)
+    def _(i):
+        result = a - b
+elif op_type == "mult":
+    @for_range(N)
+    def _(i):
+        result = a * b
+elif op_type == "div":
+    @for_range(N)
+    def _(i):
+        result = a / b
+elif op_type == "pow":
+    @for_range(N)
+    def _(i):
+        result = a ** 2
+elif op_type == "sqrt":
+    from mpc_math import sqrt
+    @for_range(N)
+    def _(i):
+        result = sqrt(a)
+elif op_type == "exp":
+    from mpc_math import exp2_fx
+    @for_range(N)
+    def _(i):
+        result = exp2_fx(a / math.log(2))
+elif op_type == "log":
+    from mpc_math import log2_fx
+    @for_range(N)
+    def _(i):
+        result = log2_fx(a) * math.log(2)
+elif op_type == "sin":
+    from mpc_math import sin
+    @for_range(N)
+    def _(i):
+        result = sin(a)
+elif op_type == "cos":
+    from mpc_math import cos
+    @for_range(N)
+    def _(i):
+        result = cos(a)
+elif op_type == "compare":
+    @for_range(N)
+    def _(i):
+        result = (a < b).if_else(sfix(1.0), sfix(0.0))
+elif op_type == "if_else":
+    @for_range(N)
+    def _(i):
+        result = (a > b).if_else(a, b)
+else:
+    raise ValueError(f"未知的操作类型: {op_type}")
+
+stop_timer(1)
+
+# 输出结果以确保计算被执行
+print_ln("操作类型: %s, 结果: %s", op_type, result.reveal())
+
