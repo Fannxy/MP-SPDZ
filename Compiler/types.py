@@ -591,7 +591,7 @@ class _structure(Tape._no_truth):
             return cls.int_type.reg_type
         raise CompilerError('type not supported as argument: %s' % cls)
 
-class _secret_structure(_structure):
+class _secret_structure(Tape._no_secret_truth, _structure):
     @classmethod
     def input_tensor_from(cls, player, shape):
         """ Input tensor secretly from player.
@@ -1105,10 +1105,9 @@ class cint(_clear, _int):
     @staticmethod
     def in_immediate_range(value, regint=False):
         if value and not regint:
-            # +1 for sign
-            bit_length = 1 + int(math.ceil(math.log(abs(value), 2)))
+            # slack for sign
             program.non_linear.require_bit_length(
-                bit_length, 'integer conversion')
+                value.bit_length(), 'integer conversion', slack=1)
         return value < 2**31 and value >= -2**31
 
     @vectorize_init
@@ -1321,7 +1320,7 @@ class cint(_clear, _int):
         :param other: cint/regint/int """
         return self >> other
 
-    def round(self, k, m, nearest=None, signed=False):
+    def round(self, k, m, nearest=None, signed=True):
         if signed:
             self += 2 ** (k - 1)
         self += 2 ** (m - 1)
@@ -1386,6 +1385,17 @@ class cgf2n(_clear, _gf2n):
     __slots__ = []
     instruction_type = 'gf2n'
     reg_type = 'cg'
+
+    @classmethod
+    def write_to_socket(self, client_id, values,
+                        message_type=ClientMessageType.NoType):
+        """ Send a list of values to a client by converting to 64-bit regint.
+
+        :param client_id: Client id (regint)
+        :param values: list of cgf2n
+
+        """
+        regint.write_to_socket(client_id, [regint.conv(x) for x in values])
 
     @classmethod
     def bit_compose(cls, bits, step=None):
@@ -1996,7 +2006,12 @@ class personal(Tape._no_truth):
         return self._v
 
     def _div_san(self):
-        return self._v.conv((library.get_player_id() == self.player)._v).if_else(self._v, 1)
+        return self._op_san(1)
+
+    def _op_san(self, default=0):
+        return self._v.conv(
+            (library.get_player_id() == self.player)._v).if_else(
+                self._v, default)
 
     def __setitem__(self, index, value):
         self._san(value)
@@ -2367,7 +2382,7 @@ class _secret(_arithmetic_register, _secret_structure):
     @set_instruction_type
     @read_mem_value
     @vectorize
-    def mul(self, other):
+    def mul(self, other, sync=True):
         """ Secret multiplication. Either both operands have the same
         size or one size 1 for a value-vector multiplication.
 
@@ -2380,7 +2395,7 @@ class _secret(_arithmetic_register, _secret_structure):
             res = type(self)(size=x.size)
             mulrs(res, x, y)
             return res
-        if program.use_mulm == 1:
+        if program.use_mulm == 1 or not sync:
             mulm = instructions.mulm
         elif program.use_mulm == -1:
             mulm = lambda res, x, y: instructions.mulm(res, x, cint(regint(y)))
@@ -2514,7 +2529,7 @@ class _secret(_arithmetic_register, _secret_structure):
         writesharestofile(regint.conv(position), *shares)
 
 class sint(_secret, _int):
-    """
+    r"""
     Secret integer in the protocol-specific domain. It supports
     operations with :py:class:`sint`, :py:class:`cint`,
     :py:class:`regint`, and Python integers. Operations where one of
@@ -2542,6 +2557,12 @@ class sint(_secret, _int):
     Modulo prime, the behaviour is
     undefined and potentially insecure if the operands are longer than
     the bit length.
+
+    Instances of sint are understood to be signed. This means that,
+    for modulo :math:`N`, numbers in :math:`[0,N/2)` are understood as
+    positive numbers whereas numbers in :math:`[N/2,N)` are understood
+    to be negative, namely :math:`x-N`. This ensures expected
+    arithmetic such as :math:`-1 + 1 = (N-1) + 1 = N = 0 \mod N`.
 
     See :ref:`nonlinear` for an overview of how non-linear
     computation is implemented.
@@ -2810,7 +2831,7 @@ class sint(_secret, _int):
             self.load_other(val.v.round(val.k, val.f,
                                         nearest=val.round_nearest))
         elif isinstance(val, sbitvec):
-            super(sint, self).__init__('s', val=val, size=val[0].n)
+            super(sint, self).__init__('s', val=val, size=val.v[0].n)
         else:
             super(sint, self).__init__('s', val=val, size=size)
 
@@ -2985,13 +3006,19 @@ class sint(_secret, _int):
                                           maybe_mixed)
 
     def TruncMul(self, other, k, m, nearest=False):
+        if not nearest and not program.warned_about_tightness and \
+           program.options.ring and int(program.options.ring) == k:
+            print('WARNING: Using tight parameters. '
+                  'Increase ring size or reduce fixed-point precision '
+                  'for increased efficiency')
+            program.warned_about_tightness = True
         return (self * other).round(k, m, nearest, signed=True)
 
     def TruncPr(self, k, m, signed=True):
         return floatingpoint.TruncPr(self, k, m, signed=signed)
 
     @vectorize
-    def round(self, k, m, nearest=False, signed=False):
+    def round(self, k, m, nearest=False, signed=True):
         """ Truncate and maybe round secret :py:obj:`k`-bit integer
         by :py:obj:`m` bits. :py:obj:`m` can be secret if
         :py:obj:`nearest` is false, in which case the truncation will be
@@ -3609,7 +3636,7 @@ class _bitint(Tape._no_truth):
         return s ^ carry, a ^ (s & (carry ^ a))
 
     @staticmethod
-    def bit_comparator(a, b):
+    def bit_comparator(a, b, m=None):
         long_one = util.long_one(a + b)
         op = lambda y,x,*args: (util.if_else(x[1], x[0], y[0]), \
                                     util.if_else(x[1], long_one, y[1]))
@@ -3769,7 +3796,8 @@ class _bitint(Tape._no_truth):
 
     @staticmethod
     def prep_comparison(a, b):
-        a[-1], b[-1] = b[-1], a[-1]
+        if len(a) > 1 and len(b) > 1:
+            a[-1], b[-1] = b[-1], a[-1]
     
     def comparison(self, other, const_rounds=False, index=None):
         a, b = self.expand(other)
@@ -3777,7 +3805,11 @@ class _bitint(Tape._no_truth):
         if const_rounds:
             return self.get_highest_different_bits(a, b, index)
         else:
-            return self.bit_comparator(a, b)
+            try:
+                return self.maybe_function(
+                    self.bit_comparator, a, b, result_length=2)
+            except:
+                return self.bit_comparator(a, b)
 
     def __lt__(self, other):
         if self.reverse_type(other):
@@ -3809,9 +3841,17 @@ class _bitint(Tape._no_truth):
         if self.reverse_type(other):
             return other == self
         diff = self ^ other
-        diff_bits = [x.bit_not() for x in diff.bit_decompose()[:bit_length]]
-        return self.comp_result(util.tree_reduce(lambda x, y: x.bit_and(y),
-                                                 diff_bits))
+        diff_bits = diff.bit_decompose()[:bit_length]
+        try:
+            res = self.maybe_function(self.eqz, diff_bits, [], 1)
+        except:
+            res = self.eqz(diff_bits)
+        return self.comp_result(res[0])
+
+    @staticmethod
+    def eqz(bits, other_bits=None, m=None):
+        diff_bits = [x.bit_not() for x in bits]
+        return [util.tree_reduce(lambda x, y: x.bit_and(y), diff_bits)]
 
     def __ne__(self, other):
         return (self == other).bit_not()
@@ -4035,7 +4075,7 @@ class cfix(_number, _structure):
     :py:class:`cfix` if the other operand is public
     (cfix/regint/cint/int) or :py:class:`sfix` if the other operand is
     an sfix. It also support comparisons (``==, !=, <, <=, >, >=``),
-    returning either :py:class:`regint` or :py:class:`sbitint`.
+    returning either :py:class:`regint` or :py:class:`sintbit`.
 
     Similarly to :py:class:`Compiler.types.cint`, this type is
     restricted to arithmetic circuits due to the fact that only
@@ -4703,7 +4743,7 @@ class _fix(_single):
 
     @classmethod
     def coerce(cls, other, equal_precision=None):
-        if isinstance(other, (_fix, cls.clear_type)):
+        if isinstance(other, (_fix, cls.clear_type, _vectorizable)):
             return other
         else:
             return cls.conv(other)
@@ -4727,7 +4767,7 @@ class _fix(_single):
     @classmethod
     def _new(cls, other, k=None, f=None):
         res = cls(k=k, f=f, initialize=False)
-        res.v = cls.int_type.conv(other)
+        res.v = res.int_type.conv(other)
         return res
 
     @vectorize_init
@@ -4788,6 +4828,9 @@ class _fix(_single):
     def __getitem__(self, index):
         return self._new(self.v[index])
 
+    def __iter__(self):
+        return (self._new(x, k=self.k, f=self.f) for x in self.v)
+
     @vectorize 
     def add(self, other):
         """ Secret fixed-point addition.
@@ -4819,7 +4862,8 @@ class _fix(_single):
                 f -= 1
                 v //= 2
             k = len(bin(abs(v))) - 1
-            other = self.multipliable(v, k, f, self.size)
+            val = self.v.TruncMul(v, self.k + f, f, nearest=self.round_nearest)
+            return self._new(val, k=self.k, f=self.f)
         try:
             other = self.coerce(other, equal_precision=False)
         except:
@@ -4963,18 +5007,28 @@ class sfix(_fix):
 
     It supports basic arithmetic (``+, -, *, /``), returning
     :py:class:`sfix`, and comparisons (``==, !=, <, <=, >, >=``),
-    returning :py:class:`sbitint`. The other operand can be any of
+    returning :py:class:`sintbit`. The other operand can be any of
     sfix/sint/cfix/regint/cint/int/float. It also supports ``abs()``
     and ``**``.
 
     Note that the default precision (16 bits after the dot, 31 bits in
     total) only allows numbers up to :math:`2^{31-16-1} \\approx
-    16000` with the smallest non-zero number being :math:`2^{-16}`.
+    16000` with the smallest non-zero number being :math:`2^{-16}
+    \\approx 0.000015`.
     You can change this using :py:func:`set_precision`.
 
     Fixed-point multiplication is not linear in the sense of the
     computation domain. Therefore, techniques from :ref:`nonlinear`
     have to be used.
+
+    Many operations (including multiplication and division) use
+    probabilistic trunctation by default. This means that the results
+    are not deterministc but random within a small range around the
+    deterministic result. You can switch to (more expensive)
+    deterministic computation by setting
+    ``sfix.round_nearest`` to true. See `Catrina and de Hoogh
+    <https://www.ifca.ai/pub/fc10/31_47.pdf>`_ for an introduction to
+    probabilistic truncation.
 
     :params _v: int/float/regint/cint/sint/sfloat
     """
@@ -5059,7 +5113,10 @@ class sfix(_fix):
         return self.v
 
     def mul_no_reduce(self, other, res_params=None):
-        if not isinstance(other, type(self)):
+        if util.is_constant_float(other):
+            return self.unreduced(
+                self.v * cfix.int_rep(other, k=self.k, f=self.f))
+        elif not isinstance(other, type(self)):
             return self * other
         assert self.f == other.f
         assert self.k == other.k
@@ -5916,6 +5973,18 @@ class _vectorizable:
         """
         self.value_type.reveal_to_clients(clients, [self.get_vector()])
 
+    def reveal_to_socket_by_party(self, client_id, n_parties=None):
+        """ Reveal i-th part to a specific client socket on party i.
+
+        :param client_id: regint
+        :param n_parties: number of parties (default: first dimension length)
+
+        """
+        n_parties = n_parties or len(self)
+        tmp = sum(self.get_part_vector(base=i, size=1).reveal_to(i)._op_san()
+                  for i in range(n_parties))
+        tmp.write_to_socket(client_id, tmp)
+
 class Array(_vectorizable):
     """
     Array accessible by public index. That is, ``a[i]`` works for an
@@ -6008,7 +6077,11 @@ class Array(_vectorizable):
     @read_mem_value
     def get_address(self, index, size=None):
         if isinstance(index, (_secret, _single)):
-            raise CompilerError('need cleartext index')
+            raise CompilerError(
+                'Need cleartext index to address Array. If you need to address '
+                'using secret numbers, you need to use ORAM: '
+                'https://mp-spdz.readthedocs.io/en/latest/Compiler.html#'
+                'module-Compiler.oram')
         key = str(index), size or 1
         index = self.check(index, self.length, self.length)
         if (program.curr_block, key) not in self.address_cache:
@@ -6453,6 +6526,10 @@ class Array(_vectorizable):
         """ Dot product with another array. """
         M = Matrix(1, len(self), self.value_type, address=self.address)
         return M.dot(other)
+
+    def sum(self):
+        """ Sum of elements. """
+        return self[:].sum()
 
     def shuffle(self):
         """ Insecure shuffle in place. """
@@ -7073,11 +7150,6 @@ class SubMultiArray(_vectorizable):
             res_matrix = Matrix(self.sizes[0], other.sizes[1], t)
             try:
                 try:
-                    # force matmuls for smaller sizes
-                    a, c = res_matrix.sizes
-                    if a * c / (a + c) < 2 and \
-                       self.value_type == other.value_type:
-                        raise AttributeError()
                     self.value_type.direct_matrix_mul
                     skip_reduce = set((sint, sfix)) == \
                         set((self.value_type, other.value_type))
@@ -7431,7 +7503,7 @@ class SubMultiArray(_vectorizable):
                     column = column.secure_permute(permutation, reverse=reverse)
                     self.set_column(i, column)
 
-    def sort(self, key_indices=None, n_bits=None, batcher=False):
+    def sort(self, key_indices=None, n_bits=None, batcher=False, n_threads=None):
         """ Sort sub-arrays (different first index) in place.
         This uses `radix sort <https://eprint.iacr.org/2014/121>`_.
 
@@ -7440,7 +7512,8 @@ class SubMultiArray(_vectorizable):
           ``a[*][1][2]``. Default is ``(0, ..., 0)`` of correct length.
         :param n_bits: number of bits in keys (default: global bit length)
         :param batcher: whether to use Batcher's odd-even merge sorting
-
+        :param n_threads: number of threads to use (single thread by default),
+         only works with Batcher's algorithm
         """
         if key_indices is None:
             key_indices = (0,) * (len(self.sizes) - 1)
@@ -7449,7 +7522,7 @@ class SubMultiArray(_vectorizable):
                                 'than the dimension')
         if program.options.binary or batcher:
             assert len(self.sizes) == 2
-            library.loopy_odd_even_merge_sort(self, key_indices=key_indices)
+            library.loopy_odd_even_merge_sort(self, key_indices=key_indices, n_threads=n_threads)
             return
         if isinstance(key_indices, regint):
             key_indices = tuple(key_indices)

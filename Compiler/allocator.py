@@ -712,7 +712,8 @@ class Merger:
             elif isinstance(instr, StackInstruction):
                 keep_order(instr, n, StackInstruction)
             elif isinstance(instr, applyshuffle):
-                shuffles[instr.args[3]].add(n)
+                for handle in instr.handles():
+                    shuffles[handle].add(n)
             elif isinstance(instr, delshuffle):
                 for i_inst in shuffles[instr.args[0]]:
                     add_edge(i_inst, n)
@@ -845,14 +846,15 @@ class RegintOptimizer:
                             new_base = reg
                             if reverse:
                                 new_offset = offset - delta
+                                mult *= -1
                             else:
                                 new_offset = offset + delta
                         else:
                             new_base = reg
-                            new_offset = -delta if reverse else delta
+                            new_offset = delta if reverse else -delta
                             mult = 1
                         self.add_offset(inst.args[0], new_base, new_offset,
-                                        mult if reverse else -mult)
+                                        -mult)
                     if inst.args[1] in self.cache:
                         f(inst.args[2], inst.args[1], False)
                     elif inst.args[2] in self.cache:

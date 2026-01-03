@@ -131,7 +131,7 @@ def p_eval(p_c, x):
     local_aggregation = 0
     # Evaluation of the Polynomial
     for i, pre_mult in zip(p_c[1:], pre_mults):
-        local_aggregation += pre_mult.mul_no_reduce(x.coerce(i))
+        local_aggregation += pre_mult.mul_no_reduce(i)
     return local_aggregation.reduce_after_mul() + p_c[0]
 
 
@@ -148,7 +148,8 @@ def p_eval(p_c, x):
 # @return b2: \{0,1\} value. Returns one when reduction to
 # \pi is greater than \pi/2.
 def sTrigSub(x):
-    library.get_program().reading('trigonometric functions', 'AS19')
+    library.get_program().reading('trigonometric functions', 'AS19',
+                                  'Section 4')
     # reduction to 2* \pi
     f = x * (1.0 / (2 * pi))
     f = trunc(f)
@@ -267,18 +268,19 @@ def exp2_fx(a, zero_output=False, as19=False):
 
     :return: :math:`2^a` if it is within the range. Undefined otherwise
     """
-    library.get_program().reading('exponential', 'AS19')
+    library.get_program().reading('exponential', 'AS19', 'Protocol 6')
     def exp_from_parts(whole_exp, frac):
         class my_fix(type(a)):
             pass
         # improve precision
         my_fix.set_precision(a.k - 2, a.k)
         n_shift = a.k - 2 - a.f
+        res_k = 2 * a.k - n_shift
         x = my_fix._new(frac.v << n_shift)
         # evaluates fractional part of a in p_1045
         e = p_eval(p_1045, x)
         g = a._new(whole_exp.TruncMul(e.v, 2 * a.k, n_shift,
-                                           nearest=a.round_nearest), a.k, a.f)
+                                           nearest=a.round_nearest), res_k, a.f)
         return g
     # how many bits to use from integer part
     n_int_bits = int(math.ceil(math.log(a.k - a.f, 2)))
@@ -315,7 +317,7 @@ def exp2_fx(a, zero_output=False, as19=False):
                 s = sint.conv(bits[-1])
                 lower = a.v.raw_mod2m(a.f) - (lower_overflow << a.f)
             else:
-                bits = sbitvec(a.v, a.k)
+                bits = sbitvec(a.v, a.k).v
                 s = sint.conv(bits[-1])
                 lower = sint.bit_compose(sint.conv(b) for b in bits[:a.f])
             higher_bits = bits[a.f:n_bits]
@@ -368,7 +370,7 @@ def exp2_fx(a, zero_output=False, as19=False):
         pow2_bits = [sint.conv(x) for x in higher_bits]
         d = floatingpoint.Pow2_from_bits(pow2_bits)
         g = exp_from_parts(d, c)
-        small_result = a._new(g.v.round(a.f + 2 ** n_int_bits,
+        small_result = a._new(g.v.round(a.f + 2 ** n_int_bits + 1,
                                             2 ** n_int_bits, signed=False,
                                             nearest=a.round_nearest),
                                        k=a.k, f=a.f)
@@ -376,7 +378,7 @@ def exp2_fx(a, zero_output=False, as19=False):
             t = sint.conv(floatingpoint.KOpL(lambda x, y: x.bit_and(y),
                                              bits_to_check))
             small_result = t.if_else(small_result, 0)
-        return s.if_else(small_result, g)
+        return s.if_else(small_result, a._new(g.v, k=a.k, f=a.f))
     else:
         assert not zero_output
         # obtain absolute value of a
@@ -436,7 +438,7 @@ def log2_fx(x, use_division=True):
     :return: (sfix) the value of :math:`\log_2(x)`
 
     """
-    library.get_program().reading('logarithm', 'AS19')
+    library.get_program().reading('logarithm', 'AS19', 'Section 5')
     if isinstance(x, types._fix):
         # transforms sfix to f*2^n, where f is [o.5,1] bounded
         # obtain number bounded by [0,5 and 1] by transforming input to sfloat
@@ -814,7 +816,7 @@ def sqrt(x, k=None, f=None):
 
     :return:  square root of :py:obj:`x` (sfix).
     """
-    library.get_program().reading('square root', 'AS19')
+    library.get_program().reading('square root', 'AS19', 'Section 3')
     if k is None:
         k = x.k
     if f is None:
@@ -836,7 +838,8 @@ def atan(x):
 
     :return:  arctan of :py:obj:`x` (sfix).
     """
-    library.get_program().reading('inverse trigonometric functions', 'AS19')
+    library.get_program().reading('inverse trigonometric functions', 'AS19',
+                                  'Protocol 5')
     # obtain absolute value of x
     s = x < 0
     x_abs  = s.if_else(-x, x)
