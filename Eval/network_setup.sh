@@ -14,10 +14,12 @@ ip="$4"
 logFolder="$5"
 mn -c
 root_folder=/root/llm-project/NFGen+KAN/
+# root_folder=/root/
 log_file=${logFolder}network_setup.log
 
 MININET_SESSION="mininet"
 mininet_folder=/root/llm-project/NFGen+KAN/aby3/Net/mininet
+# mininet_folder=/root/mininet
 
 # 检查 tmux 会话是否存在
 if tmux has-session -t $MININET_SESSION 2>/dev/null; then

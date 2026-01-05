@@ -44,49 +44,57 @@ M = 100
 n_vars = mnb.benchmark_dict[func_name]["n_vars"]
 domain = mnb.benchmark_dict[func_name]["domain"]
 func_approx = eval(f"approx_{func_name}.{func_name}_kan_model_evaluate_vectorized")
-input_file_path = f"/root/llm-project/NFGen+KAN/Results/inputs/{func_name}_input.txt"
+# input_file_path = f"/root/MP-SPDZ/Results/inputs/{func_name}_input.txt"
 
 sfix.set_precision(48, 96)
 
-# --- START: 修改部分 ---
-# 1. 检查输入文件是否存在
-if not os.path.exists(input_file_path):
-    raise FileNotFoundError(f"输入文件未找到，请先运行数据准备脚本: {input_file_path}")
+# # --- START: 修改部分 ---
+# # 1. 检查输入文件是否存在
+# if not os.path.exists(input_file_path):
+#     raise FileNotFoundError(f"输入文件未找到，请先运行数据准备脚本: {input_file_path}")
 
-# 2. 创建矩阵用于存储输入数据
-x_matrix = sfix.Matrix(N, n_vars)
+# # 2. 创建矩阵用于存储输入数据
+# x_matrix = sfix.Matrix(N, n_vars)
 
-# 3. 在编译时从文本文件读取数据并填充矩阵
-print_ln("正在从 %s 加载输入数据...", input_file_path)
-last_index = -1
-with open(input_file_path, 'r') as f:
-    # 使用 itertools.islice 来只迭代文件的前 N 行
-    for i, line in enumerate(itertools.islice(f, N)):
-        # 读取一行，去除首尾空格，按空格分割，并转换为浮点数列表
-        row_data = [float(val) for val in line.strip().split()]
+# # 3. 在编译时从文本文件读取数据并填充矩阵
+# print_ln("正在从 %s 加载输入数据...", input_file_path)
+# last_index = -1
+# with open(input_file_path, 'r') as f:
+#     # 使用 itertools.islice 来只迭代文件的前 N 行
+#     for i, line in enumerate(itertools.islice(f, N)):
+#         # 读取一行，去除首尾空格，按空格分割，并转换为浮点数列表
+#         row_data = [float(val) for val in line.strip().split()]
         
-        # 检查维度是否匹配
-        if len(row_data) != n_vars:
-            raise ValueError(f"文件第 {i+1} 行的维度 ({len(row_data)}) 与期望的维度 ({n_vars}) 不匹配。")
+#         # 检查维度是否匹配
+#         if len(row_data) != n_vars:
+#             raise ValueError(f"文件第 {i+1} 行的维度 ({len(row_data)}) 与期望的维度 ({n_vars}) 不匹配。")
             
-        # 将数据分配给矩阵的当前行
-        x_matrix[i].assign(row_data)
-        last_index = i
+#         # 将数据分配给矩阵的当前行
+#         x_matrix[i].assign(row_data)
+#         last_index = i
 
-# 如果文件行数少于 N，这是一个严重错误
-# last_index 是最后一个成功读取的行的索引（从0开始）
-if last_index + 1 < N:
-    raise ValueError(f"输入文件 '{input_file_path}' 只包含 {last_index + 1} 行，但程序需要 N={N} 行。")
+# # 如果文件行数少于 N，这是一个严重错误
+# # last_index 是最后一个成功读取的行的索引（从0开始）
+# if last_index + 1 < N:
+#     raise ValueError(f"输入文件 '{input_file_path}' 只包含 {last_index + 1} 行，但程序需要 N={N} 行。")
 
-print_ln("输入数据加载完成。")
-# --- END: 修改部分 ---
+# print_ln("输入数据加载完成。")
+# # --- END: 修改部分 ---
+
+x_matrix = sfix.Matrix(N, n_vars)
+# fill with dummy data for compilation
+@for_range_opt_multithread(40, N)
+def _(i):
+    for j in range(n_vars):
+        x_matrix[i][j] = sfix(0)
+
 
 y_approx_list = Array.create_from([sfix(0) for _ in range(N)])
 
 start_timer(1)
-@for_range_opt_multithread(40, N)   
-def _(i):
-# for i in range(N):
+# @for_range_opt_multithread(40, N)   
+# def _(i):
+for i in range(N):
     current_x_vector = x_matrix[i]
     y = func_approx(current_x_vector)
     y_approx_list[i] = y[0]
