@@ -170,10 +170,6 @@ def neuron004(x):
     k = len(coeffA)
     degree = k-1
     
-    m = 1
-    k = len(coeffA)
-    degree = k-1
-    
     pre_muls = floatingpoint.PreOpL(lambda a,b,_: a * b, [x] * degree)
 
     poss_res = [0]*m
@@ -1148,10 +1144,6 @@ def neuron034(x):
     breaks = [-4.199999809265137]
     coeffA = [-0.66579411622, -0.98038295321, -0.15645290214, 0.00793222592, 0.0, 0.0, 0.0, 0.0, 0.0]
     scaler = [5.96e-08, 5.96e-08, 5.96e-08, 5.96e-08, 1.0, 1.0, 1.0, 1.0, 1.0]
-    
-    m = 1
-    k = len(coeffA)
-    degree = k-1
     
     m = 1
     k = len(coeffA)
