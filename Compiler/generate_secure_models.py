@@ -19,7 +19,7 @@ from typing import Dict, Iterable, List, Tuple
 
 THIS_DIR = Path(__file__).resolve().parent
 SOURCE_PATTERN = "func*_kan_model_spdz.py"
-TARGET_PREFIX = "secure_"
+TARGET_PREFIX = "secure2_"
 
 BLOCK_PATTERN = re.compile(
     r"[ \t]*m = len\(coeffA\).*?return sfix\.dot_product\(cipher_index, poss_res\)",
@@ -31,27 +31,71 @@ NFGEN_BLOCK = textwrap.indent(
         """\
         m = len(coeffA)
         k = len(coeffA[0])
-        degree = k-1
+        degree = k - 1
         
-        pre_muls = floatingpoint.PreOpL(lambda a,b,_: a * b, [x] * degree)
-
-        poss_res = [0]*m
-        for i in range(m):
-            poss_res0 = coeffA[i][0] * scaler[i][0]
-            for j in range(degree):
-                tmp = pre_muls[j].mul_no_reduce(x.coerce(coeffA[i][j+1]))
-                poss_res[i] += tmp.mul_no_reduce(x.coerce(scaler[i][j+1]))
-            poss_res[i].reduce_after_mul()
-            poss_res[i] += poss_res0
-
         comp = [x >= breaks[i] for i in range(m)]
         cipher_index = [comp[i] ^ comp[i+1] for i in range(m-1)] + [comp[m-1]]
 
-        return sfix.dot_product(cipher_index, poss_res)
+        # pre_muls[j] 对应 x^(j+1)
+        pre_muls = floatingpoint.PreOpL(lambda a,b,_: a * b, [x] * degree)
+        
+        col_c0 = [coeffA[i][0] for i in range(m)]
+        col_s0 = [scaler[i][0] for i in range(m)]
+        
+        # 使用 dot_product 选出当前区间对应的 c 和 s
+        # 此时 selected_c0 和 selected_s0 变成了 sfix (Secret)
+        selected_c0 = sfix.dot_product(cipher_index, col_c0)
+        selected_s0 = sfix.dot_product(cipher_index, col_s0)
+        
+        # 计算常数项结果
+        final_res = selected_c0 * selected_s0
+
+        # 4. 处理高阶项 (x^1 到 x^degree)
+        for j in range(degree):
+            # 提取第 j+1 列 (对应 x^(j+1))
+            col_c = [coeffA[i][j+1] for i in range(m)]
+            col_s = [scaler[i][j+1] for i in range(m)]
+            
+            # 选出当前区间的 c 和 s
+            selected_c = sfix.dot_product(cipher_index, col_c)
+            selected_s = sfix.dot_product(cipher_index, col_s)
+
+            
+            term = selected_c * pre_muls[j] * selected_s
+            final_res += term
+
+        return final_res
         """
     ),
     "    ",
 )
+
+# NFGEN_BLOCK = textwrap.indent(
+#     textwrap.dedent(
+#         """\
+#         m = len(coeffA)
+#         k = len(coeffA[0])
+#         degree = k-1
+        
+#         pre_muls = floatingpoint.PreOpL(lambda a,b,_: a * b, [x] * degree)
+
+#         poss_res = [0]*m
+#         for i in range(m):
+#             poss_res0 = coeffA[i][0] * scaler[i][0]
+#             for j in range(degree):
+#                 tmp = pre_muls[j].mul_no_reduce(x.coerce(coeffA[i][j+1]))
+#                 poss_res[i] += tmp.mul_no_reduce(x.coerce(scaler[i][j+1]))
+#             poss_res[i].reduce_after_mul()
+#             poss_res[i] += poss_res0
+
+#         comp = [x >= breaks[i] for i in range(m)]
+#         cipher_index = [comp[i] ^ comp[i+1] for i in range(m-1)] + [comp[m-1]]
+
+#         return sfix.dot_product(cipher_index, poss_res)
+#         """
+#     ),
+#     "    ",
+# )
 
 
 @dataclass(frozen=True)

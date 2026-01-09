@@ -14,21 +14,21 @@ import nfgen_func12_kan_model_spdz as nfgen_func12
 import nfgen_func13_kan_model_spdz as nfgen_func13
 import nfgen_func14_kan_model_spdz as nfgen_func14
 import nfgen_func15_kan_model_spdz as nfgen_func15
-import secure_func1_kan_model_spdz as secure_func1
-import secure_func2_kan_model_spdz as secure_func2
-import secure_func3_kan_model_spdz as secure_func3
-import secure_func4_kan_model_spdz as secure_func4
-import secure_func5_kan_model_spdz as secure_func5
-import secure_func6_kan_model_spdz as secure_func6
-import secure_func7_kan_model_spdz as secure_func7
-import secure_func8_kan_model_spdz as secure_func8
-import secure_func9_kan_model_spdz as secure_func9
-import secure_func10_kan_model_spdz as secure_func10
-import secure_func11_kan_model_spdz as secure_func11
-import secure_func12_kan_model_spdz as secure_func12
-import secure_func13_kan_model_spdz as secure_func13
-import secure_func14_kan_model_spdz as secure_func14
-import secure_func15_kan_model_spdz as secure_func15
+import secure2_func1_kan_model_spdz as secure_func1
+import secure2_func2_kan_model_spdz as secure_func2
+import secure2_func3_kan_model_spdz as secure_func3
+import secure2_func4_kan_model_spdz as secure_func4
+import secure2_func5_kan_model_spdz as secure_func5
+import secure2_func6_kan_model_spdz as secure_func6
+import secure2_func7_kan_model_spdz as secure_func7
+import secure2_func8_kan_model_spdz as secure_func8
+import secure2_func9_kan_model_spdz as secure_func9
+import secure2_func10_kan_model_spdz as secure_func10
+import secure2_func11_kan_model_spdz as secure_func11
+import secure2_func12_kan_model_spdz as secure_func12
+import secure2_func13_kan_model_spdz as secure_func13
+import secure2_func14_kan_model_spdz as secure_func14
+import secure2_func15_kan_model_spdz as secure_func15
 import itertools, os
 
 program.use_edabit(True)
