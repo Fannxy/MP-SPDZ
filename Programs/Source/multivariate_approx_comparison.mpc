@@ -1,0 +1,123 @@
+import multivariate_nonlinear_baseline as mnb
+import nfgen_func1_kan_model_spdz as nfgen_func1
+import nfgen_func2_kan_model_spdz as nfgen_func2
+import nfgen_func3_kan_model_spdz as nfgen_func3
+import nfgen_func4_kan_model_spdz as nfgen_func4
+import nfgen_func5_kan_model_spdz as nfgen_func5
+import nfgen_func6_kan_model_spdz as nfgen_func6
+import nfgen_func7_kan_model_spdz as nfgen_func7
+import nfgen_func8_kan_model_spdz as nfgen_func8
+import nfgen_func9_kan_model_spdz as nfgen_func9
+import nfgen_func10_kan_model_spdz as nfgen_func10
+import nfgen_func11_kan_model_spdz as nfgen_func11
+import nfgen_func12_kan_model_spdz as nfgen_func12
+import nfgen_func13_kan_model_spdz as nfgen_func13
+import nfgen_func14_kan_model_spdz as nfgen_func14
+import nfgen_func15_kan_model_spdz as nfgen_func15
+import secure_func1_kan_model_spdz as secure_func1
+import secure_func2_kan_model_spdz as secure_func2
+import secure_func3_kan_model_spdz as secure_func3
+import secure_func4_kan_model_spdz as secure_func4
+import secure_func5_kan_model_spdz as secure_func5
+import secure_func6_kan_model_spdz as secure_func6
+import secure_func7_kan_model_spdz as secure_func7
+import secure_func8_kan_model_spdz as secure_func8
+import secure_func9_kan_model_spdz as secure_func9
+import secure_func10_kan_model_spdz as secure_func10
+import secure_func11_kan_model_spdz as secure_func11
+import secure_func12_kan_model_spdz as secure_func12
+import secure_func13_kan_model_spdz as secure_func13
+import secure_func14_kan_model_spdz as secure_func14
+import secure_func15_kan_model_spdz as secure_func15
+import itertools, os
+
+program.use_edabit(True)
+
+arg_val = str(program.args[3])
+
+if arg_val in ("0", "1", "5"):
+    if arg_val in ("0", "1"):
+        program.use_split(3)
+    print("compiled for ring")
+    if arg_val in ("0", "5"):
+        program.use_trunc_pr = True
+    else:
+        program.use_square(True)
+else:
+    if arg_val in ("2", "3"):
+        print("compiled for field")
+    else:
+        print("compiled for others")
+
+func_name = str(program.args[1])
+N = int(program.args[2])
+variant = str(program.args[4]).lower()
+M = 100
+
+if func_name not in mnb.benchmark_dict:
+    raise ValueError(f"unknown function name '{func_name}'")
+
+variant_modules = {
+    "nfgen": {
+        "func1": nfgen_func1,
+        "func2": nfgen_func2,
+        "func3": nfgen_func3,
+        "func4": nfgen_func4,
+        "func5": nfgen_func5,
+        "func6": nfgen_func6,
+        "func7": nfgen_func7,
+        "func8": nfgen_func8,
+        "func9": nfgen_func9,
+        "func10": nfgen_func10,
+        "func11": nfgen_func11,
+        "func12": nfgen_func12,
+        "func13": nfgen_func13,
+        "func14": nfgen_func14,
+        "func15": nfgen_func15,
+    },
+    "secure": {
+        "func1": secure_func1,
+        "func2": secure_func2,
+        "func3": secure_func3,
+        "func4": secure_func4,
+        "func5": secure_func5,
+        "func6": secure_func6,
+        "func7": secure_func7,
+        "func8": secure_func8,
+        "func9": secure_func9,
+        "func10": secure_func10,
+        "func11": secure_func11,
+        "func12": secure_func12,
+        "func13": secure_func13,
+        "func14": secure_func14,
+        "func15": secure_func15,
+    },
+}
+
+if variant not in variant_modules:
+    raise ValueError(f"unsupported variant '{variant}', expected 'nfgen' or 'secure'")
+
+selected_module = variant_modules[variant].get(func_name)
+if selected_module is None:
+    raise ValueError(f"function '{func_name}' not available for variant '{variant}'")
+
+n_vars = mnb.benchmark_dict[func_name]["n_vars"]
+domain = mnb.benchmark_dict[func_name]["domain"]
+func_approx = getattr(selected_module, f"{func_name}_kan_model_evaluate_vectorized")
+
+sfix.set_precision(48, 96)
+
+x_matrix = sfix.Matrix(N, n_vars)
+@for_range_opt_multithread(40, N)
+def _(i):
+    for j in range(n_vars):
+        x_matrix[i][j] = sfix(0)
+
+y_approx_list = Array.create_from([sfix(0) for _ in range(N)])
+
+start_timer(1)
+for i in range(N):
+    current_x_vector = x_matrix[i]
+    y = func_approx(current_x_vector)
+    y_approx_list[i] = y[0]
+stop_timer(1)
