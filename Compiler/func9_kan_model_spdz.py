@@ -34,7 +34,7 @@ def neuron000(x):
         poss_res[i] += poss_res0
 
     comp = [x >= breaks[i] for i in range(m)]
-    cipher_index = [comp[i] ^ comp[i+1] for i in range(m-1)] + [comp[m-1]]
+    cipher_index = [comp[i-1] - comp[i] for i in range(1, m)] + [comp[m-1]]
 
     return sfix.dot_product(cipher_index, poss_res)
 
@@ -71,7 +71,7 @@ def neuron001(x):
         poss_res[i] += poss_res0
 
     comp = [x >= breaks[i] for i in range(m)]
-    cipher_index = [comp[i] ^ comp[i+1] for i in range(m-1)] + [comp[m-1]]
+    cipher_index = [comp[i-1] - comp[i] for i in range(1, m)] + [comp[m-1]]
 
     return sfix.dot_product(cipher_index, poss_res)
 
@@ -108,7 +108,7 @@ def neuron002(x):
         poss_res[i] += poss_res0
 
     comp = [x >= breaks[i] for i in range(m)]
-    cipher_index = [comp[i] ^ comp[i+1] for i in range(m-1)] + [comp[m-1]]
+    cipher_index = [comp[i-1] - comp[i] for i in range(1, m)] + [comp[m-1]]
 
     return sfix.dot_product(cipher_index, poss_res)
 
@@ -145,7 +145,7 @@ def neuron003(x):
         poss_res[i] += poss_res0
 
     comp = [x >= breaks[i] for i in range(m)]
-    cipher_index = [comp[i] ^ comp[i+1] for i in range(m-1)] + [comp[m-1]]
+    cipher_index = [comp[i-1] - comp[i] for i in range(1, m)] + [comp[m-1]]
 
     return sfix.dot_product(cipher_index, poss_res)
 
@@ -182,7 +182,7 @@ def neuron004(x):
         poss_res[i] += poss_res0
 
     comp = [x >= breaks[i] for i in range(m)]
-    cipher_index = [comp[i] ^ comp[i+1] for i in range(m-1)] + [comp[m-1]]
+    cipher_index = [comp[i-1] - comp[i] for i in range(1, m)] + [comp[m-1]]
 
     return sfix.dot_product(cipher_index, poss_res)
 
@@ -219,7 +219,7 @@ def neuron005(x):
         poss_res[i] += poss_res0
 
     comp = [x >= breaks[i] for i in range(m)]
-    cipher_index = [comp[i] ^ comp[i+1] for i in range(m-1)] + [comp[m-1]]
+    cipher_index = [comp[i-1] - comp[i] for i in range(1, m)] + [comp[m-1]]
 
     return sfix.dot_product(cipher_index, poss_res)
 
@@ -256,7 +256,7 @@ def neuron006(x):
         poss_res[i] += poss_res0
 
     comp = [x >= breaks[i] for i in range(m)]
-    cipher_index = [comp[i] ^ comp[i+1] for i in range(m-1)] + [comp[m-1]]
+    cipher_index = [comp[i-1] - comp[i] for i in range(1, m)] + [comp[m-1]]
 
     return sfix.dot_product(cipher_index, poss_res)
 
@@ -293,7 +293,7 @@ def neuron007(x):
         poss_res[i] += poss_res0
 
     comp = [x >= breaks[i] for i in range(m)]
-    cipher_index = [comp[i] ^ comp[i+1] for i in range(m-1)] + [comp[m-1]]
+    cipher_index = [comp[i-1] - comp[i] for i in range(1, m)] + [comp[m-1]]
 
     return sfix.dot_product(cipher_index, poss_res)
 
@@ -330,7 +330,7 @@ def neuron008(x):
         poss_res[i] += poss_res0
 
     comp = [x >= breaks[i] for i in range(m)]
-    cipher_index = [comp[i] ^ comp[i+1] for i in range(m-1)] + [comp[m-1]]
+    cipher_index = [comp[i-1] - comp[i] for i in range(1, m)] + [comp[m-1]]
 
     return sfix.dot_product(cipher_index, poss_res)
 
@@ -367,7 +367,7 @@ def neuron010(x):
         poss_res[i] += poss_res0
 
     comp = [x >= breaks[i] for i in range(m)]
-    cipher_index = [comp[i] ^ comp[i+1] for i in range(m-1)] + [comp[m-1]]
+    cipher_index = [comp[i-1] - comp[i] for i in range(1, m)] + [comp[m-1]]
 
     return sfix.dot_product(cipher_index, poss_res)
 
@@ -404,7 +404,7 @@ def neuron011(x):
         poss_res[i] += poss_res0
 
     comp = [x >= breaks[i] for i in range(m)]
-    cipher_index = [comp[i] ^ comp[i+1] for i in range(m-1)] + [comp[m-1]]
+    cipher_index = [comp[i-1] - comp[i] for i in range(1, m)] + [comp[m-1]]
 
     return sfix.dot_product(cipher_index, poss_res)
 
@@ -441,7 +441,7 @@ def neuron012(x):
         poss_res[i] += poss_res0
 
     comp = [x >= breaks[i] for i in range(m)]
-    cipher_index = [comp[i] ^ comp[i+1] for i in range(m-1)] + [comp[m-1]]
+    cipher_index = [comp[i-1] - comp[i] for i in range(1, m)] + [comp[m-1]]
 
     return sfix.dot_product(cipher_index, poss_res)
 
@@ -478,7 +478,7 @@ def neuron013(x):
         poss_res[i] += poss_res0
 
     comp = [x >= breaks[i] for i in range(m)]
-    cipher_index = [comp[i] ^ comp[i+1] for i in range(m-1)] + [comp[m-1]]
+    cipher_index = [comp[i-1] - comp[i] for i in range(1, m)] + [comp[m-1]]
 
     return sfix.dot_product(cipher_index, poss_res)
 
@@ -515,7 +515,7 @@ def neuron014(x):
         poss_res[i] += poss_res0
 
     comp = [x >= breaks[i] for i in range(m)]
-    cipher_index = [comp[i] ^ comp[i+1] for i in range(m-1)] + [comp[m-1]]
+    cipher_index = [comp[i-1] - comp[i] for i in range(1, m)] + [comp[m-1]]
 
     return sfix.dot_product(cipher_index, poss_res)
 
@@ -552,7 +552,7 @@ def neuron015(x):
         poss_res[i] += poss_res0
 
     comp = [x >= breaks[i] for i in range(m)]
-    cipher_index = [comp[i] ^ comp[i+1] for i in range(m-1)] + [comp[m-1]]
+    cipher_index = [comp[i-1] - comp[i] for i in range(1, m)] + [comp[m-1]]
 
     return sfix.dot_product(cipher_index, poss_res)
 
@@ -589,7 +589,7 @@ def neuron016(x):
         poss_res[i] += poss_res0
 
     comp = [x >= breaks[i] for i in range(m)]
-    cipher_index = [comp[i] ^ comp[i+1] for i in range(m-1)] + [comp[m-1]]
+    cipher_index = [comp[i-1] - comp[i] for i in range(1, m)] + [comp[m-1]]
 
     return sfix.dot_product(cipher_index, poss_res)
 
@@ -626,7 +626,7 @@ def neuron017(x):
         poss_res[i] += poss_res0
 
     comp = [x >= breaks[i] for i in range(m)]
-    cipher_index = [comp[i] ^ comp[i+1] for i in range(m-1)] + [comp[m-1]]
+    cipher_index = [comp[i-1] - comp[i] for i in range(1, m)] + [comp[m-1]]
 
     return sfix.dot_product(cipher_index, poss_res)
 
@@ -663,7 +663,7 @@ def neuron018(x):
         poss_res[i] += poss_res0
 
     comp = [x >= breaks[i] for i in range(m)]
-    cipher_index = [comp[i] ^ comp[i+1] for i in range(m-1)] + [comp[m-1]]
+    cipher_index = [comp[i-1] - comp[i] for i in range(1, m)] + [comp[m-1]]
 
     return sfix.dot_product(cipher_index, poss_res)
 
@@ -700,7 +700,7 @@ def neuron020(x):
         poss_res[i] += poss_res0
 
     comp = [x >= breaks[i] for i in range(m)]
-    cipher_index = [comp[i] ^ comp[i+1] for i in range(m-1)] + [comp[m-1]]
+    cipher_index = [comp[i-1] - comp[i] for i in range(1, m)] + [comp[m-1]]
 
     return sfix.dot_product(cipher_index, poss_res)
 
@@ -737,7 +737,7 @@ def neuron021(x):
         poss_res[i] += poss_res0
 
     comp = [x >= breaks[i] for i in range(m)]
-    cipher_index = [comp[i] ^ comp[i+1] for i in range(m-1)] + [comp[m-1]]
+    cipher_index = [comp[i-1] - comp[i] for i in range(1, m)] + [comp[m-1]]
 
     return sfix.dot_product(cipher_index, poss_res)
 
@@ -774,7 +774,7 @@ def neuron022(x):
         poss_res[i] += poss_res0
 
     comp = [x >= breaks[i] for i in range(m)]
-    cipher_index = [comp[i] ^ comp[i+1] for i in range(m-1)] + [comp[m-1]]
+    cipher_index = [comp[i-1] - comp[i] for i in range(1, m)] + [comp[m-1]]
 
     return sfix.dot_product(cipher_index, poss_res)
 
@@ -811,7 +811,7 @@ def neuron023(x):
         poss_res[i] += poss_res0
 
     comp = [x >= breaks[i] for i in range(m)]
-    cipher_index = [comp[i] ^ comp[i+1] for i in range(m-1)] + [comp[m-1]]
+    cipher_index = [comp[i-1] - comp[i] for i in range(1, m)] + [comp[m-1]]
 
     return sfix.dot_product(cipher_index, poss_res)
 
@@ -848,7 +848,7 @@ def neuron024(x):
         poss_res[i] += poss_res0
 
     comp = [x >= breaks[i] for i in range(m)]
-    cipher_index = [comp[i] ^ comp[i+1] for i in range(m-1)] + [comp[m-1]]
+    cipher_index = [comp[i-1] - comp[i] for i in range(1, m)] + [comp[m-1]]
 
     return sfix.dot_product(cipher_index, poss_res)
 
@@ -885,7 +885,7 @@ def neuron025(x):
         poss_res[i] += poss_res0
 
     comp = [x >= breaks[i] for i in range(m)]
-    cipher_index = [comp[i] ^ comp[i+1] for i in range(m-1)] + [comp[m-1]]
+    cipher_index = [comp[i-1] - comp[i] for i in range(1, m)] + [comp[m-1]]
 
     return sfix.dot_product(cipher_index, poss_res)
 
@@ -922,7 +922,7 @@ def neuron026(x):
         poss_res[i] += poss_res0
 
     comp = [x >= breaks[i] for i in range(m)]
-    cipher_index = [comp[i] ^ comp[i+1] for i in range(m-1)] + [comp[m-1]]
+    cipher_index = [comp[i-1] - comp[i] for i in range(1, m)] + [comp[m-1]]
 
     return sfix.dot_product(cipher_index, poss_res)
 
@@ -959,7 +959,7 @@ def neuron027(x):
         poss_res[i] += poss_res0
 
     comp = [x >= breaks[i] for i in range(m)]
-    cipher_index = [comp[i] ^ comp[i+1] for i in range(m-1)] + [comp[m-1]]
+    cipher_index = [comp[i-1] - comp[i] for i in range(1, m)] + [comp[m-1]]
 
     return sfix.dot_product(cipher_index, poss_res)
 
@@ -996,7 +996,7 @@ def neuron028(x):
         poss_res[i] += poss_res0
 
     comp = [x >= breaks[i] for i in range(m)]
-    cipher_index = [comp[i] ^ comp[i+1] for i in range(m-1)] + [comp[m-1]]
+    cipher_index = [comp[i-1] - comp[i] for i in range(1, m)] + [comp[m-1]]
 
     return sfix.dot_product(cipher_index, poss_res)
 
@@ -1033,7 +1033,7 @@ def neuron030(x):
         poss_res[i] += poss_res0
 
     comp = [x >= breaks[i] for i in range(m)]
-    cipher_index = [comp[i] ^ comp[i+1] for i in range(m-1)] + [comp[m-1]]
+    cipher_index = [comp[i-1] - comp[i] for i in range(1, m)] + [comp[m-1]]
 
     return sfix.dot_product(cipher_index, poss_res)
 
@@ -1070,7 +1070,7 @@ def neuron031(x):
         poss_res[i] += poss_res0
 
     comp = [x >= breaks[i] for i in range(m)]
-    cipher_index = [comp[i] ^ comp[i+1] for i in range(m-1)] + [comp[m-1]]
+    cipher_index = [comp[i-1] - comp[i] for i in range(1, m)] + [comp[m-1]]
 
     return sfix.dot_product(cipher_index, poss_res)
 
@@ -1107,7 +1107,7 @@ def neuron032(x):
         poss_res[i] += poss_res0
 
     comp = [x >= breaks[i] for i in range(m)]
-    cipher_index = [comp[i] ^ comp[i+1] for i in range(m-1)] + [comp[m-1]]
+    cipher_index = [comp[i-1] - comp[i] for i in range(1, m)] + [comp[m-1]]
 
     return sfix.dot_product(cipher_index, poss_res)
 
@@ -1144,7 +1144,7 @@ def neuron033(x):
         poss_res[i] += poss_res0
 
     comp = [x >= breaks[i] for i in range(m)]
-    cipher_index = [comp[i] ^ comp[i+1] for i in range(m-1)] + [comp[m-1]]
+    cipher_index = [comp[i-1] - comp[i] for i in range(1, m)] + [comp[m-1]]
 
     return sfix.dot_product(cipher_index, poss_res)
 
@@ -1181,7 +1181,7 @@ def neuron034(x):
         poss_res[i] += poss_res0
 
     comp = [x >= breaks[i] for i in range(m)]
-    cipher_index = [comp[i] ^ comp[i+1] for i in range(m-1)] + [comp[m-1]]
+    cipher_index = [comp[i-1] - comp[i] for i in range(1, m)] + [comp[m-1]]
 
     return sfix.dot_product(cipher_index, poss_res)
 
@@ -1218,7 +1218,7 @@ def neuron035(x):
         poss_res[i] += poss_res0
 
     comp = [x >= breaks[i] for i in range(m)]
-    cipher_index = [comp[i] ^ comp[i+1] for i in range(m-1)] + [comp[m-1]]
+    cipher_index = [comp[i-1] - comp[i] for i in range(1, m)] + [comp[m-1]]
 
     return sfix.dot_product(cipher_index, poss_res)
 
@@ -1255,7 +1255,7 @@ def neuron036(x):
         poss_res[i] += poss_res0
 
     comp = [x >= breaks[i] for i in range(m)]
-    cipher_index = [comp[i] ^ comp[i+1] for i in range(m-1)] + [comp[m-1]]
+    cipher_index = [comp[i-1] - comp[i] for i in range(1, m)] + [comp[m-1]]
 
     return sfix.dot_product(cipher_index, poss_res)
 
@@ -1292,7 +1292,7 @@ def neuron037(x):
         poss_res[i] += poss_res0
 
     comp = [x >= breaks[i] for i in range(m)]
-    cipher_index = [comp[i] ^ comp[i+1] for i in range(m-1)] + [comp[m-1]]
+    cipher_index = [comp[i-1] - comp[i] for i in range(1, m)] + [comp[m-1]]
 
     return sfix.dot_product(cipher_index, poss_res)
 
@@ -1329,7 +1329,7 @@ def neuron038(x):
         poss_res[i] += poss_res0
 
     comp = [x >= breaks[i] for i in range(m)]
-    cipher_index = [comp[i] ^ comp[i+1] for i in range(m-1)] + [comp[m-1]]
+    cipher_index = [comp[i-1] - comp[i] for i in range(1, m)] + [comp[m-1]]
 
     return sfix.dot_product(cipher_index, poss_res)
 
@@ -1366,7 +1366,7 @@ def neuron040(x):
         poss_res[i] += poss_res0
 
     comp = [x >= breaks[i] for i in range(m)]
-    cipher_index = [comp[i] ^ comp[i+1] for i in range(m-1)] + [comp[m-1]]
+    cipher_index = [comp[i-1] - comp[i] for i in range(1, m)] + [comp[m-1]]
 
     return sfix.dot_product(cipher_index, poss_res)
 
@@ -1403,7 +1403,7 @@ def neuron041(x):
         poss_res[i] += poss_res0
 
     comp = [x >= breaks[i] for i in range(m)]
-    cipher_index = [comp[i] ^ comp[i+1] for i in range(m-1)] + [comp[m-1]]
+    cipher_index = [comp[i-1] - comp[i] for i in range(1, m)] + [comp[m-1]]
 
     return sfix.dot_product(cipher_index, poss_res)
 
@@ -1440,7 +1440,7 @@ def neuron042(x):
         poss_res[i] += poss_res0
 
     comp = [x >= breaks[i] for i in range(m)]
-    cipher_index = [comp[i] ^ comp[i+1] for i in range(m-1)] + [comp[m-1]]
+    cipher_index = [comp[i-1] - comp[i] for i in range(1, m)] + [comp[m-1]]
 
     return sfix.dot_product(cipher_index, poss_res)
 
@@ -1477,7 +1477,7 @@ def neuron043(x):
         poss_res[i] += poss_res0
 
     comp = [x >= breaks[i] for i in range(m)]
-    cipher_index = [comp[i] ^ comp[i+1] for i in range(m-1)] + [comp[m-1]]
+    cipher_index = [comp[i-1] - comp[i] for i in range(1, m)] + [comp[m-1]]
 
     return sfix.dot_product(cipher_index, poss_res)
 
@@ -1514,7 +1514,7 @@ def neuron044(x):
         poss_res[i] += poss_res0
 
     comp = [x >= breaks[i] for i in range(m)]
-    cipher_index = [comp[i] ^ comp[i+1] for i in range(m-1)] + [comp[m-1]]
+    cipher_index = [comp[i-1] - comp[i] for i in range(1, m)] + [comp[m-1]]
 
     return sfix.dot_product(cipher_index, poss_res)
 
@@ -1551,7 +1551,7 @@ def neuron045(x):
         poss_res[i] += poss_res0
 
     comp = [x >= breaks[i] for i in range(m)]
-    cipher_index = [comp[i] ^ comp[i+1] for i in range(m-1)] + [comp[m-1]]
+    cipher_index = [comp[i-1] - comp[i] for i in range(1, m)] + [comp[m-1]]
 
     return sfix.dot_product(cipher_index, poss_res)
 
@@ -1588,7 +1588,7 @@ def neuron046(x):
         poss_res[i] += poss_res0
 
     comp = [x >= breaks[i] for i in range(m)]
-    cipher_index = [comp[i] ^ comp[i+1] for i in range(m-1)] + [comp[m-1]]
+    cipher_index = [comp[i-1] - comp[i] for i in range(1, m)] + [comp[m-1]]
 
     return sfix.dot_product(cipher_index, poss_res)
 
@@ -1625,7 +1625,7 @@ def neuron047(x):
         poss_res[i] += poss_res0
 
     comp = [x >= breaks[i] for i in range(m)]
-    cipher_index = [comp[i] ^ comp[i+1] for i in range(m-1)] + [comp[m-1]]
+    cipher_index = [comp[i-1] - comp[i] for i in range(1, m)] + [comp[m-1]]
 
     return sfix.dot_product(cipher_index, poss_res)
 
@@ -1662,7 +1662,7 @@ def neuron048(x):
         poss_res[i] += poss_res0
 
     comp = [x >= breaks[i] for i in range(m)]
-    cipher_index = [comp[i] ^ comp[i+1] for i in range(m-1)] + [comp[m-1]]
+    cipher_index = [comp[i-1] - comp[i] for i in range(1, m)] + [comp[m-1]]
 
     return sfix.dot_product(cipher_index, poss_res)
 
@@ -1699,7 +1699,7 @@ def neuron050(x):
         poss_res[i] += poss_res0
 
     comp = [x >= breaks[i] for i in range(m)]
-    cipher_index = [comp[i] ^ comp[i+1] for i in range(m-1)] + [comp[m-1]]
+    cipher_index = [comp[i-1] - comp[i] for i in range(1, m)] + [comp[m-1]]
 
     return sfix.dot_product(cipher_index, poss_res)
 
@@ -1736,7 +1736,7 @@ def neuron051(x):
         poss_res[i] += poss_res0
 
     comp = [x >= breaks[i] for i in range(m)]
-    cipher_index = [comp[i] ^ comp[i+1] for i in range(m-1)] + [comp[m-1]]
+    cipher_index = [comp[i-1] - comp[i] for i in range(1, m)] + [comp[m-1]]
 
     return sfix.dot_product(cipher_index, poss_res)
 
@@ -1773,7 +1773,7 @@ def neuron052(x):
         poss_res[i] += poss_res0
 
     comp = [x >= breaks[i] for i in range(m)]
-    cipher_index = [comp[i] ^ comp[i+1] for i in range(m-1)] + [comp[m-1]]
+    cipher_index = [comp[i-1] - comp[i] for i in range(1, m)] + [comp[m-1]]
 
     return sfix.dot_product(cipher_index, poss_res)
 
@@ -1810,7 +1810,7 @@ def neuron053(x):
         poss_res[i] += poss_res0
 
     comp = [x >= breaks[i] for i in range(m)]
-    cipher_index = [comp[i] ^ comp[i+1] for i in range(m-1)] + [comp[m-1]]
+    cipher_index = [comp[i-1] - comp[i] for i in range(1, m)] + [comp[m-1]]
 
     return sfix.dot_product(cipher_index, poss_res)
 
@@ -1847,7 +1847,7 @@ def neuron054(x):
         poss_res[i] += poss_res0
 
     comp = [x >= breaks[i] for i in range(m)]
-    cipher_index = [comp[i] ^ comp[i+1] for i in range(m-1)] + [comp[m-1]]
+    cipher_index = [comp[i-1] - comp[i] for i in range(1, m)] + [comp[m-1]]
 
     return sfix.dot_product(cipher_index, poss_res)
 
@@ -1884,7 +1884,7 @@ def neuron055(x):
         poss_res[i] += poss_res0
 
     comp = [x >= breaks[i] for i in range(m)]
-    cipher_index = [comp[i] ^ comp[i+1] for i in range(m-1)] + [comp[m-1]]
+    cipher_index = [comp[i-1] - comp[i] for i in range(1, m)] + [comp[m-1]]
 
     return sfix.dot_product(cipher_index, poss_res)
 
@@ -1921,7 +1921,7 @@ def neuron056(x):
         poss_res[i] += poss_res0
 
     comp = [x >= breaks[i] for i in range(m)]
-    cipher_index = [comp[i] ^ comp[i+1] for i in range(m-1)] + [comp[m-1]]
+    cipher_index = [comp[i-1] - comp[i] for i in range(1, m)] + [comp[m-1]]
 
     return sfix.dot_product(cipher_index, poss_res)
 
@@ -1958,7 +1958,7 @@ def neuron057(x):
         poss_res[i] += poss_res0
 
     comp = [x >= breaks[i] for i in range(m)]
-    cipher_index = [comp[i] ^ comp[i+1] for i in range(m-1)] + [comp[m-1]]
+    cipher_index = [comp[i-1] - comp[i] for i in range(1, m)] + [comp[m-1]]
 
     return sfix.dot_product(cipher_index, poss_res)
 
@@ -1995,7 +1995,7 @@ def neuron058(x):
         poss_res[i] += poss_res0
 
     comp = [x >= breaks[i] for i in range(m)]
-    cipher_index = [comp[i] ^ comp[i+1] for i in range(m-1)] + [comp[m-1]]
+    cipher_index = [comp[i-1] - comp[i] for i in range(1, m)] + [comp[m-1]]
 
     return sfix.dot_product(cipher_index, poss_res)
 
@@ -2032,7 +2032,7 @@ def neuron100(x):
         poss_res[i] += poss_res0
 
     comp = [x >= breaks[i] for i in range(m)]
-    cipher_index = [comp[i] ^ comp[i+1] for i in range(m-1)] + [comp[m-1]]
+    cipher_index = [comp[i-1] - comp[i] for i in range(1, m)] + [comp[m-1]]
 
     return sfix.dot_product(cipher_index, poss_res)
 
@@ -2069,7 +2069,7 @@ def neuron110(x):
         poss_res[i] += poss_res0
 
     comp = [x >= breaks[i] for i in range(m)]
-    cipher_index = [comp[i] ^ comp[i+1] for i in range(m-1)] + [comp[m-1]]
+    cipher_index = [comp[i-1] - comp[i] for i in range(1, m)] + [comp[m-1]]
 
     return sfix.dot_product(cipher_index, poss_res)
 
@@ -2106,7 +2106,7 @@ def neuron120(x):
         poss_res[i] += poss_res0
 
     comp = [x >= breaks[i] for i in range(m)]
-    cipher_index = [comp[i] ^ comp[i+1] for i in range(m-1)] + [comp[m-1]]
+    cipher_index = [comp[i-1] - comp[i] for i in range(1, m)] + [comp[m-1]]
 
     return sfix.dot_product(cipher_index, poss_res)
 
@@ -2143,7 +2143,7 @@ def neuron130(x):
         poss_res[i] += poss_res0
 
     comp = [x >= breaks[i] for i in range(m)]
-    cipher_index = [comp[i] ^ comp[i+1] for i in range(m-1)] + [comp[m-1]]
+    cipher_index = [comp[i-1] - comp[i] for i in range(1, m)] + [comp[m-1]]
 
     return sfix.dot_product(cipher_index, poss_res)
 
@@ -2180,7 +2180,7 @@ def neuron140(x):
         poss_res[i] += poss_res0
 
     comp = [x >= breaks[i] for i in range(m)]
-    cipher_index = [comp[i] ^ comp[i+1] for i in range(m-1)] + [comp[m-1]]
+    cipher_index = [comp[i-1] - comp[i] for i in range(1, m)] + [comp[m-1]]
 
     return sfix.dot_product(cipher_index, poss_res)
 
@@ -2217,7 +2217,7 @@ def neuron150(x):
         poss_res[i] += poss_res0
 
     comp = [x >= breaks[i] for i in range(m)]
-    cipher_index = [comp[i] ^ comp[i+1] for i in range(m-1)] + [comp[m-1]]
+    cipher_index = [comp[i-1] - comp[i] for i in range(1, m)] + [comp[m-1]]
 
     return sfix.dot_product(cipher_index, poss_res)
 
@@ -2254,7 +2254,7 @@ def neuron160(x):
         poss_res[i] += poss_res0
 
     comp = [x >= breaks[i] for i in range(m)]
-    cipher_index = [comp[i] ^ comp[i+1] for i in range(m-1)] + [comp[m-1]]
+    cipher_index = [comp[i-1] - comp[i] for i in range(1, m)] + [comp[m-1]]
 
     return sfix.dot_product(cipher_index, poss_res)
 
@@ -2291,7 +2291,7 @@ def neuron170(x):
         poss_res[i] += poss_res0
 
     comp = [x >= breaks[i] for i in range(m)]
-    cipher_index = [comp[i] ^ comp[i+1] for i in range(m-1)] + [comp[m-1]]
+    cipher_index = [comp[i-1] - comp[i] for i in range(1, m)] + [comp[m-1]]
 
     return sfix.dot_product(cipher_index, poss_res)
 
@@ -2328,7 +2328,7 @@ def neuron180(x):
         poss_res[i] += poss_res0
 
     comp = [x >= breaks[i] for i in range(m)]
-    cipher_index = [comp[i] ^ comp[i+1] for i in range(m-1)] + [comp[m-1]]
+    cipher_index = [comp[i-1] - comp[i] for i in range(1, m)] + [comp[m-1]]
 
     return sfix.dot_product(cipher_index, poss_res)
 
